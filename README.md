@@ -21,7 +21,11 @@ A tiny web application framework with big ambitions.
 ### Installing Haku
 
 ```sh
-git clone git@github.com:hejrobin/haku-php.git project-name
+gh repo clone hejrobin/haku project-name
+
+# or via ssh
+# git clone git@github.com:hejrobin/haku.git project-name
+
 cd project-name
 
 php haku init --dev
