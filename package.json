@@ -1,0 +1,7 @@
+{
+	"name": "haku",
+	"version": "0.1.0",
+	"description": "A tiny web application framework with big ambitions.",
+	"author": "Robin Grass <hej@carbin.se>",
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+# Logs
+*.log
+*.err
+*.debug
+
+# Sensitive files
+config.*.php
+!config.sample.php
+*.dev.php
+*.dev.sql
+
+# Misc
+.DS_Store
+Thumbs.db
