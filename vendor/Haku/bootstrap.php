@@ -109,3 +109,44 @@ function loadVendorBootstrap(
 
 	return false;
 }
+
+function hakuAutoloadResolver()
+{
+	/* Set up "magic" vendor specific autoloading */
+
+	\spl_autoload_register(
+		fn(string $namespace) => require_once resolveVendorNamespacePath($namespace),
+		throw: true,
+		prepend: true,
+	);
+
+	/* Load every bootstrap file in every Haku module */
+	$regexDirectoryIterator = new RegexIterator(
+		new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator(
+				'./vendor/'
+			),
+		),
+		'/bootstrap\.php/',
+		RecursiveRegexIterator::GET_MATCH,
+	);
+
+	$includePaths = array_keys(iterator_to_array($regexDirectoryIterator));
+
+	foreach ($includePaths as $includePath)
+	{
+		require_once resolvePath($includePath);
+	}
+}
+
+/**
+ *	Returns information found in package.json
+ */
+function package(): object
+{
+	return json_decode(
+		file_get_contents(
+			resolvePath('package.json')
+		)
+	);
+}

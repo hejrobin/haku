@@ -23,14 +23,7 @@ try
 		'vendor', 'Haku', 'bootstrap.php'
 	]);
 
-	/**
-	 *	@note Set up vendor specific autoloader
-	 */
-	\spl_autoload_register(
-		fn(string $namespace) => require_once resolveVendorNamespacePath($namespace),
-		throw: true,
-		prepend: true,
-	);
+	hakuAutoloadResolver();
 
 	ob_start();
 

@@ -2,6 +2,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Haku;
+
 error_reporting(E_ALL & ~E_NOTICE);
 
 define('HAKU_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
@@ -14,7 +16,19 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 
 try
 {
-	echo "Hello from haku!";
+	require_once implode(DIRECTORY_SEPARATOR, [
+		rtrim(HAKU_ROOT_PATH, DIRECTORY_SEPARATOR),
+		'vendor', 'Haku', 'bootstrap.php'
+	]);
+
+	hakuAutoloadResolver();
+
+	$engine = new Console\Engine();
+
+	$engine->registerCommand(new Console\Commands\Version());
+
+	$engine->run();
+
 	exit;
 }
 catch(\Throwable $throwable)
