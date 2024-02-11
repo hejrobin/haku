@@ -96,3 +96,8 @@ function resolveArguments(
 
 	return $args;
 }
+
+function calculateIndentLength(array $items): int
+{
+	return max(array_map('strlen', $items));
+}

@@ -25,13 +25,28 @@ class Engine extends Output
 	 */
 	protected function outputNilCommand(): void
 	{
-		$this->output('not sure what to do? maybe one of these?');
+		$this->output('available commands:');
+		$this->break();
+
+		foreach ($this->commands as $trigger => $command)
+		{
+			$indentLength = calculateIndentLength(array_keys($this->commands), $trigger) + 2;
+
+			$commandName = str_pad($command->name(), $indentLength);
+
+			$this->send(sprintf(
+				'%s — %s',
+				$this->format($commandName, Ansi::Cyan),
+				$command->description(),
+			));
+		}
+
 	}
 
 	/**
 	 *	Outputs error message when command defined, but not found
 	 */
-	protected function outputCommandNotFound(): void
+	protected function outputCommandNotFound(object $arguments): void
 	{
 		$this->output(
 			sprintf(
@@ -74,7 +89,7 @@ class Engine extends Output
 		}
 		else if (!$commandExists)
 		{
-			$this->outputCommandNotFound();
+			$this->outputCommandNotFound($arguments);
 		}
 		else
 		{

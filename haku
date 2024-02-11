@@ -26,6 +26,7 @@ try
 	$engine = new Console\Engine();
 
 	$engine->registerCommand(new Console\Commands\Version());
+	$engine->registerCommand(new Console\Commands\Serve());
 
 	$engine->run();
 
