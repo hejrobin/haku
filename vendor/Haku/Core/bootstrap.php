@@ -11,8 +11,3 @@ final class Kernel
 	use Singleton;
 	use Factory;
 }
-
-function haku(): Kernel
-{
-	return Kernel::getInstance();
-}

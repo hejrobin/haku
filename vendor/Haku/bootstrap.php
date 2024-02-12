@@ -6,11 +6,11 @@ namespace Haku;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use \Exception;
-use \RegexIterator;
-use \RecursiveRegexIterator;
-use \RecursiveIteratorIterator;
-use \RecursiveDirectoryIterator;
+use Exception;
+use RegexIterator;
+use RecursiveRegexIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
 /**
  *	Alias class for Exception
@@ -149,4 +149,28 @@ function package(): object
 			resolvePath('package.json')
 		)
 	);
+}
+
+/**
+ *	Returns Kernel instance, or initialized instance inside factory if instanceName is passed.
+ *
+ *	@throws Haku\Exceptions\FrameworkException
+ *
+ *	@return object
+ */
+function haku(?string $instanceName = null): object
+{
+	$kernel = Core\Kernel::getInstance();
+
+	if ($instanceName)
+	{
+		if (!$kernel->has($instanceName))
+		{
+			throw new FrameworkException(sprintf('Instance %s not initialized.', $instanceName));
+		}
+
+		return $kernel->get($instanceName);
+	}
+
+	return $kernel;
 }

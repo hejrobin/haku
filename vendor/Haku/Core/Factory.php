@@ -25,7 +25,7 @@ trait Factory
 	 *
 	 *	@throws Haku\Exceptions\FrameworkException
 	 */
-	public function set(string $instanceName, object $instance): void
+	protected function set(string $instanceName, object $instance): void
 	{
 		if ($this->has($instanceName))
 		{
@@ -55,11 +55,16 @@ trait Factory
 	 */
 	public function initialize(
 		string $className,
-		string $instanceName,
+		string $instanceName = null,
 		string $classMethodName = null,
 		array $classMethodArguments = [],
-	): mixed
+	): object
 	{
+		if (is_null($instanceName))
+		{
+			$instanceName = lcfirst(array_pop(explode('\\', $className)));
+		}
+
 		if ($this->get($instanceName) !== null)
 		{
 			throw new FrameworkException(
@@ -76,7 +81,5 @@ trait Factory
 
 		return $classInstance;
 	}
-
-
 
 }
