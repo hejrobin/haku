@@ -15,6 +15,8 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 
 use Throwable;
 
+use Haku\Exceptions\FrameworkException;
+
 use Haku\Http\{
 	Status,
 	Headers,
@@ -23,7 +25,11 @@ use Haku\Http\{
 	Exceptions\StatusException,
 };
 
-use function Haku\resolvePath;
+use function Haku\{
+	resolvePath,
+	config
+};
+
 use function Haku\Spl\uri;
 use function Haku\Delegation\delegate;
 
@@ -40,7 +46,8 @@ try
 		'vendor', 'Haku', 'bootstrap.php'
 	]);
 
-	hakuAutoloadResolver();
+	autoloadResolver();
+	loadEnvironment();
 
 	$__outputHeaders = new Headers([
 		'Content-Type' => 'application/json'

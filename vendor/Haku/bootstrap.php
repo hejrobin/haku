@@ -119,7 +119,7 @@ function loadVendorBootstrap(
 	return false;
 }
 
-function hakuAutoloadResolver()
+function autoloadResolver()
 {
 	/* Set up "magic" vendor specific autoloading */
 
@@ -146,6 +146,21 @@ function hakuAutoloadResolver()
 	{
 		require_once resolvePath($includePath);
 	}
+}
+
+function loadEnvironment(string $fallbackEnvironment = 'dev')
+{
+	config('HAKU_ENVIRONMENT', $fallbackEnvironment);
+
+	$configFilePath = sprintf('config.%s.php', HAKU_ENVIRONMENT);
+
+	if (!file_exists($configFilePath))
+	{
+		echo sprintf("panic: no such environment '%s'", HAKU_ENVIRONMENT);
+		exit -1;
+	}
+
+	require_once resolvePath($configFilePath);
 }
 
 /**
@@ -182,4 +197,15 @@ function haku(?string $instanceName = null): object
 	}
 
 	return $kernel;
+}
+
+/**
+ *	Creates a config variable, attempts to get value from environment first, otherwise fallback.
+ */
+function config(string $variable, string $fallback): void
+{
+	$value = getenv($variable);
+	$value ??= $fallback;
+
+	define($variable, $fallback);
 }

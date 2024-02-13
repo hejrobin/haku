@@ -11,6 +11,7 @@ use Haku\Console\Command;
 use Haku\Spec\Runner;
 use Haku\Spec\Reporters\DefaultReporter;
 
+use function Haku\config;
 use function Haku\Spec\loadSpecTests;
 
 class Test extends Command
@@ -26,13 +27,14 @@ class Test extends Command
 	{
 		return [
 			'--only|runs test matching filter|',
-			'--except|runs all tests except filter|'
+			'--not|runs all tests except filter|'
 		];
 	}
 
 	public function invoke(): bool
 	{
-		try {
+		try
+		{
 			loadSpecTests();
 
 			$runner = Runner::getInstance();

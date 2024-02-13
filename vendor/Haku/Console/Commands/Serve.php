@@ -21,7 +21,8 @@ class Serve extends Command
 	{
 		return [
 			'--port|server port|8000',
-			'--host|server host|127.0.0.1'
+			'--host|server host|127.0.0.1',
+			'--env|server environment|dev',
 		];
 	}
 
@@ -31,8 +32,10 @@ class Serve extends Command
 		{
 			$args = (object) $this->arguments->arguments;
 
+			$env = $args?->env ?? 'dev';
 			$host = $args?->host ?? '127.0.0.1';
 			$port = $args?->port ?? '8000';
+
 
 			$this->output->output('starting development server...');
 
@@ -42,7 +45,7 @@ class Serve extends Command
 
 			$this->output->break();
 
-			shell_exec(sprintf('php -S %s:%s', $host, $port));
+			shell_exec(sprintf('HAKU_ENVIRONMENT=%s php -d variables_order=EGPCS -S %s:%s', $env, $host, $port));
 
 			return true;
 		}

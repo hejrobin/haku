@@ -86,16 +86,31 @@ class Engine extends Output
 				$this->break();
 				$this->send('options:');
 
+				$indent = max(array_map(function(string $option) {
+					[$option] = explode('|', $option);
+
+					return strlen($option);
+				}, $options)) + 2;
+
 				foreach($options as $option)
 				{
 					[$option, $description, $default] = explode('|', $option);
 
 					if ($default)
 					{
-						$this->send(sprintf('  %s — %s (%s)', $option, $description, $default));
+						$this->send(sprintf(
+							'  %s — %s (%s)',
+							str_pad($option, $indent),
+							$description,
+							$default
+						));
 					}
 					else {
-						$this->send(sprintf('  %s — %s', $option, $description));
+						$this->send(sprintf(
+							'  %s — %s',
+							str_pad($option, $indent),
+							$description
+						));
 					}
 				}
 			}
