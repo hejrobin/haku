@@ -26,3 +26,19 @@ function any(
 
 	return false;
 }
+
+function find(
+	array $array,
+	callable $callback
+): mixed
+{
+	foreach ($array as $item)
+	{
+		if (call_user_func($callback, $item) === true)
+		{
+			return $item;
+		}
+	}
+
+	return null;
+}

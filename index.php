@@ -13,8 +13,25 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 	exit;
 }
 
-/* @note Capture output, resolve it and then output it */
+use Throwable;
+
+use Haku\Http\{
+	Status,
+	Headers,
+	Message,
+	Messages\Json,
+	Exceptions\StatusException,
+};
+
+use function Haku\resolvePath;
+use function Haku\Spl\uri;
+use function Haku\Delegation\delegate;
+
+/* @willResolve Haku\Http\Message */
 $__outputBuffer = null;
+
+/* @willResolve Haku\Http\Headers */
+$__outputHeaders = null;
 
 try
 {
@@ -25,18 +42,55 @@ try
 
 	hakuAutoloadResolver();
 
+	$__outputHeaders = new Headers([
+		'Content-Type' => 'application/json'
+	]);
+
 	ob_start();
 
-	echo '{ "message": "Hello World!" }';
+	[$request, $response, $headers] = delegate(uri(), $__outputHeaders);
+
+	if (!$response || $response?->size() === 0)
+	{
+		throw new StatusException(500);
+	}
+
+	$__outputHeaders = $headers;
+
+	echo $response;
 
 	$__outputBuffer = ob_get_clean();
 }
-catch(\Throwable $throwable)
+catch(StatusException $throwable)
 {
-	$__outputBuffer = $throwable->getMessage();
+	$__outputHeaders->status(
+		Status::from($throwable->getCode())
+	);
+
+	$__outputBuffer = Json::from([
+		'code' => $throwable->getCode(),
+		'error' => $throwable->getMessage(),
+	]);
+}
+catch(Throwable $throwable)
+{
+	$__outputHeaders->status(
+		Status::from(500)
+	);
+
+	$__outputBuffer = Json::from([
+		'code' => 500,
+		'error' => $throwable->getMessage(),
+	]);
 }
 finally
 {
+	if ($__outputHeaders instanceof Headers)
+	{
+		$__outputHeaders->send();
+	}
+
 	echo $__outputBuffer;
+
 	exit;
 }

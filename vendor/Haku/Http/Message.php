@@ -89,6 +89,11 @@ abstract class Message
 
 	abstract public function valid(): bool;
 
+	public function size(): int
+	{
+		return strlen($this->asRendered());
+	}
+
 	public function asRendered(): string
 	{
 		return $this->render($this->data);

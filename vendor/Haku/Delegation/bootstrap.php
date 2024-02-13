@@ -15,11 +15,14 @@ use RecursiveRegexIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 
+use Haku\Exceptions\FrameworkException;
+
 use Haku\Http\{
 	Request,
 	Headers,
 	Method,
-	Status
+	Status,
+	Exceptions\StatusException
 };
 
 use function Haku\{
@@ -32,6 +35,8 @@ use function Haku\Spl\Strings\{
 	camelCaseFromSnakeCase,
 	snakeCaseFromCamelCase,
 };
+
+use function Haku\Spl\Arrays\find;
 
 function loadApplicationRoutes(): array {
 	$routeClassNames = [];
@@ -67,6 +72,9 @@ function loadApplicationRoutes(): array {
 	return $routeClassNames;
 }
 
+/**
+ *	Iterates recursively through app/routes and builds a parseable routes object.
+ */
 function generateApplicationRoutes(): array
 {
 	$routes = [];
@@ -121,6 +129,9 @@ function generateApplicationRoutes(): array
 	return $routes;
 }
 
+/**
+ *	Converts a route path into regex.
+ */
 function pathToRegex(
 	string $path
 ): string
@@ -137,6 +148,7 @@ function pathToRegex(
 			$match,
 		);
 
+		// Path includes a paramerer ( "{foo}" )
 		if (array_key_exists('parameter', $match))
 		{
 			$prefix = '';
@@ -145,11 +157,13 @@ function pathToRegex(
 			$innerPattern = '([\w\-_%]+)';
 			$parameter = $match['parameter'];
 
+			// Parameter name ends with "id"
 			if (str_ends_with(strtolower($match['parameter']), 'id'))
 			{
 				$innerPattern = '(\d+)';
 			}
 
+			// Path has a type, i.e: "{foo:number}"
 			if (array_key_exists('type', $match))
 			{
 				if ($match['type'] === 'number')
@@ -158,6 +172,7 @@ function pathToRegex(
 				}
 			}
 
+			// Parameter is optional, ending with a question mark: "{foo}?"
 			if (array_key_exists('optional', $match))
 			{
 				$prefix = '(?:';
@@ -168,6 +183,7 @@ function pathToRegex(
 		}
 		else
 		{
+			// No parameters in path, match as defined
 			$pattern .= "({$segment})/";
 		}
 	}
@@ -177,6 +193,11 @@ function pathToRegex(
 	return "~^{$pattern}$~ix";
 }
 
+/**
+ *	Parses route specific attribute.
+ *
+ *	#[Route], #[Uses], #[WithStatus], #[WithHeaders],
+ */
 function parseRouteAttribute(
 	ReflectionAttribute $attribute,
 	ReflectionMethod $method = null
@@ -239,6 +260,11 @@ function parseRouteAttribute(
 	return $parsed;
 }
 
+/**
+ *	Parses each route specific attribute.
+ *
+ *	@see {parseRouteAttribute}
+ */
 function parseRouteAttributes(
 	array $attributes,
 	ReflectionMethod $method = null
@@ -254,6 +280,9 @@ function parseRouteAttributes(
 	return $parsed;
 }
 
+/**
+ *	Converts middlewares from "foo" to "App\Middlewares\Foo"
+ */
 function normalizeMiddlewarePathName(string $unresolved): string
 {
 	$namespace = ['App', 'Middlewares'];
@@ -262,4 +291,66 @@ function normalizeMiddlewarePathName(string $unresolved): string
 	$parts = array_map(fn($part) => ucfirst(camelCaseFromSnakeCase($part)), $parts);
 
 	return implode('\\', [...$namespace, ...$parts]);
+}
+
+/**
+ *	Attempts to find route definition based on URL path and processes the request.
+ *
+ *	@throws \Haku\Exceptions\FrameworkException
+ * 	@throws \Haku\Http\Exceptions\StatusException
+ *
+ *	@return [\Haku\Http\Request, \Haku\Http\Message, \Haku\Http\Headers]
+ */
+function delegate(string $path, Headers $headers): array
+{
+	$routes = generateApplicationRoutes();
+
+	if (count($routes) === 0)
+	{
+		throw new FrameworkException('No application routes defined');
+	}
+
+	$requestMethod = Method::resolve();
+
+	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
+	{
+		$hasPatternMatch = preg_match($route['pattern'], cleanPath($path)) === 1;
+		$hasMethodMatch = $route['method'] === $requestMethod;
+
+		if ($hasPatternMatch && !$hasMethodMatch)
+		{
+			// 405 Method Not Allowed
+			throw new StatusException(405);
+		}
+
+		return $hasPatternMatch && $hasMethodMatch;
+	});
+
+	if (!$foundRoute)
+	{
+		// 404 Not Found
+		throw new StatusException(404);
+	}
+
+	if (array_key_exists('httpStatus', $foundRoute))
+	{
+		$headers->status(Status::from($foundRoute['httpStatus']));
+	}
+
+	if (array_key_exists('httpHeaders', $foundRoute))
+	{
+		$headers->append($foundRoute['httpHeaders']);
+	}
+
+	preg_match($foundRoute['pattern'], $path, $matches);
+
+	$foundRoute['parameters'] = array_filter(
+		$matches,
+		'is_string',
+		\ARRAY_FILTER_USE_KEY
+	);
+
+	$request = Request::from($foundRoute, $headers);
+
+	return $request->process();
 }
