@@ -1,0 +1,18 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+# Redirect trailing slashes
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Handle pretty URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?/$1 [L]
+
+# Deny access to private folder
+RedirectMatch 403 ^/private/.*$
+
+<FilesMatch "\.htaccess|config.*\.php">
+	Order allow, deny
+	Deny from all
+</FilesMatch>

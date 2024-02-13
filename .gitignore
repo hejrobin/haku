@@ -12,3 +12,4 @@ config.*.php
 # Misc
 .DS_Store
 Thumbs.db
+.htaccess

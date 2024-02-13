@@ -11,7 +11,8 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
  */
 function resolveArguments(
 	?string $triggerNextAsArgument = null,
-	?array $nextAsArgumentTriggers = []
+	?array $nextAsArgumentTriggers = [],
+	?string $triggerFieldName = null,
 ): array
 {
 	global $argv;
@@ -85,6 +86,12 @@ function resolveArguments(
 					if (!\str_starts_with($next, '-'))
 					{
 						$fieldValue = $next;
+
+						if (!is_null($triggerFieldName))
+						{
+							$args[$triggerFieldName] = $field;
+						}
+
 						$n++; // Skip next arg
 					}
 				}

@@ -15,7 +15,7 @@ class Engine extends Output
 		parent::__construct();
 	}
 
-	public function registerCommand(Command $command): void
+	public function registerCommand(Command $command, bool $triggerNextAsArgument = false): void
 	{
 		$this->commands[$command->name()] = $command;
 	}

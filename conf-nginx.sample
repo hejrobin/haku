@@ -1,0 +1,15 @@
+location ~ 403 {
+  rewrite ^(.*)$ ^/private/.*$ redirect;
+}
+
+location / {
+  rewrite ^/(.*)/$ /$1 redirect;
+  if (!-e $request_filename){
+    rewrite ^(.*)$ /index.php?/$1 break;
+  }
+}
+
+location ~ \.htaccess|config.*\.php {
+  deny all;
+}
+
