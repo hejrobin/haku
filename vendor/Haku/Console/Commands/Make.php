@@ -14,16 +14,26 @@ use function Haku\Console\resolveArguments;
 class Make extends Command
 {
 
+	protected const AvailableGenerators = [
+		'spec'
+	];
+
 	#[Override]
 	protected function resolveArguments(): void
 	{
 		$this->arguments = (object) resolveArguments(
 			triggerNextAsArgument: 'make',
 			triggerFieldName: 'generator',
-			nextAsArgumentTriggers: [
-				'spec',
-			]
+			nextAsArgumentTriggers: self::AvailableGenerators,
 		);
+	}
+
+	#[Override]
+	public function options(): array
+	{
+		return [
+			sprintf('generator|generator name|%s', implode(', ', self::AvailableGenerators)),
+		];
 	}
 
 	public function description(): string

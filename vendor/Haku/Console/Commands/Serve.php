@@ -16,6 +16,15 @@ class Serve extends Command
 		return 'invokes development server';
 	}
 
+	#[Override]
+	public function options(): array
+	{
+		return [
+			'--port|server port|8000',
+			'--host|server host|127.0.0.1'
+		];
+	}
+
 	public function invoke(): bool
 	{
 		try

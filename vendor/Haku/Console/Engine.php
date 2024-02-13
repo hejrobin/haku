@@ -65,14 +65,52 @@ class Engine extends Output
 	{
 		$command = $this->commands[$arguments->command];
 
-		$didInvoke = $command->invoke();
-
-		if (!$didInvoke)
+		if ($arguments->showHelp)
 		{
-			$this->error(sprintf(
-				'command failed: %s',
-				$arguments->command
+			$options = $command->options();
+			$hasOptions = count($options) > 0;
+
+			$this->send(sprintf(
+				'%s — %s',
+				$this->format($command->name(), Ansi::Cyan),
+				$command->description(),
 			));
+
+			$this->send(sprintf(
+				$hasOptions ? 'usage: %s <args>' : 'usage: %s',
+				$this->format("haku {$command->name()}", Ansi::Cyan)
+			));
+
+			if ($hasOptions)
+			{
+				$this->break();
+				$this->send('options:');
+
+				foreach($options as $option)
+				{
+					[$option, $description, $default] = explode('|', $option);
+
+					if ($default)
+					{
+						$this->send(sprintf('  %s — %s (%s)', $option, $description, $default));
+					}
+					else {
+						$this->send(sprintf('  %s — %s', $option, $description));
+					}
+				}
+			}
+		}
+		else
+		{
+			$didInvoke = $command->invoke();
+
+			if (!$didInvoke)
+			{
+				$this->error(sprintf(
+					'command failed: %s',
+					$arguments->command
+				));
+			}
 		}
 	}
 
