@@ -10,12 +10,25 @@ use Haku\Console\Command;
 
 use function Haku\resolvePath;
 use function Haku\Console\resolveArguments;
+use function Haku\Spl\Strings\snakeCaseFromCamelCase;
+
+function namespaceToRoutePath(string $unresolved): string
+{
+	$segments = explode('\\', $unresolved);
+	$segments = array_map(fn(string $segment) => snakeCaseFromCamelCase($segment), $segments);
+
+	$hyphenated = str_replace('_', '-', implode('/', $segments));
+
+	return trim($hyphenated, '/');
+}
 
 class Make extends Command
 {
 
 	protected const AvailableGenerators = [
-		'spec'
+		'spec',
+		'route',
+		'middleware',
 	];
 
 	#[Override]
@@ -68,20 +81,40 @@ class Make extends Command
 	private function generate(
 		string $templateFileName,
 		string $outputFilePattern,
-		?array $templateVariables = []
+		?array $templateVariables = [],
+		string $targetRootPath = 'vendor',
+		?string $nameArgument = null,
 	): bool
 	{
 		$args = $this->arguments;
 
-		// @todo Allow to set path to anything other than 'vendor'.
-		$fileName = sprintf("vendor/{$outputFilePattern}", $args->{$args->generator});
+		if (is_null($nameArgument) || empty($nameArgument))
+		{
+			$nameArgument = ucfirst($args->{$args->generator});
+		}
+
+		$fileName = sprintf("{$targetRootPath}/{$outputFilePattern}", $nameArgument);
 		$filePath = resolvePath(...explode('/', $fileName));
+
+		$directoryPath = str_ireplace(basename($filePath), '', $filePath);
 
 		$templatePath = resolvePath(
 			'private',
 			'generator-templates',
 			"{$templateFileName}.tmpl"
 		);
+
+		if (!is_dir($directoryPath))
+		{
+			$didCreate = mkdir(directory: $directoryPath, recursive: true);
+
+			if (!$didCreate)
+			{
+				$this->output->error('could not create path');
+
+				return false;
+			}
+		}
 
 		if (file_exists($filePath))
 		{
@@ -123,7 +156,70 @@ class Make extends Command
 			templateFileName: 'spec',
 			outputFilePattern: '%s.spec.php',
 			templateVariables: [
-				'testName' => $this->arguments->spec,
+				'spec' => $this->arguments->spec,
+			],
+		);
+	}
+
+	private function generateMiddleware(): bool
+	{
+		$middleware = $this->arguments->middleware;
+		$segments = explode('/', $middleware);
+
+		$middleware = array_pop($segments);
+		$namespace = '';
+
+		if (count($segments) > 0)
+		{
+			$namespace = '\\';
+			$namespace .= implode('\\', $segments);
+		}
+
+		return $this->generate(
+			targetRootPath: 'app/middlewares',
+			templateFileName: 'middleware',
+			outputFilePattern: '%s.php',
+			templateVariables: [
+				'namespace' => $namespace,
+				'middleware' => $middleware,
+			],
+		);
+	}
+
+	private function generateRoute(): bool
+	{
+		$route = $this->arguments->route;
+
+		$segments = explode('/', $route);
+		$segments = array_map(fn(string $segment) => ucfirst($segment), $segments);
+
+		$route = array_pop($segments);
+		$namespace = '';
+
+		if (count($segments) > 0)
+		{
+			$namespace = '\\';
+			$namespace .= implode('\\', $segments);
+		}
+
+		if (array_key_exists('root', $this->arguments->arguments))
+		{
+			$name = implode('/', $segments);
+		}
+		else
+		{
+			$name = implode('/', [...$segments, $route]);
+		}
+
+		return $this->generate(
+			nameArgument: $name,
+			targetRootPath: 'app/routes',
+			templateFileName: 'route',
+			outputFilePattern: '%s.php',
+			templateVariables: [
+				'namespace' => $namespace,
+				'routePath' => namespaceToRoutePath($name),
+				'routeClass' => $route,
 			],
 		);
 	}

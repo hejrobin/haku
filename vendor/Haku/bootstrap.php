@@ -31,6 +31,15 @@ function resolvePath(string ...$pathSegments): string
 }
 
 /**
+ *	Removes exessive slashes from a string.
+ */
+function cleanPath(string $unresolvedPath): string
+{
+	return trim(preg_replace('/[\/]+/', '/', $unresolvedPath), '/');
+}
+
+
+/**
  *	Attempts to resolve namespace specific imports;
  *
  *	Anything under /vendor/ where namespace matches file structure, case sensitive.

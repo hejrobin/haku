@@ -6,7 +6,7 @@ namespace Haku\Spec\Expectations;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Spl\array_any;
+use function Haku\Spl\Arrays\any;
 
 final class Expectations implements ExpectationsInterface
 {
@@ -187,7 +187,7 @@ final class Expectations implements ExpectationsInterface
 	{
 		$actual = $this->actual;
 
-		$equalsAny = array_any(
+		$equalsAny = any(
 			$expectations,
 			function(mixed $expectation) use ($actual)
 			{

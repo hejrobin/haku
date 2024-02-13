@@ -27,12 +27,12 @@ try
 
 	$engine->registerCommand(new Console\Commands\Version());
 	$engine->registerCommand(new Console\Commands\Serve());
+	$engine->registerCommand(new Console\Commands\Routes());
 	$engine->registerCommand(new Console\Commands\Test());
 	$engine->registerCommand(new Console\Commands\Make());
 
 	$engine->run();
 
-	exit;
 }
 catch(\Throwable $throwable)
 {
