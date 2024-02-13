@@ -22,7 +22,6 @@ try
 	]);
 
 	autoloadResolver();
-	loadEnvironment('test');
 
 	$engine = new Console\Engine();
 

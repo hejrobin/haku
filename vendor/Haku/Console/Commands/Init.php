@@ -68,6 +68,11 @@ class Init extends Command
 			return false;
 		}
 
+		$this->output->success(sprintf(
+			'created environment config for: %s',
+			$environment
+		));
+
 		return true;
 	}
 

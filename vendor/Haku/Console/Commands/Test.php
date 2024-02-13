@@ -11,7 +11,11 @@ use Haku\Console\Command;
 use Haku\Spec\Runner;
 use Haku\Spec\Reporters\DefaultReporter;
 
-use function Haku\config;
+use function Haku\{
+	config,
+	loadEnvironment,
+};
+
 use function Haku\Spec\loadSpecTests;
 
 class Test extends Command
@@ -35,6 +39,7 @@ class Test extends Command
 	{
 		try
 		{
+			loadEnvironment('test');
 			loadSpecTests();
 
 			$runner = Runner::getInstance();

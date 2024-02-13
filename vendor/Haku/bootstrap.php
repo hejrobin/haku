@@ -156,7 +156,11 @@ function loadEnvironment(string $fallbackEnvironment = 'dev')
 
 	if (!file_exists($configFilePath))
 	{
-		echo sprintf("panic: no such environment '%s'", HAKU_ENVIRONMENT);
+		header('content-type: text/plain');
+
+		echo sprintf("panic: no such environment: %s\n", HAKU_ENVIRONMENT);
+		echo sprintf("run 'php haku init --%s' in your terminal\n", HAKU_ENVIRONMENT);
+
 		exit -1;
 	}
 
