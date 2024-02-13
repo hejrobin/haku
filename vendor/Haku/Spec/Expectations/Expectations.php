@@ -102,9 +102,10 @@ final class Expectations implements ExpectationsInterface
 
 	public function call(
 		?string $methodName = null,
+		?array $arguments = []
 	): static
 	{
-		return $this->withoutArguments($methodName);
+		return $this->withArguments($arguments, $methodName);
 	}
 
 	public function not(): static

@@ -30,10 +30,11 @@ interface ExpectationsInterface
 	): static;
 
 	/**
-	 *	Alias for withoutArguments
+	 *	Inverse argument alias of {@see Haku\Spec\Expectations\withArguments}
 	 */
 	public function call(
-		?string $methodName
+		?string $methodName,
+		?array $arguments,
 	): static;
 
 	/**

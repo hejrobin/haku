@@ -1,0 +1,29 @@
+<?php
+declare(strict_types=1);
+
+namespace Haku\Http\Messages;
+
+/* @note Deny direct file access */
+if (defined('HAKU_ROOT_PATH') === false) exit;
+
+use Haku\Http\Message;
+
+class Plain extends Message
+{
+
+	public static function from(mixed $data): self
+	{
+		return new self([$data]);
+	}
+
+	protected function render(array $data): string
+	{
+		return implode($data);
+	}
+
+	public function valid(): bool
+	{
+		return is_string($this->asRendered());
+	}
+
+}

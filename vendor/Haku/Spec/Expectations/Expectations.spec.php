@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+/* @note Deny direct file access */
+if (defined('HAKU_ROOT_PATH') === false) exit;
+
 use function Haku\Spec\{
 	spec,
 	describe,
