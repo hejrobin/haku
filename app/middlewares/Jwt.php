@@ -20,7 +20,7 @@ use Haku\Http\Messages\{
 	Plain
 };
 
-use \Cider\Jwt\Token;
+use Haku\Jwt\Token;
 
 class jwt extends Middleware
 {

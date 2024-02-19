@@ -1,0 +1,29 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Models%namespace%;
+
+/* @note Deny direct file access */
+if (defined('HAKU_ROOT_PATH') === false) exit;
+
+use Haku\Database\Model;
+
+use Haku\Database\Attributes\{
+	Entity,
+	PrimaryKey,
+	Validates,
+};
+
+#[Entity('%tableName%')]
+class %model% extends Model
+{
+
+	#[PrimaryKey]
+	protected readonly int $id;
+
+	public function setId(int $id)
+	{
+		$this->id = $id;
+	}
+
+}

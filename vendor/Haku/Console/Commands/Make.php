@@ -29,6 +29,7 @@ class Make extends Command
 		'spec',
 		'route',
 		'middleware',
+		'model'
 	];
 
 	#[Override]
@@ -220,6 +221,32 @@ class Make extends Command
 				'namespace' => $namespace,
 				'routePath' => namespaceToRoutePath($name),
 				'routeClass' => $route,
+			],
+		);
+	}
+
+	private function generateModel(): bool
+	{
+		$model = $this->arguments->model;
+		$segments = explode('/', $model);
+
+		$model = array_pop($segments);
+		$namespace = '';
+
+		if (count($segments) > 0)
+		{
+			$namespace = '\\';
+			$namespace .= implode('\\', $segments);
+		}
+
+		return $this->generate(
+			targetRootPath: 'app/models',
+			templateFileName: 'model',
+			outputFilePattern: '%s.php',
+			templateVariables: [
+				'namespace' => $namespace,
+				'model' => $model,
+				'tableName' => snakeCaseFromCamelCase($model)
 			],
 		);
 	}

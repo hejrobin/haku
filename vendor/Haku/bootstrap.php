@@ -38,7 +38,6 @@ function cleanPath(string $unresolvedPath): string
 	return trim(preg_replace('/[\/]+/', '/', $unresolvedPath), '/');
 }
 
-
 /**
  *	Attempts to resolve namespace specific imports;
  *
