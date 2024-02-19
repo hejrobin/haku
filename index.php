@@ -30,7 +30,7 @@ use function Haku\{
 	config
 };
 
-use function Haku\Spl\uri;
+use function Haku\Spl\Url\path;
 use function Haku\Delegation\delegate;
 
 /* @willResolve Haku\Http\Message */
@@ -55,7 +55,7 @@ try
 
 	ob_start();
 
-	[$request, $response, $headers] = delegate(uri(), $__outputHeaders);
+	[$request, $response, $headers] = delegate(path(), $__outputHeaders);
 
 	if (!$response || $response?->size() === 0)
 	{

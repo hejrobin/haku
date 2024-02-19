@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Haku\Spl;
+namespace Haku\Spl\Url;
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use function Haku\Spl\Strings\hyphenate;
 
-function url(bool $omitRequestPath = false): string
+function resolve(bool $omitRequestPath = false): string
 {
 	$sslSuffix = (empty($_SERVER['HTTPS']) === true
 			? ''
@@ -43,7 +43,7 @@ function url(bool $omitRequestPath = false): string
 	return $resolvedUrl;
 }
 
-function uri(string $unresolvedUri = null): string
+function path(string $unresolvedUri = null): string
 {
 	if ($unresolvedUri === null)
 	{

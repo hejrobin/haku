@@ -46,3 +46,19 @@ function snakeCaseFromCamelCase(string $unresolved): string
 
 	return $resolved;
 }
+
+function encodeBase64Url(string $value): string
+{
+	return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+}
+
+function decodeBase64Url(string $value): string
+{
+	return base64_decode(
+		str_pad(strtr($value, '-_', '+/'), strlen($value) % 4, '=', STR_PAD_RIGHT),
+	);
+}
+
+function random($byteSize = 16): string {
+	return base64_encode(random_bytes($byteSize));
+}

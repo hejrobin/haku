@@ -14,7 +14,7 @@ use function Haku\Spec\{
 
 use Haku\Schema\Validator;
 
-spec('Haku/Schema/Validator', function()
+spec('Schema\Validator', function()
 {
 
 	describe('Validator', function()

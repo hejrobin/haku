@@ -9,6 +9,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use Haku\Console\Command;
 
 use function Haku\resolvePath;
+use function Haku\Spl\Strings\random;
 
 class Init extends Command
 {
@@ -55,6 +56,16 @@ class Init extends Command
 		}
 
 		$contents = file_get_contents($inputPath);
+
+		$templateVariables = [
+			'signingKey' => random(),
+			'jwtSigningKey' => random(),
+		];
+
+		foreach($templateVariables as $variable => $value)
+		{
+			$contents = str_replace("%{$variable}%", strval($value), $contents);
+		}
 
 		$bytes = file_put_contents($outputPath, $contents);
 

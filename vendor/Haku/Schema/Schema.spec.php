@@ -13,7 +13,7 @@ use function Haku\Spec\{
 
 use Haku\Schema\Schema;
 
-spec('Haku/Schema/Schema', function()
+spec('Schema\Schema', function()
 {
 
 	describe('Schema validation', function()
