@@ -1,0 +1,5 @@
+{
+	"files.associations": {
+		"private/generator-templates/*.tmpl": "plaintext"
+	}
+}

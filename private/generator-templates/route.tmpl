@@ -23,39 +23,7 @@ class %routeClass%
 	public function list(): Message
 	{
 		return Json::from([
-			'records' => ["%routeClass%"],
-		]);
-	}
-
-	#[Route('/', Method::Post)]
-	public function create(): Message
-	{
-		return Json::from([
-			'records' => ["%routeClass%"],
-		]);
-	}
-
-	#[Route('/{id}')]
-	public function show(int $id): Message
-	{
-		return Json::from([
-			'record' => "%routeClass%#{$id}",
-		]);
-	}
-
-	#[Route('/{id}', Method::Patch)]
-	public function update(int $id): Message
-	{
-		return Json::from([
-			'record' => "%routeClass%#{$id}",
-		]);
-	}
-
-	#[Route('/{id}', Method::Delete)]
-	public function delete(int $id): Message
-	{
-		return Json::from([
-			'record' => "%routeClass%#{$id}",
+			'message' => "Hello from %routeClass%!",
 		]);
 	}
 

@@ -6,6 +6,7 @@ namespace Haku\Database;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use PDO;
 use PDOException;
 
 use Haku\Database\Exceptions\DatabaseException;
@@ -44,7 +45,7 @@ trait Statement
 			$statement = $this->prepare($query);
 			$statement->execute($parameters);
 
-			$result = $statement->fetch(\PDO::FETCH_ASSOC);
+			$result = $statement->fetch(PDO::FETCH_ASSOC);
 
 			return $this->marshal($result);
 		}
@@ -64,7 +65,7 @@ trait Statement
 			$statement = $this->prepare($query);
 			$statement->execute($parameters);
 
-			$result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+			$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 			if (!$result || count($result) === 0) {
 				return null;

@@ -179,7 +179,7 @@ function pathToRegex(
 				$suffix = ')?';
 			}
 
-			$pattern .= "{$prefix}(?<{$parameter}>{$innerPattern}){$suffix}/";
+			$pattern .= "{$prefix}(?<{$parameter}>{$innerPattern}){$suffix}";
 		}
 		else
 		{
@@ -296,10 +296,10 @@ function normalizeMiddlewarePathName(string $unresolved): string
 /**
  *	Attempts to find route definition based on URL path and processes the request.
  *
- *	@throws \Haku\Exceptions\FrameworkException
- * 	@throws \Haku\Http\Exceptions\StatusException
+ *	@throws Haku\Exceptions\FrameworkException
+ * 	@throws Haku\Http\Exceptions\StatusException
  *
- *	@return [\Haku\Http\Request, \Haku\Http\Message, \Haku\Http\Headers]
+ *	@return [Haku\Http\Request, Haku\Http\Message, Haku\Http\Headers]
  */
 function delegate(string $path, Headers $headers): array
 {
@@ -314,7 +314,11 @@ function delegate(string $path, Headers $headers): array
 
 	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
 	{
-		$hasPatternMatch = preg_match($route['pattern'], cleanPath($path)) === 1;
+		// @note Check with trailing slash to also match optional parameters properly
+		$hasPatternMatch =
+			preg_match($route['pattern'], cleanPath($path)) === 1 ||
+			preg_match($route['pattern'], cleanPath($path) . '/') === 1;
+
 		$hasMethodMatch = $route['method'] === $requestMethod;
 
 		if ($hasPatternMatch && !$hasMethodMatch)

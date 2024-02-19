@@ -212,6 +212,11 @@ class Make extends Command
 			$name = implode('/', [...$segments, $route]);
 		}
 
+		if ($namespace === '\\')
+		{
+			$namespace = '';
+		}
+
 		return $this->generate(
 			nameArgument: $name,
 			targetRootPath: 'app/routes',
