@@ -21,6 +21,7 @@ A tiny web application framework with big ambitions.
 ### Installing Haku
 
 ```sh
+
 gh repo clone hejrobin/haku project-name
 
 # or via ssh
@@ -29,6 +30,7 @@ gh repo clone hejrobin/haku project-name
 cd project-name
 
 php haku init --dev
+
 ```
 
 ---
