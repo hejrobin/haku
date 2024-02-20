@@ -12,16 +12,6 @@ use function Haku\resolvePath;
 use function Haku\Console\resolveArguments;
 use function Haku\Spl\Strings\snakeCaseFromCamelCase;
 
-function namespaceToRoutePath(string $unresolved): string
-{
-	$segments = explode('\\', $unresolved);
-	$segments = array_map(fn(string $segment) => snakeCaseFromCamelCase($segment), $segments);
-
-	$hyphenated = str_replace('_', '-', implode('/', $segments));
-
-	return trim($hyphenated, '/');
-}
-
 class Make extends Command
 {
 
@@ -187,45 +177,107 @@ class Make extends Command
 		);
 	}
 
-	private function generateRoute(): bool
-	{
-		$route = $this->arguments->route;
+	private function generateRoute(): bool {
+		$path = trim($this->arguments->route, '/');
+		$route = $path;
 
-		$segments = explode('/', $route);
-		$segments = array_map(fn(string $segment) => ucfirst($segment), $segments);
+		if (preg_match('/^[0-9].*?/', $route))
+		{
+			return false;
+		}
 
-		$route = array_pop($segments);
+		if (!preg_match('/([a-z0-9-\/]+)/', $route))
+		{
+			return false;
+		}
+
+		$segments = [];
+		$parameters = [];
 		$namespace = '';
+
+		// @note Skip everything after optional parameter
+		if (\str_contains($path, '?'))
+		{
+			$path = array_shift(explode('?', $path));
+			$route = $path;
+		}
+
+		foreach(explode('/', $route) as $segment)
+		{
+			if (\str_starts_with($segment, '{'))
+			{
+				array_push($parameters, $segment);
+			}
+			else
+			{
+				array_push($segments, ucfirst($segment));
+			}
+		}
 
 		if (count($segments) > 0)
 		{
 			$namespace = '\\';
 			$namespace .= implode('\\', $segments);
+
+			if ($namespace === '\\')
+			{
+				$namespace = '';
+			}
+
+			$namespace = str_replace('-', '_', $namespace);
 		}
 
-		if (array_key_exists('root', $this->arguments->arguments))
+		$route = $segments[count($segments) - 1];
+		$routeName = implode('/', [...$segments, $route]);
+		$routeName = str_replace('-', '_', $routeName);
+
+		$arguments = [];
+
+		foreach($parameters as $parameter)
 		{
-			$name = implode('/', $segments);
-		}
-		else
-		{
-			$name = implode('/', [...$segments, $route]);
+			$isOptional = \str_ends_with($parameter, '?');
+			$parameter = str_replace(['{', '}', '?'], '', $parameter);
+			$keepDefinedType = true;
+
+			// @note Fixes undefined key warning
+			if (!str_contains($parameter, ':'))
+			{
+				$keepDefinedType = false;
+				$parameter .= ':mixed';
+			}
+
+			[$name, $type] = explode(':', $parameter);
+
+			if ($name === 'id' && !$keepDefinedType)
+			{
+				$type = 'int';
+			}
+
+			$argument = "{$type} \${$name}";
+
+			if ($isOptional)
+			{
+				$prefix = $type !== 'mixed' ? '?' : '';
+				$argument = "{$prefix}{$type} \${$name} = null";
+			}
+
+			array_push($arguments, $argument);
 		}
 
-		if ($namespace === '\\')
-		{
-			$namespace = '';
-		}
+		$routePath = str_replace('\\', '/', $namespace);
+		$routePath = str_replace('_', '-', $routePath);
+		$routePath = trim(mb_strtolower($routePath), '/');
 
 		return $this->generate(
-			nameArgument: $name,
+			nameArgument: $routeName,
 			targetRootPath: 'app/routes',
 			templateFileName: 'route',
 			outputFilePattern: '%s.php',
 			templateVariables: [
 				'namespace' => $namespace,
-				'routePath' => namespaceToRoutePath($name),
+				'routePath' => $routePath,
 				'routeClass' => $route,
+				'arguments' => count($arguments) > 0 ? implode(', ', $arguments) : ''
 			],
 		);
 	}

@@ -20,7 +20,7 @@ class %routeClass%
 {
 
 	#[Route('/')]
-	public function list(): Message
+	public function index(%arguments%): Message
 	{
 		return Json::from([
 			'message' => "Hello from %routeClass%!",
