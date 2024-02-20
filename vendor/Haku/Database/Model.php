@@ -26,7 +26,6 @@ use function Haku\haku;
 
 use function Haku\Spl\Strings\camelCaseFromSnakeCase;
 
-
 abstract class Model implements JsonSerializable
 {
 

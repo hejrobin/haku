@@ -195,13 +195,14 @@ class Make extends Command
 		$parameters = [];
 		$namespace = '';
 
-		// @note Skip everything after optional parameter
+		// Skip everything after optional parameter
 		if (\str_contains($path, '?'))
 		{
 			$path = array_shift(explode('?', $path));
 			$route = $path;
 		}
 
+		// Split array segments and parameters
 		foreach(explode('/', $route) as $segment)
 		{
 			if (\str_starts_with($segment, '{'))
@@ -227,12 +228,14 @@ class Make extends Command
 			$namespace = str_replace('-', '_', $namespace);
 		}
 
+		// Normalize route name
 		$route = $segments[count($segments) - 1];
-		$routeName = implode('/', [...$segments, $route]);
+		$routeName = implode('/', $segments);
 		$routeName = str_replace('-', '_', $routeName);
 
 		$arguments = [];
 
+		// Parse route parameters such as {foo}, {foo:string} and {foo}?...
 		foreach($parameters as $parameter)
 		{
 			$isOptional = \str_ends_with($parameter, '?');
@@ -264,9 +267,13 @@ class Make extends Command
 			array_push($arguments, $argument);
 		}
 
+		// Cleanup path, keep full namespace as path
 		$routePath = str_replace('\\', '/', $namespace);
 		$routePath = str_replace('_', '-', $routePath);
 		$routePath = trim(mb_strtolower($routePath), '/');
+
+		// Remove last segment of namespace
+		$namespace = implode('\\', array_slice(explode('\\', $namespace), 0, -1));
 
 		return $this->generate(
 			nameArgument: $routeName,
