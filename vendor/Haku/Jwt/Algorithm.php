@@ -8,7 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use ReflectionClass;
 
-use Exceptions\AlgorithmException;
+use Haku\Jwt\Exceptions\AlgorithmException;
 
 class Algorithm
 {

@@ -129,7 +129,7 @@ final class Expectations implements ExpectationsInterface
 
 		return new ExpectationResult(
 			$result->success === false,
-			$errorMessage
+			$errorMessage,
 		);
 	}
 
@@ -137,18 +137,24 @@ final class Expectations implements ExpectationsInterface
 		bool $success,
 		string $errorMessage,
 		string $inverseErrorMessage,
+		mixed $actual = null,
+		mixed $expect = null,
 	): ExpectationResult {
 		if ($this->expectInverseResult)
 		{
 			return new ExpectationResult(
 				$success === false,
 				$inverseErrorMessage,
+				actual: $expect,
+				expect: $actual
 			);
 		}
 
 		return new ExpectationResult(
 			$success,
 			$errorMessage,
+			$actual,
+			$expect
 		);
 	}
 
@@ -160,6 +166,8 @@ final class Expectations implements ExpectationsInterface
 			success: $this->actual === $expected,
 			errorMessage: 'expectation is not equal',
 			inverseErrorMessage: 'expectation is equal',
+			actual: $this->actual,
+			expect: $expected,
 		);
 	}
 
@@ -198,7 +206,9 @@ final class Expectations implements ExpectationsInterface
 		return $this->toExpectationResult(
 			success: $equalsAny === true,
 			errorMessage: 'expectation not present in list',
-			inverseErrorMessage: 'expectation present in list'
+			inverseErrorMessage: 'expectation present in list',
+			actual: $this->actual,
+			expect: $expectations,
 		);
 	}
 
@@ -207,7 +217,9 @@ final class Expectations implements ExpectationsInterface
 		return $this->toExpectationResult(
 			success: $this->actual === true,
 			errorMessage: 'expectation is not explicitly true',
-			inverseErrorMessage: 'expectation is explicitly true'
+			inverseErrorMessage: 'expectation is explicitly true',
+			actual: $this->actual,
+			expect: true,
 		);
 	}
 
@@ -216,7 +228,9 @@ final class Expectations implements ExpectationsInterface
 		return $this->toExpectationResult(
 			success: $this->actual === false,
 			errorMessage: 'expectation is not explicitly false',
-			inverseErrorMessage: 'expectation is explicitly false'
+			inverseErrorMessage: 'expectation is explicitly false',
+			actual: $this->actual,
+			expect: false,
 		);
 	}
 
@@ -227,7 +241,9 @@ final class Expectations implements ExpectationsInterface
 		return $this->toExpectationResult(
 			$this->actual instanceof $instance,
 			"expectation is not an instance of '$instance'",
-			"expectation is an instance of '$instance'"
+			"expectation is an instance of '$instance'",
+			actual: $this->actual,
+			expect: $instance,
 		);
 	}
 
@@ -261,7 +277,9 @@ final class Expectations implements ExpectationsInterface
 		return $this->toExpectationResult(
 			success: call_user_func("is_$typeName", $this->actual),
 			errorMessage: "expectation is not type of '$typeName'",
-			inverseErrorMessage: "expectation is type of '$typeName'"
+			inverseErrorMessage: "expectation is type of '$typeName'",
+			actual: gettype($this->actual), // @todo Fix this to match $validObhectTypes
+			expect: $typeName,
 		);
 	}
 
@@ -269,18 +287,32 @@ final class Expectations implements ExpectationsInterface
 	 *	Fundamentally same as calling `withArguments([])->toBeInstanceOf(\Throwable::class)`.
 	 */
 	public function toThrow(
-		string $exceptionType = '\Throwable',
-		array $withArguments = []
+		string $exceptionType = '\Throwable'
 	): ExpectationResult
 	{
-		$result = $this
-			->withArguments($withArguments)
-			->toBeInstanceOf($exceptionType);
+		$actual = $this->actual;
+
+		if (is_object($actual))
+		{
+			$actual = get_class($actual);
+		}
+
+		$isValidException = $actual === $exceptionType;
+
+		if (
+			is_object($this->actual) &&
+			$this->actual instanceof \Throwable &&
+			$exceptionType === '\Throwable'
+		) {
+			$isValidException = true;
+		}
 
 		return $this->toExpectationResult(
-			success: $result->success === true,
-			errorMessage: "expectation did not throw '$exceptionType'",
-			inverseErrorMessage: "expectation threw '$exceptionType'"
+			success: $isValidException,
+			errorMessage: "expectation did not throw '$exceptionType' (got $actual)",
+			inverseErrorMessage: "expectation threw '$exceptionType' (expected $exceptionType)",
+			actual: $actual,
+			expect: $exceptionType,
 		);
 	}
 

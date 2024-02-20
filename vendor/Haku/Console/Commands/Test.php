@@ -31,7 +31,7 @@ class Test extends Command
 	{
 		return [
 			'--only|runs test matching filter|',
-			'--not|runs all tests except filter|'
+			'--omit|runs all tests except filter|'
 		];
 	}
 
@@ -39,8 +39,14 @@ class Test extends Command
 	{
 		try
 		{
+			$filterOnly = $this->arguments->arguments['only'] ?? '';
+			$filterOmit = $this->arguments->arguments['omit'] ?? '';
+
 			loadEnvironment('test');
-			loadSpecTests();
+			loadSpecTests(
+				only: $filterOnly,
+				omit: $filterOmit,
+			);
 
 			$runner = Runner::getInstance();
 

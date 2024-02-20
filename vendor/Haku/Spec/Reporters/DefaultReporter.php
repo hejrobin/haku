@@ -150,7 +150,14 @@ final class DefaultReporter extends Reporter
 
 		foreach ($test->cases as $case)
 		{
+			$actual = null;
+			$expect = null;
+
 			[$state, $description, $hint] = $case;
+
+			if (count($case) === 5) {
+				[$state, $description, $hint, $actual, $expect] = $case;
+			}
 
 			$result = TestResult::from(strtolower($state));
 
@@ -170,6 +177,20 @@ final class DefaultReporter extends Reporter
 					$this->output->format('↪ ', Ansi::Cyan),
 					$hint
 				);
+
+				if ($actual && $expect) {
+					$this->output->send(
+						$this->output->indent(3),
+						sprintf('%s: ', $this->output->format('expected', Ansi::Green)),
+						$expect
+					);
+
+					$this->output->send(
+						$this->output->indent(3),
+						sprintf('%s: ', $this->output->format('recieved', Ansi::Red)),
+						(string) $actual
+					);
+				}
 			}
 		}
 

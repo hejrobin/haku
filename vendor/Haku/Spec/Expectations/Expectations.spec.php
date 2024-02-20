@@ -45,10 +45,7 @@ spec('Spec\Expectations', function() {
 		it('throws an exception if callable signature fails', function () {
 			$willThrowDivisionByZero = fn() => 0 / 0;
 
-			return expectAll(
-				expect($willThrowDivisionByZero)->toThrow(),
-				expect($willThrowDivisionByZero)->toThrow(\DivisionByZeroError::class),
-			);
+			return expect($willThrowDivisionByZero)->call()->toThrow(\DivisionByZeroError::class);
 		});
 
 		it('validates presence of an array index', function() {
@@ -131,10 +128,7 @@ spec('Spec\Expectations', function() {
 		it('throws an exception if callable signature fails', function () {
 			$willNotThrowDivisionByZero = fn() => 16 / 9;
 
-			return expectAll(
-				expect($willNotThrowDivisionByZero)->not()->toThrow(),
-				expect($willNotThrowDivisionByZero)->not()->toThrow(\DivisionByZeroError::class),
-			);
+			return expect($willNotThrowDivisionByZero)->call()->not()->toThrow(\DivisionByZeroError::class);
 		});
 
 		it('validates presence of an array index', function() {

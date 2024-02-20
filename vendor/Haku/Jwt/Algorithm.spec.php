@@ -14,7 +14,7 @@ use function Haku\Spec\{
 
 use Haku\Jwt\Algorithm;
 
-use Haku\Jwt\Exception\AlgorithmException;
+use Haku\Jwt\Exceptions\AlgorithmException;
 
 spec('Jwt\Algorithm', function()
 {
@@ -49,7 +49,7 @@ spec('Jwt\Algorithm', function()
 		{
 			return expect('\\Haku\\Jwt\\Algorithm::get')
 				->withArguments(['FAKE1337'])
-				->toThrow();
+				->toThrow(AlgorithmException::class);
 		});
 
 	});

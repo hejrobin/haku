@@ -181,7 +181,7 @@ class Test
 
 				if ($callbackResult instanceof ExpectationResult)
 				{
-					[$caseCallbackResult, $caseCallbackResultText] = $callbackResult->toArray();
+					[$caseCallbackResult, $caseCallbackResultText, $actual, $expect] = $callbackResult->toArray();
 				}
 				else
 				{
@@ -197,7 +197,7 @@ class Test
 				elseif ($caseCallbackResult === false)
 				{
 					$this->fail($caseDescription);
-					$specReport[$caseDescription] = ['fail', $caseDescription, $caseCallbackResultText];
+					$specReport[$caseDescription] = ['fail', $caseDescription, $caseCallbackResultText, $actual, $expect];
 				}
 				else
 				{

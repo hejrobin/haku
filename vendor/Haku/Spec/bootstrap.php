@@ -117,7 +117,8 @@ function expectAll(
  *	Loads all *.spec.php files from root recursively.
  */
 function loadSpecTests(
-	?string $filter = '',
+	?string $only = '',
+	?string $omit = '',
 	?array $excludePaths = null,
 ): int
 {
@@ -149,9 +150,9 @@ function loadSpecTests(
 		}
 	}
 
-	if (is_string($filter) && strlen($filter) > 0)
+	if (is_string($only) && strlen($only) > 0)
 	{
-		$keywords = explode(',', $filter);
+		$keywords = explode(',', $only);
 		$tmpIncludePaths = [];
 
 		foreach ($keywords as $keyword)
@@ -161,6 +162,25 @@ function loadSpecTests(
 				array_filter($includePaths, function (string $path) use ($keyword)
 				{
 					return str_contains(strtolower($path), trim(strtolower($keyword)));
+				})
+			);
+		}
+
+		$includePaths = $tmpIncludePaths;
+	}
+
+	if (is_string($omit) && strlen($omit) > 0)
+	{
+		$keywords = explode(',', $omit);
+		$tmpIncludePaths = [];
+
+		foreach ($keywords as $keyword)
+		{
+			$tmpIncludePaths = array_merge(
+				$tmpIncludePaths,
+				array_filter($includePaths, function (string $path) use ($keyword)
+				{
+					return !str_contains(strtolower($path), trim(strtolower($keyword)));
 				})
 			);
 		}

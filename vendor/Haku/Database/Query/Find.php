@@ -6,7 +6,7 @@ namespace Haku\Database\Query;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Database\{
+use function Haku\Database\Query\{
 	normalizeField,
 	normalizeWhereClauses,
 };

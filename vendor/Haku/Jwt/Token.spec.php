@@ -18,6 +18,7 @@ use Haku\Jwt\{
 };
 
 use Haku\Jwt\Exceptions\TokenException;
+use Haku\Jwt\Exceptions\IntegrityException;
 
 spec('Jwt\Token', function()
 {
@@ -68,7 +69,7 @@ spec('Jwt\Token', function()
 
 			return expect([$token, 'encode'])
 				->withArguments([Algorithm::HS256, \HAKU_JWT_SIGNING_KEY])
-				->toThrow();
+				->ToThrow(IntegrityException::class);
 		});
 
 	});

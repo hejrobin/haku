@@ -86,8 +86,7 @@ interface ExpectationsInterface
 	 *	Expects actual to be instance of a throwable.
 	 */
 	public function toThrow(
-		string $exceptionType = '\Throwable',
-		array $withArguments = []
+		string $exceptionType = '\Throwable'
 	): ExpectationResult;
 
 	/**
