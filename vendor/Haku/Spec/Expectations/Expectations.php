@@ -6,6 +6,13 @@ namespace Haku\Spec\Expectations;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Haku\Http\{
+	Status,
+	Message,
+};
+
+use Haku\Spec\RouteExpectationResult;
+
 use function Haku\Spl\Arrays\any;
 
 final class Expectations implements ExpectationsInterface
@@ -498,6 +505,36 @@ final class Expectations implements ExpectationsInterface
 			success: $this->actual < $min || $this->actual > $max,
 			errorMessage: "expectation is not outside range $min:$max",
 			inverseErrorMessage: "expectation is outside range $min:$max",
+		);
+	}
+
+	public function toRespondWith(
+		string $messageClassName,
+		Status $httpStatus = Status::OK,
+	): ExpectationResult
+	{
+		$actual = $this->actual;
+
+		if ($actual instanceof RouteExpectationResult)
+		{
+			$validMessage = get_class($actual->response) === $messageClassName;
+			$validStatus = $actual->status === $httpStatus;
+
+			$formatErrorMessage = function (string $errorMessage) use ($messageClassName, $httpStatus) {
+				return sprintf("{$errorMessage} %s, %s", $messageClassName, "Haku\\Http\\Status::{$httpStatus->name}");
+			};
+
+			return $this->toExpectationResult(
+				success: $validMessage && $validStatus,
+				errorMessage: $formatErrorMessage("expectation response is not"),
+				inverseErrorMessage: $formatErrorMessage("expectation response is"),
+			);
+		}
+
+		return $this->toExpectationResult(
+			success: false,
+			errorMessage: "expectation is not result from route()",
+			inverseErrorMessage: "expectation is result from route()",
 		);
 	}
 

@@ -12,10 +12,22 @@ use RecursiveRegexIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 
+use Haku\Http\{
+	Request,
+	Headers,
+	Method,
+	Messages\Json,
+	Exceptions\StatusException
+};
+
 use Haku\Spec\Expectations\{
 	Expectations,
 	ExpectationResult
 };
+
+use function Haku\cleanPath;
+use function Haku\Spl\Arrays\find;
+use function Haku\Delegation\generateApplicationRoutes;
 
 function spec(
 	string $description,
@@ -194,4 +206,107 @@ function loadSpecTests(
 	}
 
 	return count($includePaths);
+}
+
+class RouteExpectationResult
+{
+
+	public function __construct(
+		public \Haku\Http\Request $request,
+		public \Haku\Http\Message $response,
+		public \Haku\Http\Headers $headers,
+		public \Haku\Http\Status $status,
+	) {}
+
+}
+
+/**
+ *	Invokes a specific route and returns an object with request, response, headers and status data.
+ *
+ *	@param string $path
+ *	@param Cider\Http\Method $requestMethod
+ *
+ *	@return object
+ */
+function route(
+	string $path,
+	Method $requestMethod = Method::Get,
+	array $additionalHeaders = []
+): RouteExpectationResult
+{
+	$routes = generateApplicationRoutes();
+
+	$headers = new Headers([
+		'Content-Type' => 'application/json',
+	]);
+
+	$headers->append($additionalHeaders);
+
+	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
+	{
+		// @note Check with trailing slash to also match optional parameters properly
+		$hasPatternMatch =
+			preg_match($route['pattern'], cleanPath($path)) === 1 ||
+			preg_match($route['pattern'], cleanPath($path) . '/') === 1;
+
+		$hasMethodMatch = $route['method'] === $requestMethod;
+
+		if ($hasPatternMatch && !$hasMethodMatch)
+		{
+			$route['httpStatus'] = 405;
+
+			return true;
+		}
+
+		return $hasPatternMatch && $hasMethodMatch;
+	});
+
+	if (!$foundRoute)
+	{
+		$noOpClass = new class {
+			public function noOp()
+			{
+				return Json::from([]);
+			}
+		};
+
+		$foundRoute = [
+			'name' => 'error',
+			'path' => cleanPath($path),
+			'pattern' => '~^(error)$~ix',
+			'method' => $requestMethod,
+			'callback' => [$noOpClass, 'noOp'],
+			'middlewares' => [],
+			'httpStatus' => 404,
+		];
+	}
+
+	if (array_key_exists('httpStatus', $foundRoute))
+	{
+		$headers->status(\Haku\Http\Status::from($foundRoute['httpStatus']));
+	}
+
+	if (array_key_exists('httpHeaders', $foundRoute))
+	{
+		$headers->append($foundRoute['httpHeaders']);
+	}
+
+	preg_match($foundRoute['pattern'], $path, $matches);
+
+	$foundRoute['parameters'] = array_filter(
+		$matches,
+		'is_string',
+		\ARRAY_FILTER_USE_KEY
+	);
+
+	$request = Request::from($foundRoute, $headers);
+
+	[$request, $response, $headers] = $request->process();
+
+	return new RouteExpectationResult(
+		request: $request,
+		response: $response,
+		headers: $headers,
+		status: $headers->getStatus(),
+	);
 }

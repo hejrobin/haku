@@ -6,6 +6,11 @@ namespace Haku\Spec\Expectations;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Haku\Http\{
+	Status,
+	Message,
+};
+
 interface ExpectationsInterface
 {
 
@@ -150,6 +155,11 @@ interface ExpectationsInterface
 	public function toBeOutsideRange(
 		int | float $min,
 		int | float $max
+	): ExpectationResult;
+
+	public function toRespondWith(
+		string $messageClassName,
+		Status $httpStatus,
 	): ExpectationResult;
 
 }

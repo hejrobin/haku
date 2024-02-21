@@ -143,9 +143,31 @@ class Make extends Command
 
 	private function generateSpec(): bool
 	{
+		$targetRootPath = 'vendor';
+
+		if (array_key_exists('app', $this->arguments->arguments))
+		{
+			$target = $this->arguments->arguments['app'];
+
+			if (\str_ends_with($target, 's'))
+			{
+				$target = substr($target, 0, -1);
+			}
+
+			if (
+				$target !== 'spec' &&
+				!in_array($target, static::AvailableGenerators)
+			) {
+				return false;
+			}
+
+			$targetRootPath = "app/{$target}s";
+		}
+
 		return $this->generate(
 			templateFileName: 'spec',
 			outputFilePattern: '%s.spec.php',
+			targetRootPath: $targetRootPath,
 			templateVariables: [
 				'spec' => $this->arguments->spec,
 			],

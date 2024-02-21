@@ -144,6 +144,16 @@ class Headers
 		return array_key_exists($this->name($header), $this->headers);
 	}
 
+	public function is(string $header, string $value): bool
+	{
+		if ($this->has($header))
+		{
+			return mb_strtolower($this->get($header)) === mb_strtolower($value);
+		}
+
+		return false;
+	}
+
 	/**
 	 *	Adds or overwrites a header.
 	 */
