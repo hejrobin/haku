@@ -88,6 +88,7 @@ catch(Throwable $throwable)
 	$__outputBuffer = Json::from([
 		'code' => 500,
 		'error' => $throwable->getMessage(),
+		'trace' => $throwable->getTrace(),
 	]);
 }
 finally

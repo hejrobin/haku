@@ -107,6 +107,7 @@ trait Entity
 				'validationRules',
 				'timestampFields',
 				'omittedFields',
+				'includedFields',
 			];
 
 			$propertyIsIgnored =
@@ -348,7 +349,7 @@ trait Entity
 	protected function getExposeablePropertyNames(): array
 	{
 		$exposeableFields = array_unique(
-			array_keys($this->validationRules, $this->get_included_files)
+			array_keys($this->validationRules, $this->includedFields)
 		);
 
 		return [

@@ -23,7 +23,6 @@ use Haku\Database\Query\{
 use Haku\Database\Mixins\Entity;
 
 use function Haku\haku;
-
 use function Haku\Spl\Strings\camelCaseFromSnakeCase;
 
 abstract class Model implements JsonSerializable

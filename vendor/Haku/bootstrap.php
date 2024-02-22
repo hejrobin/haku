@@ -57,7 +57,7 @@ function resolveVendorNamespacePath(string $unresolvedNamespace): string
 	// Handle app-specific namespaces
 	if (str_starts_with($unresolvedNamespace, 'App'))
 	{
-		$includeRootPath = 'app';
+		$includeRootPath = '';
 
 		// Resolve app specific namespace
 		$segments = explode('\\', $unresolvedNamespace);
@@ -67,7 +67,7 @@ function resolveVendorNamespacePath(string $unresolvedNamespace): string
 		$pathSegments = [...$segments, $fileName];
 
 		// Converts App/Routes/Home to app/routes/Home.php
-		$namespaceDirectoryPath = resolvePath(...$pathSegments);
+		$namespaceDirectoryPath = implode(DIRECTORY_SEPARATOR, $pathSegments);
 	}
 
 	$resolvedFilePath = resolvePath($includeRootPath, $namespaceDirectoryPath);
