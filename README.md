@@ -44,4 +44,16 @@ Haku ships with its own command line tool, `haku` which provides some helpful co
 * `php haku init` — Creates required configuration files, if you add `--dev` or `--test` configuration files for those environments will be created.
 * `php haku serve` — Starts a development server using [PHP's built in server](https://www.php.net/manual/en/features.commandline.webserver.php).
 * `php haku make <generator>` — Invokes one of the code generators that Haku ships with, run `php haku make --help` to see available generators.
-* `php haku test` — Runs all available `*.spec.php` tests in the workspace, you can control what tests to run with the flags `--only` or `--not`.
+* `php haku test` — Runs all available `*.spec.php` tests in the workspace, you can control what tests to run with the flags `--only` or `--omit`.
+* `php haku version` — Shows current haku version.
+* `php haku routes` — Lists all available routes based on defined application routes.
+
+---
+
+### Planned Features
+
+* Database Migrations
+* Framework Upgrade Commands
+* Configurable JWT Methodology
+	- Either do new token per request, or;
+	- Short lived JWT token + refresh token.

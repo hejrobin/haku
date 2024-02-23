@@ -8,6 +8,9 @@ config.*.php
 !config.sample.php
 *.dev.php
 *.dev.sql
+private/*
+!private/.gitkeep
+!private/generator-templates
 
 # Misc
 .DS_Store
