@@ -6,6 +6,8 @@ namespace Haku\Http;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Haku\Http\Status;
+
 /**
  *	Container for anything that is presented to the client.
  */
@@ -13,7 +15,9 @@ abstract class Message
 {
 
 	public function __construct(
-		protected array $data = []
+		protected array $data = [],
+		public readonly Status $status = Status::OK,
+		public readonly array $headers = [],
 	) {}
 
 	protected function sanitize(mixed $value, string $type = 'string'): string
@@ -83,9 +87,23 @@ abstract class Message
 		}
 	}
 
+	public function getStatus(): Status
+	{
+		return $this->status;
+	}
+
+	public function getHeaders(): array
+	{
+		return $this->headers;
+	}
+
 	abstract protected function render(array $data): string;
 
-	abstract public static function from(mixed $data): self;
+	abstract public static function from(
+		mixed $data,
+		Status $status,
+		array $headers
+	): self;
 
 	abstract public function valid(): bool;
 

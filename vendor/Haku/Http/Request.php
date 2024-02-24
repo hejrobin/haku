@@ -73,6 +73,9 @@ class Request
 			}
 		}
 
+		$this->headers->status($response->status);
+		$this->headers->append($response->headers);
+
 		return [$request, $response, $this->headers];
 	}
 
