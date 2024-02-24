@@ -16,7 +16,7 @@ class Plain extends Message
 
 	public static function from(
 		mixed $data,
-		Status $status,
+		Status $status = Status::OK,
 		array $headers = [],
 	): self
 	{

@@ -14,6 +14,8 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 	exit;
 }
 
+$didThrow = false;
+
 try
 {
 	require_once implode(DIRECTORY_SEPARATOR, [
@@ -38,9 +40,14 @@ try
 catch(\Throwable $throwable)
 {
 	print_r($throwable);
-	exit -1;
+	$didThrow = true;
 }
 finally
 {
+	if ($didThrow)
+	{
+		exit -1;
+	}
+
 	exit;
 }
