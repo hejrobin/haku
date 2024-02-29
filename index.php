@@ -26,6 +26,9 @@ use Haku\Http\{
 };
 
 use function Haku\{
+	autoloadResolver,
+	loadEnvironment,
+	loadBootstrap,
 	resolvePath,
 	config
 };
@@ -39,6 +42,9 @@ $__outputBuffer = null;
 /* @willResolve Haku\Http\Headers */
 $__outputHeaders = null;
 
+/* @willResolve \Throwable */
+$__throwable = null;
+
 try
 {
 	require_once implode(DIRECTORY_SEPARATOR, [
@@ -48,6 +54,7 @@ try
 
 	autoloadResolver();
 	loadEnvironment();
+	loadBootstrap();
 
 	$__outputHeaders = new Headers([
 		'Content-Type' => 'application/json'
@@ -70,6 +77,8 @@ try
 }
 catch(StatusException $throwable)
 {
+	$__throwable = $throwable;
+
 	$__outputHeaders->status(
 		Status::from($throwable->getCode())
 	);
@@ -81,6 +90,8 @@ catch(StatusException $throwable)
 }
 catch(Throwable $throwable)
 {
+	$__throwable = $throwable;
+
 	$__outputHeaders->status(
 		Status::from(500)
 	);
@@ -98,7 +109,23 @@ finally
 		$__outputHeaders->send();
 	}
 
-	echo $__outputBuffer;
+	/**
+	 *	Output errors captured outside of output buffer
+	 */
+	if ($__throwable instanceof \Throwable)
+	{
+		header('Content-Type: application/json');
+
+		echo Json::from([
+			'code' => 500,
+			'error' => $__throwable->getMessage(),
+			'trace' => $__throwable->getTrace(),
+		]);
+	}
+	else
+	{
+		echo $__outputBuffer;
+	}
 
 	exit;
 }

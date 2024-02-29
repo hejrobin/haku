@@ -166,6 +166,11 @@ function loadEnvironment(string $fallbackEnvironment = 'dev')
 	require_once resolvePath($configFilePath);
 }
 
+function loadBootstrap()
+{
+	require_once resolvePath('bootstrap.php');
+}
+
 /**
  *	Returns information found in package.json
  */

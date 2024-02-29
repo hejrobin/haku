@@ -15,13 +15,32 @@ use Haku\Database\{
 
 function isConfigured(): bool
 {
-	return
+	$allVariablesDefined =
 		defined('HAKU_DATABASE_TYPE') &&
 		defined('HAKU_DATABASE_HOST') &&
 		defined('HAKU_DATABASE_PORT') &&
 		defined('HAKU_DATABASE_NAME') &&
 		defined('HAKU_DATABASE_USER') &&
 		defined('HAKU_DATABASE_PASS');
+
+	if ($allVariablesDefined)
+	{
+		$needsSetValue = [
+			HAKU_DATABASE_TYPE,
+			HAKU_DATABASE_HOST,
+			HAKU_DATABASE_NAME,
+		];
+
+		foreach ($needsSetValue as $value)
+		{
+			if (strlen($value) === 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 function databaseType(ConnectionType $connectionType): bool
@@ -32,24 +51,4 @@ function databaseType(ConnectionType $connectionType): bool
 	}
 
 	return ConnectionType::from(HAKU_DATABASE_TYPE) === $connectionType;
-}
-
-/**
- *	Set up database connection.
- */
-if (isConfigured()) {
-	haku()->initialize(
-		'Haku\Database\Connection', 'db', null,
-		[
-			ConnectionType::from(HAKU_DATABASE_TYPE),
-			HAKU_DATABASE_NAME,
-			HAKU_DATABASE_HOST,
-			HAKU_DATABASE_PORT,
-		]
-	);
-
-	app('db')->connect(
-		HAKU_DATABASE_USER,
-		HAKU_DATABASE_PASS
-	);
 }
