@@ -9,7 +9,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use Haku\Console\Command;
 
 use function Haku\resolvePath;
-use function Haku\Spl\Strings\random;
+use function Haku\Generic\Strings\random;
 
 class Init extends Command
 {

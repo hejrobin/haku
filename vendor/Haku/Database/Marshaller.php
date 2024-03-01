@@ -6,7 +6,7 @@ namespace Haku\Database;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Spl\Strings\{
+use function Haku\Generic\Strings\{
 	camelCaseFromSnakeCase,
 	snakeCaseFromCamelCase,
 };

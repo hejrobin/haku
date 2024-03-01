@@ -33,7 +33,7 @@ use function Haku\{
 	config
 };
 
-use function Haku\Spl\Url\path;
+use function Haku\Generic\Url\path;
 use function Haku\Delegation\delegate;
 
 /* @willResolve Haku\Http\Message */

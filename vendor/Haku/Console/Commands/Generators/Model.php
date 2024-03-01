@@ -6,7 +6,7 @@ namespace Haku\Console\Commands\Generators;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Spl\Strings\snakeCaseFromCamelCase;
+use function Haku\Generic\Strings\snakeCaseFromCamelCase;
 
 class Model extends Generator
 {

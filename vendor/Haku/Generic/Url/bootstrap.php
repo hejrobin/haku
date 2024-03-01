@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Haku\Spl\Url;
+namespace Haku\Generic\Url;
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Spl\Strings\hyphenate;
+use function Haku\Generic\Strings\hyphenate;
 
 function resolve(bool $omitRequestPath = false): string
 {
@@ -65,16 +65,4 @@ function path(string $unresolvedUri = null): string
 	}
 
 	return preg_replace('#/+#', '/', trim(hyphenate($unresolvedUri), '/'));
-}
-
-function query(): object
-{
-	if (!array_key_exists('QUERY_STRING', $_SERVER))
-	{
-		return (object) [];
-	}
-
-	parse_str($_SERVER['QUERY_STRING'], $output);
-
-	return (object) $output;
 }

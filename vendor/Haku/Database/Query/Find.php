@@ -8,7 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use function Haku\Database\Query\{
 	normalizeField,
-	normalizeWhereClauses,
+	normalizeConditions,
 	normaizeOrderByClauses,
 };
 
@@ -17,12 +17,9 @@ class Find
 
 	protected const DefaultFetchLimit = 50;
 
-	/**
-	 *	Returns SQL query and associated parameters for a "fetch many" query.
-	 */
 	public static function all(
 		string $tableName,
-		array $tableFields,
+		array $fields,
 		array $aggregateFields = [],
 		array $where = [],
 		array $orderBy = [],
@@ -30,50 +27,84 @@ class Find
 		int $offset = 0,
 	): array
 	{
+		// Normalize non-aggregate fields
 		$normalizedFields = array_map(
 			fn(string $field) => normalizeField($tableName, $field),
-			$tableFields,
+			$fields,
 		);
 
+		// Normalize aggregate fields if any
 		if (count($aggregateFields) > 0)
 		{
+			var_dump(['aggr' => $aggregateFields]);
+
 			foreach ($aggregateFields as $field => $aggregate)
 			{
 				$normalizedFields[] = sprintf('%2$s AS %1$s', $field, $aggregate);
 			}
 		}
 
-		$queryPattern = 'SELECT %2$s FROM %1$s';
-
-		if (count($where) > 0)
-		{
-			$queryPattern .= ' WHERE ';
-		}
-
-		$queryPattern .= '%3$s';
-
-		if (count($orderBy) > 0)
-		{
-			$queryPattern .= ' ORDER BY ';
-		}
-
-		$queryPattern .= '%4$s';
-		$queryPattern .= ' LIMIT %6$d, %5$d';
-
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
-		$orderBy = normalizeOrderByClauses($tableName, $orderBy);
-
-		$query = sprintf(
-			trim($queryPattern),
-			$tableName,
+		$querySegments = [
+			'SELECT',
 			implode(', ', $normalizedFields),
-			implode(' ', $conditions),
-			implode(', ', $orderBy),
-			$limit,
-			$offset
+			'FROM',
+			$tableName,
+		];
+
+		// Get normalized WHERE and HAVING
+		$conditions = (object) normalizeConditions(
+			$tableName,
+			$where,
+			$aggregateFields
 		);
 
-		return [$query, $parameters];
+		// Combine parameters
+		$parameters = [
+			...$conditions->where->parameters,
+			...$conditions->having->parameters
+		];
+
+		// Add WHERE
+		if (count($conditions->where->clauses) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				['WHERE'],
+				$conditions->where->clauses
+			);
+		}
+
+		// @todo Add GROUP BY
+
+		// Add HAVING
+		if (count($conditions->having->clauses) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				['HAVING'],
+				$conditions->having->clauses
+			);
+		}
+
+		// Add ORDER BY
+		if (count($orderBy) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				[
+					'ORDER BY',
+					implode(', ', $orderBy),
+				],
+			);
+		}
+
+		// Add LIMIT
+		$querySegments[] = sprintf('LIMIT %2$d, %1$d', $limit, $offset);
+
+		return [
+			implode(' ', $querySegments),
+			$parameters
+		];
 	}
 
 	/**
@@ -81,7 +112,7 @@ class Find
 	 */
 	public static function one(
 		string $tableName,
-		array $tableFields,
+		array $fields,
 		array $aggregateFields = [],
 		array $where = [],
 		array $orderBy = [],
@@ -89,7 +120,7 @@ class Find
 	{
 		return static::all(
 			tableName: $tableName,
-			tableFields: $tableFields,
+			fields: $fields,
 			aggregateFields: $aggregateFields,
 			where: $where,
 			orderBy: $orderBy,
@@ -98,33 +129,49 @@ class Find
 	}
 
 	/**
-	 *	Returns a count query.
+	 *	Creates a count query.
 	 */
 	public static function count(
 		string $tableName,
 		string $countFieldName = '*',
-		array $where = []
+		array $aggregateFields = [],
+		array $where = [],
 	): array
 	{
-		$queryPattern = 'SELECT COUNT(%2$s) FROM %1$s';
+		$fieldName = normalizeField($tableName, $countFieldName);
 
-		if (count($where) > 0)
-		{
-			$queryPattern .= ' WHERE ';
-		}
-
-		$queryPattern .= '%3$s';
-
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
-
-		$query = sprintf(
-			trim($queryPattern),
+		$querySegments = [
+			'SELECT',
+			"COUNT({$fieldName})",
+			'FROM',
 			$tableName,
-			normalizeField($tableName, $countFieldName),
-			implode(' ', $conditions),
+		];
+
+		// Get normalized WHERE and HAVING
+		$conditions = (object) normalizeConditions(
+			$tableName,
+			$where,
+			$aggregateFields
 		);
 
-		return [$query, $parameters];
+		$parameters = $conditions->where->parameters;
+
+		// Add WHERE
+		if (count($conditions->where->clauses) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				['WHERE'],
+				$conditions->where->clauses
+			);
+		}
+
+		// @todo Add GROUP BY
+
+		return [
+			implode(' ', $querySegments),
+			$parameters
+		];
 	}
 
 }

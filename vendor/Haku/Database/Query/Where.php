@@ -16,32 +16,32 @@ class Where
 
 	public static function is(string $field, mixed $value): array
 	{
-		return [$field, $value, '=', static::getGlue()];
+		return [$field, (string) $value, '=', static::getGlue()];
 	}
 
 	public static function isNot(string $field, mixed $value): array
 	{
-		return [$field, $value, '!=', static::getGlue()];
+		return [$field, (string) $value, '!=', static::getGlue()];
 	}
 
 	public static function greaterThan(string $field, mixed $value): array
 	{
-		return [$field, $value, '>', static::getGlue()];
+		return [$field, (string) $value, '>', static::getGlue()];
 	}
 
 	public static function greaterThanOrEqualTo(string $field, mixed $value): array
 	{
-		return [$field, $value, '>=', static::getGlue()];
+		return [$field, (string) $value, '>=', static::getGlue()];
 	}
 
 	public static function lessThan(string $field, mixed $value): array
 	{
-		return [$field, $value, '<', static::getGlue()];
+		return [$field, (string) $value, '<', static::getGlue()];
 	}
 
 	public static function lessThanOrEqualTo(string $field, mixed $value): array
 	{
-		return [$field, $value, '<=', static::getGlue()];
+		return [$field,(string)  $value, '<=', static::getGlue()];
 	}
 
 	public static function like(string $field, mixed $value): array

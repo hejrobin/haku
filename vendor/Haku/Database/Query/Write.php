@@ -6,9 +6,9 @@ namespace Haku\Database\Query;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Database\{
+use function Haku\Database\Query\{
 	normalizeSet,
-	normalizeWhereClauses,
+	normalizeConditions,
 };
 
 class Write
@@ -42,7 +42,7 @@ class Write
 
 		[$variables, $parameters] = normalizeSet($tableName, $values);
 
-		[$conditions, $whereParameters] = normalizeWhereClauses(
+		$conditions = normalizeConditions(
 			$tableName,
 			$where,
 		);
@@ -51,10 +51,10 @@ class Write
 			$queryPattern,
 			$tableName,
 			implode(', ', $variables),
-			implode(' ', $conditions),
+			implode(' ', $conditions->where->clauses),
 		);
 
-		return [$query, $parameters + $whereParameters];
+		return [$query, $parameters + $conditions->where->parameters];
 	}
 
 	public static function restore(
@@ -62,7 +62,7 @@ class Write
 		array $where
 	): array
 	{
-		return static::update($tableName, ['deletedAt' => null], $where);
+		return static::update($tableName, [ 'deletedAt' => null ], $where);
 	}
 
 	public static function softDelete(
@@ -70,7 +70,7 @@ class Write
 		array $where
 	): array
 	{
-		return static::update($tableName, ['deletedAt' => time()], $where);
+		return static::update($tableName, [ 'deletedAt' => time() ], $where);
 	}
 
 	public static function delete(
@@ -78,12 +78,14 @@ class Write
 		array $where
 	): array
 	{
-		$queryPattern = 'DELETE FROM %s WHERE %s';
+		$conditions = normalizeConditions($tableName, $where);
 
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
+		$query = sprintf(
+			'DELETE FROM %s WHERE %s',
+			$tableName,
+			implode(' ', $conditions->where->clauses)
+		);
 
-		$query = sprintf($queryPattern, $tableName, implode(' ', $conditions));
-
-		return [$query, $parameters];
+		return [$query, $conditions->where->parameters];
 	}
 }

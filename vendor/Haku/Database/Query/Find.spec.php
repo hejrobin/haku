@@ -22,7 +22,11 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query', function()
 		{
-			[$actual] = Find::all('tasks', ['id', 'title']);
+			[$actual] = Find::all(
+				tableName: 'tasks',
+				fields: ['id', 'title']
+			);
+
 			$expect = 'SELECT tasks.id, tasks.title FROM tasks LIMIT 0, 50';
 
 			return expect($actual)->toEqual($expect);
@@ -30,7 +34,12 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query with limit', function()
 		{
-			[$actual] = Find::all('tasks', ['id', 'title'], limit: 10);
+			[$actual] = Find::all(
+				tableName: 'tasks',
+				fields: ['id', 'title'],
+				limit: 10
+			);
+
 			$expect = 'SELECT tasks.id, tasks.title FROM tasks LIMIT 0, 10';
 
 			return expect($actual)->toEqual($expect);
@@ -38,7 +47,13 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query with offset', function()
 		{
-			[$actual] = Find::all('tasks', ['id', 'title'], offset: 13, limit: 37);
+			[$actual] = Find::all(
+				tableName: 'tasks',
+				fields: ['id', 'title'],
+				offset: 13,
+				limit: 37
+			);
+
 			$expect = 'SELECT tasks.id, tasks.title FROM tasks LIMIT 13, 37';
 
 			return expect($actual)->toEqual($expect);
@@ -46,9 +61,13 @@ spec('Database/Query/Find', function()
 
 		it('creates a query with where clause', function()
 		{
-			[$actual, $parameters] = Find::all('tasks', ['completed'], [
-				Where::is('completed', true)
-			]);
+			[$actual, $parameters] = Find::all(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::is('completed', true)
+				]
+			);
 
 			$expect = sprintf(
 				'SELECT tasks.completed FROM tasks WHERE tasks.completed = :%s LIMIT 0, 50',
@@ -65,7 +84,11 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query', function()
 		{
-			[$actual] = Find::one('tasks', ['id', 'title']);
+			[$actual] = Find::one(
+				tableName: 'tasks',
+				fields: ['id', 'title']
+			);
+
 			$expect = 'SELECT tasks.id, tasks.title FROM tasks LIMIT 0, 1';
 
 			return expect($actual)->toEqual($expect);
@@ -73,9 +96,13 @@ spec('Database/Query/Find', function()
 
 		it('creates a query with where clause', function()
 		{
-			[$actual, $parameters] = Find::one('tasks', ['completed'], [
-				Where::is('completed', true)
-			]);
+			[$actual, $parameters] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::is('completed', true)
+				]
+			);
 
 			$expect = sprintf(
 				'SELECT tasks.completed FROM tasks WHERE tasks.completed = :%s LIMIT 0, 1',
@@ -100,9 +127,12 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query with were clause', function()
 		{
-			[$actual, $parameters] = Find::count('tasks', where: [
-				Where::lessThan('subTasks', 10)
-			]);
+			[$actual, $parameters] = Find::count(
+				tableName: 'tasks',
+				where: [
+					Where::lessThan('subTasks', 10)
+				]
+			);
 
 			$expect = sprintf(
 				'SELECT COUNT(tasks.*) FROM tasks WHERE tasks.sub_tasks < :%s',
@@ -114,9 +144,13 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query with specific field', function()
 		{
-			[$actual, $parameters] = Find::count('tasks', 'author', [
-				Where::is('author', '@admin')
-			]);
+			[$actual, $parameters] = Find::count(
+				tableName: 'tasks',
+				countFieldName: 'author',
+				where: [
+					Where::is('author', '@admin')
+				]
+			);
 
 			$expect = sprintf(
 				'SELECT COUNT(tasks.author) FROM tasks WHERE tasks.author = :%s',

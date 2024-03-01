@@ -8,7 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use function Haku\Jwt\validateTokenTimestamp;
 
-use function Haku\Spl\Strings\{
+use function Haku\Generic\Strings\{
 	encodeBase64Url,
 	decodeBase64Url
 };

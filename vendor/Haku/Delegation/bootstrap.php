@@ -31,12 +31,12 @@ use function Haku\{
 	resolvePath
 };
 
-use function Haku\Spl\Strings\{
+use function Haku\Generic\Strings\{
 	camelCaseFromSnakeCase,
 	snakeCaseFromCamelCase,
 };
 
-use function Haku\Spl\Arrays\find;
+use function Haku\Generic\Arrays\find;
 
 function loadApplicationRoutes(): array {
 	$routeClassNames = [];

@@ -26,7 +26,7 @@ use Haku\Spec\Expectations\{
 };
 
 use function Haku\cleanPath;
-use function Haku\Spl\Arrays\find;
+use function Haku\Generic\Arrays\find;
 use function Haku\Delegation\generateApplicationRoutes;
 
 function spec(

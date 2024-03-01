@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Haku\Spl\Password;
+namespace Haku\Generic\Password;
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;

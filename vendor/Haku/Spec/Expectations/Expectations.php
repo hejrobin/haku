@@ -13,7 +13,7 @@ use Haku\Http\{
 
 use Haku\Spec\RouteExpectationResult;
 
-use function Haku\Spl\Arrays\any;
+use function Haku\Generic\Arrays\any;
 
 final class Expectations implements ExpectationsInterface
 {

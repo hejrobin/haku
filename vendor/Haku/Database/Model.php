@@ -23,7 +23,7 @@ use Haku\Database\Query\{
 use Haku\Database\Mixins\Entity;
 
 use function Haku\haku;
-use function Haku\Spl\Strings\camelCaseFromSnakeCase;
+use function Haku\Generic\Strings\camelCaseFromSnakeCase;
 
 abstract class Model implements JsonSerializable
 {
@@ -58,6 +58,7 @@ abstract class Model implements JsonSerializable
 	): ?array
 	{
 		$self = new static();
+		$db = haku('db');
 
 		$result = [];
 
@@ -67,15 +68,15 @@ abstract class Model implements JsonSerializable
 
 		[$query, $parameters] = Find::all(
 			tableName: $self->tableName,
-			tableFields: $self->getRecordFields(),
+			fields: $self->getRecordFields(),
 			aggregateFields: $self->getAggregateFields(),
 			where: $where,
 			orderBy: $orderBy,
 			limit: $limit,
-			offset: $offset
+			offset: $offset,
 		);
 
-		return haku('db')->fetchAll($query, $parameters);
+		return $db->fetchAll($query, $parameters);
 	}
 
 	public static function findOne(
@@ -84,6 +85,7 @@ abstract class Model implements JsonSerializable
 	): ?static
 	{
 		$self = new static();
+		$db = haku('db');
 
 		$result = [];
 
@@ -94,12 +96,12 @@ abstract class Model implements JsonSerializable
 
 		[$query, $parameters] = Find::one(
 			tableName: $self->tableName,
-			tableFields: $self->getRecordFields(),
+			fields: $self->getRecordFields(),
 			aggregateFields: $self->getAggregateFields(),
 			where: $where,
 		);
 
-		$result = haku('db')->fetch($query, $parameters);
+		$result = $db->fetch($query, $parameters);
 
 		if (!$result) {
 			return null;
@@ -127,6 +129,7 @@ abstract class Model implements JsonSerializable
 	): ?array
 	{
 		$self = new static();
+		$db = haku('db');
 
 		$result = [];
 
@@ -134,9 +137,14 @@ abstract class Model implements JsonSerializable
 			$where[] = Where::null('deletedAt');
 		}
 
-		[$countQuery, $countParams] = Find::count($self->tableName, $self->primaryKeyName, $where);
+		[$countQuery, $countParams] = Find::count(
+			tableName: $self->tableName,
+			countFieldName: $self->primaryKeyName,
+			aggregateFields: $self->getAggregateFields(),
+			where: $where
+		);
 
-		$numRecords = haku('db')->fetchColumn($countQuery, $countParams);
+		$numRecords = $db->fetchColumn($countQuery, $countParams);
 		$pageCount = ceil($numRecords / $limit);
 
 		$prevPage = $page - 1;
@@ -161,7 +169,7 @@ abstract class Model implements JsonSerializable
 
 		[$query, $parameters] = Find::all(
 			tableName: $self->tableName,
-			tableFields: $self->getRecordFields(),
+			fields: $self->getRecordFields(),
 			aggregateFields: $self->getAggregateFields(),
 			where: $where,
 			orderBy: $orderBy,
@@ -169,16 +177,18 @@ abstract class Model implements JsonSerializable
 			offset: $offset,
 		);
 
-		$records = haku('db')->fetchAll($query, $parameters);
+		$records = $db->fetchAll($query, $parameters);
 		$records = array_map(fn($record) => static::from($record)->json(), $records);
 
 		return [
 			'pagination' => [
-				'count' => $numRecords,
 				'pageCount' => $pageCount,
 				'page' => $page,
 				'prevPage' => $prevPage,
 				'nextPage' => $nextPage,
+			],
+			'meta' => [
+				'numRecords' => $numRecords,
 			],
 			'records' => $records,
 		];
@@ -187,6 +197,7 @@ abstract class Model implements JsonSerializable
 	public static function delete(int $primaryKey): bool
 	{
 		$self = new static();
+		$db = haku('db');
 
 		if ($self->isSoftDeleteable())
 		{
@@ -201,20 +212,22 @@ abstract class Model implements JsonSerializable
 			]);
 		}
 
-		return haku('db')->execute($query, $parameters);
+		return $db->execute($query, $parameters);
 	}
 
 	public function restore(): ?static
 	{
 		if ($this->isSoftDeleteable() && $this->deletedAt !== null)
 		{
+			$db = haku('db');
+
 			$primaryKey = $this->getPrimaryKey();
 
 			[$query, $parameters] = Write::restore($self->tableName, [
 				Where::is($self->primaryKeyName, $primaryKey),
 			]);
 
-			$success = haku('db')->execute($query, $parameters);
+			$success = $db->execute($query, $parameters);
 
 			if ($success)
 			{
@@ -282,8 +295,9 @@ abstract class Model implements JsonSerializable
 			);
 		}
 
-		$record = $this->getRecord(filterTimestamps: true);
+		$db = haku('db');
 
+		$record = $this->getRecord(filterTimestamps: true);
 		$record = $this->marshalRecord($record);
 
 		$updatedModel = null;
@@ -307,7 +321,7 @@ abstract class Model implements JsonSerializable
 
 		try
 		{
-			$result = haku('db')->execute($query, $parameters);
+			$result = $db->execute($query, $parameters);
 
 			if ($this->isPersistent())
 			{
@@ -315,7 +329,7 @@ abstract class Model implements JsonSerializable
 			}
 			else
 			{
-				$primaryKey = haku('db')->lastInsertId();
+				$primaryKey = $db->lastInsertId();
 			}
 
 			if ($result && $primaryKey)

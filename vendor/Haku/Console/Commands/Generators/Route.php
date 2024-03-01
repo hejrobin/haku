@@ -35,7 +35,7 @@ class Route extends Generator
 			$route = $path;
 		}
 
-		// Split array segments and parameters
+		// Genericit array segments and parameters
 		foreach(explode('/', $route) as $segment)
 		{
 			if (\str_starts_with($segment, '{'))

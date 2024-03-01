@@ -6,7 +6,10 @@ namespace Haku\Database\Query;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\Spl\Strings\{
+use Haku\Generic\Query\Filter;
+use Haku\Database\Query\Where;
+
+use function Haku\Generic\Strings\{
 	camelCaseFromSnakeCase,
 	snakeCaseFromCamelCase,
 };
@@ -20,54 +23,135 @@ function normalizeField(
 }
 
 /**
- *	Normalizes where clauses from {@see Haku\Database\Query\Where} and {@see Haku\Database\Query\OrWhere}.
+ *	Normalizes where clauses from {@see Haku\Database\Query\Where} and {@see Haku\Database\Query\OrWhere},
+ *	if any of the conditions contains an aggregated value, it is treated as a HAVING condition.
  */
-function normalizeWhereClauses(
+function normalizeConditions(
 	string $tableName,
-	array $where,
-): array
+	array $conditions,
+	array $aggregateFields = [],
+): object
 {
-	$conditions = [];
-	$parameters = [];
+	$whereClauses = [];
+	$whereParameters = [];
+	$havingClauses = [];
+	$havingParameters = [];
 
-	$numWhereClauses = count($where);
-	$currentClauseIndex = 0;
+	$currentWhereIndex = 0;
+	$currentHavingIndex = 0;
 
-	foreach ($where as $clause)
-	{
-		[$field, $value, $condition, $glue] = $clause;
-
-		$field = snakeCaseFromCamelCase($field);
-		$param = sprintf('var_%s_%s_%d', $tableName, $field, $currentClauseIndex);
-
-		if ($currentClauseIndex > 0)
-		{
-			$conditions[] = $glue;
-		}
+	$normalizeCondition = function (
+		string $fieldName,
+		?string $value,
+		string $condition,
+		string $param,
+	) {
+		$conditions = [];
+		$parameters = [];
 
 		if (is_null($value) === false)
 		{
 			$conditions[] = sprintf(
 				'%1$s %2$s :%3$s',
-				normalizeField($tableName, $field),
+				$fieldName,
 				$condition,
 				$param,
 			);
+
 			$parameters[$param] = $value;
 		}
 		else
 		{
 			$conditions[] = sprintf(
 				'%1$s %2$s',
-				normalizeField($tableName, $field),
+				$fieldName,
 				$condition,
 			);
 		}
 
-		$currentClauseIndex++;
+		return [$conditions, $parameters];
+	};
+
+	foreach ($conditions as $clause)
+	{
+		$addTo = 'where';
+
+		[$field, $value, $condition, $glue] = $clause;
+
+		$field = snakeCaseFromCamelCase($field);
+		$fieldName = normalizeField($tableName, $field);
+
+		if (
+			count($aggregateFields) > 0 &&
+			in_array($field, array_keys($aggregateFields))
+		) {
+			$addTo = 'having';
+			$fieldName = $field;
+		}
+
+		$currentIndex = $addTo === 'where' ? $currentWhereIndex : $currentHavingIndex;
+		$param = sprintf('%s_%s_%s_%d', $addTo, $tableName, $field, $currentIndex);
+
+		[$conditions, $parameters] = $normalizeCondition(
+			$fieldName,
+			$value,
+			$condition,
+			$param,
+		);
+
+		if ($currentWhereIndex > 0)
+		{
+			$whereClauses[] = $glue;
+		}
+
+		if ($currentHavingIndex > 0)
+		{
+			$havingClauses[] = $glue;
+		}
+
+		if ($addTo === 'where')
+		{
+			$whereClauses = array_merge($whereClauses, $conditions);
+			$whereParameters = array_merge($whereParameters, $parameters);
+
+			$currentWhereIndex++;
+		}
+		else
+		{
+			$havingClauses = array_merge($havingClauses, $conditions);
+			$havingParameters = array_merge($havingParameters, $parameters);
+
+			$currentHavingIndex++;
+		}
+
+		$currentIndex++;
 	}
 
-	return [$conditions, $parameters];
+	$lastWhereClause = array_pop(array_slice($whereClauses, -1));
+	$lastHavingClause = array_pop(array_slice($havingClauses, -1));
+
+	$glues = ['AND', 'OR'];
+
+	if (in_array($lastWhereClause, $glues))
+	{
+		$whereClauses = array_slice($whereClauses, 0, -1);
+	}
+
+	if (in_array($lastHavingClause, $glues))
+	{
+		$havingClauses = array_slice($havingClauses, 0, -1);
+	}
+
+	return (object) [
+		'where' => (object) [
+			'clauses' => $whereClauses,
+			'parameters' => $whereParameters
+		],
+		'having' => (object) [
+			'clauses' => $havingClauses,
+			'parameters' => $havingParameters
+		],
+	];
 }
 
 /**
