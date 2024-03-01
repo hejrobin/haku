@@ -196,7 +196,7 @@ trait Entity
 						case Omitted::class:
 							$omittedFields[] = $property->getName();
 							break;
-						case Omitted::class:
+						case Included::class:
 							$includedFields[] = $property->getName();
 							break;
 						case Aggregate::class:

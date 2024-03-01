@@ -247,7 +247,9 @@ abstract class Model implements JsonSerializable
 			return null;
 		}
 
-		return $this->getRecord(filterPrivate: true, filterAggregates: false);
+		$record = $this->getRecord(filterPrivate: true, filterAggregates: false);
+
+		return $this->marshalRecord($record);
 	}
 
 	/**
@@ -259,7 +261,7 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
-	 *	Calls marshaller for a field, e.g "marshalPassword"
+	 *	Calls marshaller for a field, e.g "marshalDistance"
 	 */
 	protected function marshalRecord(array $record): array
 	{
@@ -277,9 +279,30 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
+	 *	Calls unmarshaller for a field, e.g "unmarshalDistance"
+	 */
+	protected function unmarshalRecord(array $record): array
+	{
+		foreach ($record as $field => $value)
+		{
+			$marshaller = sprintf('unmarshal%s', ucfirst($field));
+
+			if (method_exists($this, $marshaller))
+			{
+				$record[$field] = call_user_func_array([$this, $marshaller], [$value]);
+			}
+		}
+
+		return $record;
+	}
+
+	/**
 	 *	Attempts to create or update model.
 	 */
-	public function save(bool $ignoreValidationStatus = false): ?static
+	public function save(
+		bool $ignoreValidationStatus = false,
+		bool $unmarshalBeforeSave = false,
+	): ?static
 	{
 		if ($ignoreValidationStatus === false && $this->isValid === false)
 		{
@@ -298,7 +321,11 @@ abstract class Model implements JsonSerializable
 		$db = haku('db');
 
 		$record = $this->getRecord(filterTimestamps: true);
-		$record = $this->marshalRecord($record);
+
+		if ($unmarshalBeforeSave)
+		{
+			$record = $this->unmarshalRecord($record);
+		}
 
 		$updatedModel = null;
 
