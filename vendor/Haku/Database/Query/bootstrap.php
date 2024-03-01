@@ -24,16 +24,16 @@ function normalizeField(
  */
 function normalizeWhereClauses(
 	string $tableName,
-	array $whereClauses,
+	array $where,
 ): array
 {
 	$conditions = [];
 	$parameters = [];
 
-	$numWhereClauses = count($whereClauses);
+	$numWhereClauses = count($where);
 	$currentClauseIndex = 0;
 
-	foreach ($whereClauses as $clause)
+	foreach ($where as $clause)
 	{
 		[$field, $value, $condition, $glue] = $clause;
 
@@ -105,4 +105,29 @@ function normalizeSet(
 	}
 
 	return [$conditions, $parameters];
+}
+
+/**
+ *	Normalizes order by clauses
+ */
+function normalizeOrderByClauses(
+	string $tableName,
+	array $orderBy,
+): array
+{
+	$conditions = [];
+
+	foreach ($orderBy as $order)
+	{
+		[$field, $direction, $isAggregate] = $order;
+
+		if (!$isAggregate)
+		{
+			$field = normalizeField($tableName, $field);
+		}
+
+		$conditions[] = "{$field} {$direction}";
+	}
+
+	return $conditions;
 }

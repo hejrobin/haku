@@ -21,7 +21,8 @@ use Haku\Database\Attributes\{
 	Timestamp,
 	Omitted,
 	Included,
-	Validates
+	Validates,
+	Aggregate
 };
 
 use Haku\Schema\{
@@ -44,6 +45,7 @@ trait Entity
 	protected readonly array $timestampFields;
 	protected readonly array $omittedFields;
 	protected readonly array $includedFields;
+	protected readonly array $aggregatedFields;
 
 	protected bool $isValid = false;
 	protected bool $hasChanges = false;
@@ -85,6 +87,7 @@ trait Entity
 		$omittedFields = [];
 		$includedFields = [];
 		$timestampFields = [];
+		$aggregatedFields = [];
 
 		$properties = $ref->getProperties();
 
@@ -94,6 +97,7 @@ trait Entity
 			Omitted::class,
 			Included::class,
 			Validates::class,
+			Aggregate::class,
 		];
 
 		foreach ($properties as $property)
@@ -108,6 +112,7 @@ trait Entity
 				'timestampFields',
 				'omittedFields',
 				'includedFields',
+				'aggregatedFields',
 			];
 
 			$propertyIsIgnored =
@@ -194,6 +199,9 @@ trait Entity
 						case Omitted::class:
 							$includedFields[] = $property->getName();
 							break;
+						case Aggregate::class:
+							$aggregatedFields[$property->getName()] = $attr->aggregate;
+							break;
 					}
 				}
 			}
@@ -203,6 +211,7 @@ trait Entity
 		$this->timestampFields = $timestampFields;
 		$this->omittedFields = $omittedFields;
 		$this->includedFields = $includedFields;
+		$this->aggregatedFields = $aggregatedFields;
 	}
 
 	/**
@@ -227,9 +236,12 @@ trait Entity
 
 			// Use defined setters first, fallback to attempt to set.
 			// @NOTE Read-only properties will trigger errors
-			if (method_exists($this, $setter)) {
+			if (method_exists($this, $setter))
+			{
 				$this->$setter($value);
-			} else {
+			}
+			else
+			{
 				$this->$field = $value;
 			}
 		}
@@ -259,7 +271,7 @@ trait Entity
 
 	public function isSoftDeleteable(): bool
 	{
-		return method_exists($this, 'hasDeletedAt');
+		return property_exists($this, 'deletedAt');
 	}
 
 	/**
@@ -344,12 +356,23 @@ trait Entity
 	}
 
 	/**
+	 *	Returns array of aggregated select fields.
+	 */
+	public function getAggregateFields(): array
+	{
+		return $this->aggregatedFields;
+	}
+
+	/**
 	 *	Returns array of exposeable property names.
 	 */
 	protected function getExposeablePropertyNames(): array
 	{
 		$exposeableFields = array_unique(
-			array_keys($this->validationRules, $this->includedFields)
+			array_keys([
+				...$this->validationRules,
+				...$this->includedFields,
+			])
 		);
 
 		return [
@@ -366,6 +389,7 @@ trait Entity
 		bool $filterPrivate = false,
 		bool $filterOmitted = true,
 		bool $filterTimestamps = false,
+		bool $filterAggregates = true
 	): array
 	{
 		$ref = new ReflectionClass(static::class);
@@ -374,6 +398,14 @@ trait Entity
 
 		$properties = $ref->getProperties();
 		$validProperties = $this->getExposeablePropertyNames();
+
+		if ($filterAggregates === false)
+		{
+			$validProperties = [
+				...$validProperties,
+				...array_keys($this->getAggregateFields())
+			];
+		}
 
 		foreach ($properties as $property)
 		{
@@ -416,10 +448,16 @@ trait Entity
 		bool $filterPrivate = false,
 		bool $filterOmitted = true,
 		bool $filterTimestamps = false,
+		bool $filterAggregates = true
 	): array
 	{
 		return array_keys(
-			$this->getRecord($filterPrivate, $filterOmitted, $filterTimestamps),
+			$this->getRecord(
+				filterPrivate:$filterPrivate,
+				filterOmitted: $filterOmitted,
+				filterTimestamps: $filterTimestamps,
+				filterAggregates: $filterAggregates
+			),
 		);
 	}
 

@@ -50,7 +50,8 @@ abstract class Model implements JsonSerializable
 	}
 
 	public static function findAll(
-		array $whereClauses = [],
+		array $where = [],
+		array $orderBy = [],
 		int $limit = Model::DefaultFetchLimit,
 		int $offset = 0,
 		bool $includeDeleted = false,
@@ -61,22 +62,24 @@ abstract class Model implements JsonSerializable
 		$result = [];
 
 		if ($self->isSoftDeleteable() && !$includeDeleted) {
-			$whereClauses[] = Where::null('deletedAt');
+			$where[] = Where::null('deletedAt');
 		}
 
 		[$query, $parameters] = Find::all(
-			$self->tableName,
-			$self->getRecordFields(),
-			$whereClauses,
-			$limit,
-			$offset
+			tableName: $self->tableName,
+			tableFields: $self->getRecordFields(),
+			aggregateFields: $self->getAggregateFields(),
+			where: $where,
+			orderBy: $orderBy,
+			limit: $limit,
+			offset: $offset
 		);
 
 		return haku('db')->fetchAll($query, $parameters);
 	}
 
 	public static function findOne(
-		array $whereClauses = [],
+		array $where = [],
 		bool $includeDeleted = false,
 	): ?static
 	{
@@ -86,14 +89,14 @@ abstract class Model implements JsonSerializable
 
 		if ($self->isSoftDeleteable() && !$includeDeleted)
 		{
-			$whereClauses[] = Where::null('deletedAt');
+			$where[] = Where::null('deletedAt');
 		}
 
 		[$query, $parameters] = Find::one(
-			$self->tableName,
-			$self->getRecordFields(),
-			$whereClauses,
-			1,
+			tableName: $self->tableName,
+			tableFields: $self->getRecordFields(),
+			aggregateFields: $self->getAggregateFields(),
+			where: $where,
 		);
 
 		$result = haku('db')->fetch($query, $parameters);
@@ -116,7 +119,8 @@ abstract class Model implements JsonSerializable
 	}
 
 	public static function paginate(
-		array $whereClauses = [],
+		array $where = [],
+		array $orderBy = [],
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
 		bool $includeDeleted = false,
@@ -127,10 +131,10 @@ abstract class Model implements JsonSerializable
 		$result = [];
 
 		if ($self->isSoftDeleteable() && !$includeDeleted) {
-			$whereClauses[] = Where::null('deletedAt');
+			$where[] = Where::null('deletedAt');
 		}
 
-		[$countQuery, $countParams] = Find::count($self->tableName, $self->primaryKeyName, $whereClauses);
+		[$countQuery, $countParams] = Find::count($self->tableName, $self->primaryKeyName, $where);
 
 		$numRecords = haku('db')->fetchColumn($countQuery, $countParams);
 		$pageCount = ceil($numRecords / $limit);
@@ -156,14 +160,17 @@ abstract class Model implements JsonSerializable
 		}
 
 		[$query, $parameters] = Find::all(
-			$self->tableName,
-			$self->getRecordFields(),
-			$whereClauses,
-			$limit,
-			$offset,
+			tableName: $self->tableName,
+			tableFields: $self->getRecordFields(),
+			aggregateFields: $self->getAggregateFields(),
+			where: $where,
+			orderBy: $orderBy,
+			limit: $limit,
+			offset: $offset,
 		);
 
 		$records = haku('db')->fetchAll($query, $parameters);
+		$records = array_map(fn($record) => static::from($record)->json(), $records);
 
 		return [
 			'pagination' => [
@@ -227,7 +234,7 @@ abstract class Model implements JsonSerializable
 			return null;
 		}
 
-		return $this->getRecord(filterPrivate: true);
+		return $this->getRecord(filterPrivate: true, filterAggregates: false);
 	}
 
 	/**
@@ -276,6 +283,7 @@ abstract class Model implements JsonSerializable
 		}
 
 		$record = $this->getRecord(filterTimestamps: true);
+
 		$record = $this->marshalRecord($record);
 
 		$updatedModel = null;

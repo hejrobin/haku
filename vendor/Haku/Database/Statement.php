@@ -9,7 +9,10 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use PDO;
 use PDOException;
 
-use Haku\Database\Exceptions\DatabaseException;
+use Haku\Database\Exceptions\{
+	DatabaseException,
+	ModelException
+};
 
 trait Statement
 {

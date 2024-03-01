@@ -35,7 +35,7 @@ class Write
 	public static function update(
 		string $tableName,
 		array $values,
-		array $whereClauses,
+		array $where,
 	): array
 	{
 		$queryPattern = 'UPDATE %s SET %s WHERE %s';
@@ -44,7 +44,7 @@ class Write
 
 		[$conditions, $whereParameters] = normalizeWhereClauses(
 			$tableName,
-			$whereClauses,
+			$where,
 		);
 
 		$query = sprintf(
@@ -59,28 +59,28 @@ class Write
 
 	public static function restore(
 		string $tableName,
-		array $whereClauses
+		array $where
 	): array
 	{
-		return static::update($tableName, ['deletedAt' => null], $whereClauses);
+		return static::update($tableName, ['deletedAt' => null], $where);
 	}
 
 	public static function softDelete(
 		string $tableName,
-		array $whereClauses
+		array $where
 	): array
 	{
-		return static::update($tableName, ['deletedAt' => time()], $whereClauses);
+		return static::update($tableName, ['deletedAt' => time()], $where);
 	}
 
 	public static function delete(
 		string $tableName,
-		array $whereClauses
+		array $where
 	): array
 	{
 		$queryPattern = 'DELETE FROM %s WHERE %s';
 
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $whereClauses);
+		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
 
 		$query = sprintf($queryPattern, $tableName, implode(' ', $conditions));
 

@@ -100,7 +100,7 @@ spec('Database/Query/Find', function()
 
 		it('creates a valid query with were clause', function()
 		{
-			[$actual, $parameters] = Find::count('tasks', whereClauses: [
+			[$actual, $parameters] = Find::count('tasks', where: [
 				Where::lessThan('subTasks', 10)
 			]);
 

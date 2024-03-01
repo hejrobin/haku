@@ -9,6 +9,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use function Haku\Database\Query\{
 	normalizeField,
 	normalizeWhereClauses,
+	normaizeOrderByClauses,
 };
 
 class Find
@@ -22,7 +23,9 @@ class Find
 	public static function all(
 		string $tableName,
 		array $tableFields,
-		array $whereClauses = [],
+		array $aggregateFields = [],
+		array $where = [],
+		array $orderBy = [],
 		int $limit = Find::DefaultFetchLimit,
 		int $offset = 0,
 	): array
@@ -32,22 +35,40 @@ class Find
 			$tableFields,
 		);
 
+		if (count($aggregateFields) > 0)
+		{
+			foreach ($aggregateFields as $field => $aggregate)
+			{
+				$normalizedFields[] = sprintf('%2$s AS %1$s', $field, $aggregate);
+			}
+		}
+
 		$queryPattern = 'SELECT %2$s FROM %1$s';
 
-		if (count($whereClauses) > 0)
+		if (count($where) > 0)
 		{
 			$queryPattern .= ' WHERE ';
 		}
 
-		$queryPattern .= '%3$s LIMIT %5$d, %4$d';
+		$queryPattern .= '%3$s';
 
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $whereClauses);
+		if (count($orderBy) > 0)
+		{
+			$queryPattern .= ' ORDER BY ';
+		}
+
+		$queryPattern .= '%4$s';
+		$queryPattern .= ' LIMIT %6$d, %5$d';
+
+		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
+		$orderBy = normalizeOrderByClauses($tableName, $orderBy);
 
 		$query = sprintf(
 			trim($queryPattern),
 			$tableName,
 			implode(', ', $normalizedFields),
 			implode(' ', $conditions),
+			implode(', ', $orderBy),
 			$limit,
 			$offset
 		);
@@ -61,10 +82,19 @@ class Find
 	public static function one(
 		string $tableName,
 		array $tableFields,
-		array $whereClauses = []
+		array $aggregateFields = [],
+		array $where = [],
+		array $orderBy = [],
 	): array
 	{
-		return static::all($tableName, $tableFields, $whereClauses, 1);
+		return static::all(
+			tableName: $tableName,
+			tableFields: $tableFields,
+			aggregateFields: $aggregateFields,
+			where: $where,
+			orderBy: $orderBy,
+			limit: 1
+		);
 	}
 
 	/**
@@ -73,19 +103,19 @@ class Find
 	public static function count(
 		string $tableName,
 		string $countFieldName = '*',
-		array $whereClauses = []
+		array $where = []
 	): array
 	{
 		$queryPattern = 'SELECT COUNT(%2$s) FROM %1$s';
 
-		if (count($whereClauses) > 0)
+		if (count($where) > 0)
 		{
 			$queryPattern .= ' WHERE ';
 		}
 
 		$queryPattern .= '%3$s';
 
-		[$conditions, $parameters] = normalizeWhereClauses($tableName, $whereClauses);
+		[$conditions, $parameters] = normalizeWhereClauses($tableName, $where);
 
 		$query = sprintf(
 			trim($queryPattern),
