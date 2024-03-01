@@ -36,8 +36,6 @@ class Find
 		// Normalize aggregate fields if any
 		if (count($aggregateFields) > 0)
 		{
-			var_dump(['aggr' => $aggregateFields]);
-
 			foreach ($aggregateFields as $field => $aggregate)
 			{
 				$normalizedFields[] = sprintf('%2$s AS %1$s', $field, $aggregate);
