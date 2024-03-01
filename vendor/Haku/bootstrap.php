@@ -186,7 +186,7 @@ function package(): object
 /**
  *	Returns Kernel instance, or initialized instance inside factory if instanceName is passed.
  *
- *	@throws Haku\Exceptions\FrameworkException
+ *	@throws Haku\Exceptions\VendorException
  *
  *	@return object
  */
@@ -198,7 +198,7 @@ function haku(?string $instanceName = null): object
 	{
 		if (!$kernel->has($instanceName))
 		{
-			throw new FrameworkException(sprintf('Instance %s not initialized.', $instanceName));
+			throw new VendorException(sprintf('Instance %s not initialized.', $instanceName));
 		}
 
 		return $kernel->get($instanceName);
