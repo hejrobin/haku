@@ -22,7 +22,9 @@ use Haku\Http\Messages\{
 
 use Haku\Jwt\Token;
 
-class jwt extends Middleware
+use function Haku\Jwt\currentToken;
+
+class Jwt extends Middleware
 {
 
 	public array $requestHeaders = [];
@@ -32,7 +34,10 @@ class jwt extends Middleware
 		$this->requestHeaders = \getallheaders();
 	}
 
-	private function transformResponseMessage(Headers $headers, array $message): array
+	private function transformResponseMessage(
+		Headers $headers,
+		array $message
+	): array
 	{
 		$contentType = $headers->get('Content-Type');
 
@@ -73,11 +78,18 @@ class jwt extends Middleware
 		return currentToken() !== null;
 	}
 
-	public function invoke(Request $request, Message $response, Headers $headers): array
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array
 	{
 		if (!$this->validAuthorizationHeader())
 		{
-			[$response, $headers] = $this->transformToErrorResponse($headers, Status::Unauthorized);
+			[$response, $headers] = $this->transformToErrorResponse(
+				$headers,
+				Status::Unauthorized
+			);
 		}
 
 		if ($this->validAuthorizationToken())
@@ -86,15 +98,21 @@ class jwt extends Middleware
 
 			if ($token === null)
 			{
-				[$response, $headers] = $this->transformToErrorResponse($headers, Status::Unauthorized);
+				[$response, $headers] = $this->transformToErrorResponse(
+					$headers,
+					Status::Unauthorized
+				);
 			}
 			else
 			{
 				if ($token->hasExpired())
 				{
-					[$response, $headers] = $this->transformResponseMessage($headers, [
-						'error' => 'Authorization token has expired'
-					]);
+					[$response, $headers] = $this->transformResponseMessage(
+						$headers,
+						[
+							'error' => 'Authorization token has expired'
+						]
+					);
 
 					$headers->status(Status::Unauthorized);
 				}

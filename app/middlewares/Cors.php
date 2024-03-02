@@ -14,7 +14,7 @@ use Haku\Http\{
 	Message
 };
 
-class cors extends Middleware
+class Cors extends Middleware
 {
 
 	protected string $allowOrigin = '*';
@@ -57,7 +57,11 @@ class cors extends Middleware
 		return "{$this->accessControlMaxAge}";
 	}
 
-	public function invoke(Request $request, Message $response, Headers $headers): array
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array
 	{
 		$headers->set('Access-Control-Max-Age', $this->getAccessControlMaxAge());
 		$headers->set('Access-Control-Allow-Origin', $this->getAllowOrigin());

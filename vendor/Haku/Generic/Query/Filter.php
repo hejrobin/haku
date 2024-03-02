@@ -56,7 +56,7 @@ class Filter
 		FilterOperator $operator,
 	): bool
 	{
-		return find($this->filters, function(FilterProperty $property) {
+		return find($this->filters, function(FilterProperty $property) use ($name, $operator) {
 			return $property->name === $name && $property->operator === $operator;
 		}) !== null;
 	}

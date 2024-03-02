@@ -120,7 +120,7 @@ spec('Database/Query/Find', function()
 		it('creates a valid query', function()
 		{
 			[$actual] = Find::count('tasks');
-			$expect = 'SELECT COUNT(tasks.*) FROM tasks';
+			$expect = 'SELECT COUNT(DISTINCT tasks.id) FROM tasks';
 
 			return expect($actual)->toEqual($expect);
 		});
@@ -135,7 +135,7 @@ spec('Database/Query/Find', function()
 			);
 
 			$expect = sprintf(
-				'SELECT COUNT(tasks.*) FROM tasks WHERE tasks.sub_tasks < :%s',
+				'SELECT COUNT(DISTINCT tasks.id) FROM tasks WHERE tasks.sub_tasks < :%s',
 				...array_keys($parameters)
 			);
 
@@ -153,7 +153,29 @@ spec('Database/Query/Find', function()
 			);
 
 			$expect = sprintf(
-				'SELECT COUNT(tasks.author) FROM tasks WHERE tasks.author = :%s',
+				'SELECT COUNT(DISTINCT tasks.author) FROM tasks WHERE tasks.author = :%s',
+				...array_keys($parameters)
+			);
+
+			return expect($actual)->toEqual($expect);
+		});
+
+		it('creates a valid "complex" query with subquery', function()
+		{
+			[$actual, $parameters] = Find::count(
+				tableName: 'tasks',
+				countFieldName: 'author',
+				aggregateFields: [
+					'avgSubTasks' => 'AVG(COUNT(subTasks))'
+				],
+				where: [
+					Where::is('author', '@admin'),
+					Where::greaterThan('avgSubTasks', 5)
+				]
+			);
+
+			$expect = sprintf(
+				'SELECT COUNT(DISTINCT author) AS count FROM tasks AS o, (SELECT AVG(COUNT(subTasks)) AS avgSubTasks FROM tasks WHERE tasks.author = :%s AND tasks.avg_sub_tasks > :%s) AS i',
 				...array_keys($parameters)
 			);
 

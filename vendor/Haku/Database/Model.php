@@ -76,7 +76,7 @@ abstract class Model implements JsonSerializable
 			offset: $offset,
 		);
 
-		return $db->fetchAll($query, $parameters);
+		return $db->fetchAll($query, $parameters) ?? [];
 	}
 
 	public static function findOne(
@@ -126,6 +126,7 @@ abstract class Model implements JsonSerializable
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
 		bool $includeDeleted = false,
+		?string $countFieldName = null
 	): ?array
 	{
 		$self = new static();
@@ -137,22 +138,27 @@ abstract class Model implements JsonSerializable
 			$where[] = Where::null('deletedAt');
 		}
 
+		if (!$countFieldName)
+		{
+			$countFieldName = $self->primaryKeyName;
+		}
+
 		[$countQuery, $countParams] = Find::count(
 			tableName: $self->tableName,
-			countFieldName: $self->primaryKeyName,
+			countFieldName: $countFieldName,
 			aggregateFields: $self->getAggregateFields(),
 			where: $where
 		);
 
 		$numRecords = $db->fetchColumn($countQuery, $countParams);
-		$pageCount = ceil($numRecords / $limit);
+		$pageCount = (int) ceil($numRecords / $limit);
 
 		$prevPage = $page - 1;
 		$nextPage = $page + 1;
 
 		$offset = $prevPage * $limit;
 
-		if ($prevPage <= 1)
+		if ($prevPage <= 0)
 		{
 			$prevPage = null;
 		}
@@ -177,7 +183,7 @@ abstract class Model implements JsonSerializable
 			offset: $offset,
 		);
 
-		$records = $db->fetchAll($query, $parameters);
+		$records = $db->fetchAll($query, $parameters) ?? [];
 		$records = array_map(fn($record) => static::from($record)->json(), $records);
 
 		return [
@@ -188,7 +194,9 @@ abstract class Model implements JsonSerializable
 				'nextPage' => $nextPage,
 			],
 			'meta' => [
-				'numRecords' => $numRecords,
+				'numRecordsTotal' => $numRecords,
+				'numRecordsPerPage' => $limit,
+				'numRecordsOnCurrentPage' => count($records),
 			],
 			'records' => $records,
 		];
@@ -304,6 +312,8 @@ abstract class Model implements JsonSerializable
 		bool $unmarshalBeforeSave = false,
 	): ?static
 	{
+		$db = haku('db');
+
 		if ($ignoreValidationStatus === false && $this->isValid === false)
 		{
 			throw new ModelException(
@@ -317,8 +327,6 @@ abstract class Model implements JsonSerializable
 				sprintf('Cannot save %s, validation failed.', static::class),
 			);
 		}
-
-		$db = haku('db');
 
 		$record = $this->getRecord(filterTimestamps: true);
 

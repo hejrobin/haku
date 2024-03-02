@@ -87,6 +87,12 @@ class Find
 		// Add ORDER BY
 		if (count($orderBy) > 0)
 		{
+			$orderBy = normalizeOrderByClauses(
+				tableName: $tableName,
+				aggregateFields: $aggregateFields,
+				orderBy: $orderBy,
+			);
+
 			$querySegments = array_merge(
 				$querySegments,
 				[
@@ -127,30 +133,55 @@ class Find
 	}
 
 	/**
-	 *	Creates a count query.
+	 *	Creates a count query by first building a sub query with all filtering applied and counts on that result.
 	 */
 	public static function count(
 		string $tableName,
-		string $countFieldName = '*',
+		string $countFieldName = 'id',
 		array $aggregateFields = [],
 		array $where = [],
 	): array
 	{
-		$fieldName = normalizeField($tableName, $countFieldName);
+		if (count($aggregateFields) > 0)
+		{
+			return self::complexCount(
+				tableName: $tableName,
+				countFieldName: $countFieldName,
+				aggregateFields: $aggregateFields,
+				where: $where,
+			);
+		}
+		else
+		{
+			return self::simpleCount(
+				tableName: $tableName,
+				countFieldName: $countFieldName,
+				where: $where,
+			);
+		}
+	}
 
-		$querySegments = [
-			'SELECT',
-			"COUNT({$fieldName})",
-			'FROM',
-			$tableName,
-		];
-
+	/**
+	 * Creates a "simple" count query without aggregates.
+	 */
+	protected static function simpleCount(
+		string $tableName,
+		string $countFieldName = 'id',
+		array $where = [],
+	): array
+	{
 		// Get normalized WHERE and HAVING
 		$conditions = (object) normalizeConditions(
 			$tableName,
 			$where,
-			$aggregateFields
 		);
+
+		$querySegments = [
+			'SELECT',
+			sprintf('COUNT(DISTINCT %s)', normalizeField($tableName, $countFieldName)),
+			'FROM',
+			$tableName,
+		];
 
 		$parameters = $conditions->where->parameters;
 
@@ -164,10 +195,85 @@ class Find
 			);
 		}
 
-		// @todo Add GROUP BY
+		$query = implode(' ', $querySegments);
 
 		return [
-			implode(' ', $querySegments),
+			$query,
+			$parameters
+		];
+	}
+
+	/**
+	 *	Creates a "complex" count query that allows for aggregated filtering.
+	 */
+	protected static function complexCount(
+		string $tableName,
+		string $countFieldName = 'id',
+		array $aggregateFields = [],
+		array $where = [],
+	): array
+	{
+		// Get normalized WHERE and HAVING
+		$conditions = (object) normalizeConditions(
+			$tableName,
+			$where,
+			$aggregateFields
+		);
+
+		$normalizedFields = [];
+
+		// Normalize aggregate fields if any
+		if (count($aggregateFields) > 0)
+		{
+			foreach ($aggregateFields as $field => $aggregate)
+			{
+				$normalizedFields[] = sprintf('%2$s AS %1$s', $field, $aggregate);
+			}
+		}
+
+		$querySegments = [
+			'SELECT',
+			implode(', ', $normalizedFields),
+			'FROM',
+			$tableName,
+		];
+
+		$parameters = [
+			...$conditions->where->parameters,
+			...$conditions->having->parameters
+		];
+
+		// Add WHERE
+		if (count($conditions->where->clauses) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				['WHERE'],
+				$conditions->where->clauses
+			);
+		}
+
+		// Add HAVING
+		if (count($conditions->having->clauses) > 0)
+		{
+			$querySegments = array_merge(
+				$querySegments,
+				['HAVING'],
+				$conditions->having->clauses
+			);
+		}
+
+		$innerQuery = implode(' ', $querySegments);
+
+		$query = sprintf(
+			'SELECT COUNT(DISTINCT %s) AS count FROM %s AS o, (%s) AS i',
+			$countFieldName,
+			$tableName,
+			$innerQuery
+		);
+
+		return [
+			$query,
 			$parameters
 		];
 	}

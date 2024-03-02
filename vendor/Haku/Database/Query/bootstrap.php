@@ -40,6 +40,8 @@ function normalizeConditions(
 	$currentWhereIndex = 0;
 	$currentHavingIndex = 0;
 
+	$glues = ['AND', 'OR'];
+
 	$normalizeCondition = function (
 		string $fieldName,
 		?string $value,
@@ -99,12 +101,15 @@ function normalizeConditions(
 			$param,
 		);
 
-		if ($currentWhereIndex > 0)
+		$lastWhereClause = array_pop(array_slice($whereClauses, -1));
+		$lastHavingClause = array_pop(array_slice($havingClauses, -1));
+
+		if ($currentWhereIndex > 0 && !in_array($lastWhereClause, $glues))
 		{
 			$whereClauses[] = $glue;
 		}
 
-		if ($currentHavingIndex > 0)
+		if ($currentHavingIndex > 0 && !in_array($lastHavingClause, $glues))
 		{
 			$havingClauses[] = $glue;
 		}
@@ -129,8 +134,6 @@ function normalizeConditions(
 
 	$lastWhereClause = array_pop(array_slice($whereClauses, -1));
 	$lastHavingClause = array_pop(array_slice($havingClauses, -1));
-
-	$glues = ['AND', 'OR'];
 
 	if (in_array($lastWhereClause, $glues))
 	{
@@ -197,15 +200,16 @@ function normalizeSet(
 function normalizeOrderByClauses(
 	string $tableName,
 	array $orderBy,
+	array $aggregateFields = []
 ): array
 {
 	$conditions = [];
 
 	foreach ($orderBy as $order)
 	{
-		[$field, $direction, $isAggregate] = $order;
+		[$field, $direction] = $order;
 
-		if (!$isAggregate)
+		if (!in_array($field, array_keys($aggregateFields)))
 		{
 			$field = normalizeField($tableName, $field);
 		}
