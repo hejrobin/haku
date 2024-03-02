@@ -20,6 +20,7 @@ use Haku\Exceptions\FrameworkException;
 use Haku\Http\{
 	Status,
 	Headers,
+	Method,
 	Message,
 	Messages\Json,
 	Exceptions\StatusException,
@@ -30,7 +31,7 @@ use function Haku\{
 	loadEnvironment,
 	loadBootstrap,
 	resolvePath,
-	config
+	config,
 };
 
 use function Haku\Generic\Url\path;
@@ -57,7 +58,13 @@ try
 	loadBootstrap();
 
 	$__outputHeaders = new Headers([
-		'Content-Type' => 'application/json'
+		'Content-Type' => 'application/json',
+		'Vary' => 'Origin',
+		'Access-Control-Max-Age' => HAKU_CORS_MAX_AGE,
+		'Access-Control-Allow-Origin' => HAKU_CORS_ALLOW_ORIGIN,
+		'Access-Control-Allow-Methods' => HAKU_CORS_ALLOW_METHODS,
+		'Access-Control-Allow-Headers' => HAKU_CORS_ALLOW_HEADERS,
+		'Access-Control-Allow-Credentials' => HAKU_CORS_ALLOW_CREDENTIALS
 	]);
 
 	ob_start();
@@ -107,6 +114,11 @@ finally
 	if ($__outputHeaders instanceof Headers)
 	{
 		$__outputHeaders->send();
+	}
+
+	if (Method::resolve() === Method::Options)
+	{
+		exit;
 	}
 
 	/**

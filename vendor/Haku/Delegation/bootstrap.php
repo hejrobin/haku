@@ -321,6 +321,11 @@ function delegate(string $path, Headers $headers): array
 
 		$hasMethodMatch = $route['method'] === $requestMethod;
 
+		if ($requestMethod === Method::Options)
+		{
+			return true;
+		}
+
 		if ($hasPatternMatch && !$hasMethodMatch)
 		{
 			// 405 Method Not Allowed
