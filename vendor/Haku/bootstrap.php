@@ -172,13 +172,13 @@ function loadBootstrap()
 }
 
 /**
- *	Returns information found in package.json
+ *	Returns information found in manifest.json
  */
-function package(): object
+function manifest(): object
 {
 	return json_decode(
 		file_get_contents(
-			resolvePath('package.json')
+			resolvePath('manifest.json')
 		)
 	);
 }

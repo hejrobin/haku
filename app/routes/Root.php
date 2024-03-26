@@ -14,7 +14,7 @@ use Haku\Http\{
 	Messages\Json
 };
 
-use function Haku\package;
+use function Haku\manifest;
 
 class Root
 {
@@ -22,7 +22,7 @@ class Root
 	#[Route('/')]
 	public function index(): Message
 	{
-		return Json::from(package());
+		return Json::from(manifest());
 	}
 
 }
