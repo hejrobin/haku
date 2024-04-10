@@ -165,6 +165,7 @@ function normalizeSet(
 	array $parameters,
 	bool $filterNullValues = false,
 	string $primaryKeyName = 'id',
+	array $transform = []
 ): array
 {
 	$conditions = [];
@@ -184,10 +185,17 @@ function normalizeSet(
 			continue;
 		}
 
+		$transformedParameter = ":{$parameter}";
+
+		if (array_key_exists($parameter, $transform))
+		{
+			$transformedParameter = $transform[$parameter];
+		}
+
 		$conditions[] = sprintf(
-			'%s = :%s',
+			'%s = %s',
 			normalizeField($tableName, $parameter),
-			$parameter,
+			$transformedParameter,
 		);
 	}
 

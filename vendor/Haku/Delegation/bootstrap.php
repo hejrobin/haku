@@ -184,7 +184,7 @@ function pathToRegex(
 		else
 		{
 			// No parameters in path, match as defined
-			$pattern .= "({$segment})/";
+			$pattern .= "/({$segment})/";
 		}
 	}
 

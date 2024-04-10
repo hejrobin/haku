@@ -16,7 +16,8 @@ class Write
 
 	public static function insert(
 		string $tableName,
-		array $values
+		array $values,
+		array $transform = [],
 	): array
 	{
 		$queryPattern = 'INSERT INTO %s SET %s';
@@ -25,6 +26,7 @@ class Write
 			$tableName,
 			$values,
 			filterNullValues: true,
+			transform: $transform,
 		);
 
 		$query = sprintf($queryPattern, $tableName, implode(', ', $variables));
@@ -36,11 +38,12 @@ class Write
 		string $tableName,
 		array $values,
 		array $where,
+		array $transform = [],
 	): array
 	{
 		$queryPattern = 'UPDATE %s SET %s WHERE %s';
 
-		[$variables, $parameters] = normalizeSet($tableName, $values);
+		[$variables, $parameters] = normalizeSet($tableName, $values, transform: $transform);
 
 		$conditions = normalizeConditions(
 			$tableName,

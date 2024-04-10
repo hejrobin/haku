@@ -22,7 +22,8 @@ use Haku\Database\Attributes\{
 	Omitted,
 	Included,
 	Validates,
-	Aggregate
+	Aggregate,
+	Spatial
 };
 
 use Haku\Schema\{
@@ -46,6 +47,7 @@ trait Entity
 	protected readonly array $omittedFields;
 	protected readonly array $includedFields;
 	protected readonly array $aggregatedFields;
+	protected array $transformFields;
 
 	protected bool $isValid = false;
 	protected bool $hasChanges = false;
@@ -98,6 +100,7 @@ trait Entity
 			Included::class,
 			Validates::class,
 			Aggregate::class,
+			Spatial::class,
 		];
 
 		foreach ($properties as $property)
@@ -113,6 +116,7 @@ trait Entity
 				'omittedFields',
 				'includedFields',
 				'aggregatedFields',
+				'transformFields',
 			];
 
 			$propertyIsIgnored =
@@ -175,12 +179,6 @@ trait Entity
 							}
 							break;
 						case Timestamp::class:
-							if ($property->isReadOnly() === false) {
-								throw new EntityException(
-									sprintf("Timestamp '%s' must be readonly.", $property->getName()),
-								);
-							}
-
 							$timestampFields[] = $property->getName();
 							break;
 						case Validates::class:
@@ -202,6 +200,11 @@ trait Entity
 						case Aggregate::class:
 							$aggregatedFields[$property->getName()] = $attr->aggregate;
 							break;
+						case Spatial::class:
+							$includedFields[] = $property->getName();
+							$aggregatedFields[$property->getName()] = $attr->aggregate;
+							$this->transformFields[$property->getName()] = $attr->transform;
+							break;
 					}
 				}
 			}
@@ -212,6 +215,7 @@ trait Entity
 		$this->omittedFields = $omittedFields;
 		$this->includedFields = $includedFields;
 		$this->aggregatedFields = $aggregatedFields;
+
 	}
 
 	/**
@@ -369,9 +373,9 @@ trait Entity
 	protected function getExposeablePropertyNames(): array
 	{
 		$exposeableFields = array_unique(
+			$this->includedFields +
 			array_keys([
 				...$this->validationRules,
-				...$this->includedFields,
 			])
 		);
 

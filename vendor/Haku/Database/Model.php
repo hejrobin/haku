@@ -346,11 +346,20 @@ abstract class Model implements JsonSerializable
 			$record['createdAt'] = time();
 		}
 
-		$insert = Write::insert($this->tableName, $record);
+		$insert = Write::insert(
+			tableName: $this->tableName,
+			values: $record,
+			transform: $this->transformFields,
+		);
 
-		$update = Write::update($this->tableName, $record, [
-			Where::is($this->primaryKeyName, $record[$this->primaryKeyName]),
-		]);
+		$update = Write::update(
+			tableName: $this->tableName,
+			values: $record,
+			where: [
+				Where::is($this->primaryKeyName, $record[$this->primaryKeyName]),
+			],
+			transform: $this->transformFields,
+		);
 
 		[$query, $parameters] = $this->isPersistent() ? $update : $insert;
 

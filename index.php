@@ -129,7 +129,7 @@ finally
 		header('Content-Type: application/json');
 
 		echo Json::from([
-			'code' => 500,
+			'code' => $throwable->getCode(),
 			'error' => $__throwable->getMessage(),
 			'trace' => $__throwable->getTrace(),
 		]);
