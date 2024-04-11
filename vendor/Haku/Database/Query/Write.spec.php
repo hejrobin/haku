@@ -22,7 +22,7 @@ spec('Haku/Database/Query/Write', function()
 	describe('row alteration queries', function()
 	{
 
-		it('it can generate a proper INSERT query', function()
+		it('can generate a proper INSERT query', function()
 		{
 			[$actual] = Write::insert(
 				tableName: 'tasks',
@@ -34,7 +34,7 @@ spec('Haku/Database/Query/Write', function()
 			return expect($actual)->toEqual($expect);
 		});
 
-		it('it can generate a proper UPDATE query', function()
+		it('can generate a proper UPDATE query', function()
 		{
 			[$actual, $parameters] = Write::update(
 				tableName: 'tasks',
@@ -54,7 +54,7 @@ spec('Haku/Database/Query/Write', function()
 	describe('row deletion queries', function()
 	{
 
-		it('it can generate a proper DELETE query', function()
+		it('can generate a proper DELETE query', function()
 		{
 			[$actual, $parameters] = Write::delete(
 				tableName: 'tasks',
@@ -68,7 +68,7 @@ spec('Haku/Database/Query/Write', function()
 			return expect($actual)->toEqual($expect);
 		});
 
-		it('it can generate a "soft delete" query', function()
+		it('can generate a "soft delete" query', function()
 		{
 			[$actual, $parameters] = Write::softDelete(
 				tableName: 'tasks',
@@ -78,6 +78,24 @@ spec('Haku/Database/Query/Write', function()
 			);
 
 			$expect = "UPDATE tasks SET tasks.deleted_at = :deletedAt WHERE tasks.id = :where_tasks_id_0";
+
+			return expect($actual)->toEqual($expect);
+		});
+
+		it('can create a valid transform query', function()
+		{
+			[$actual, $parameters] = Write::update(
+				tableName: 'tasks',
+				values: [ 'location' => 'POINT(44.80243702247711 -68.7850096478809)' ],
+				where: [
+					Where::is('id', 1)
+				],
+				transform: [
+					'location' => 'ST_GeomFromText(:location)'
+				]
+			);
+
+			$expect = "UPDATE tasks SET tasks.location = ST_GeomFromText(:location) WHERE tasks.id = :where_tasks_id_0";
 
 			return expect($actual)->toEqual($expect);
 		});
