@@ -373,10 +373,10 @@ trait Entity
 	protected function getExposeablePropertyNames(): array
 	{
 		$exposeableFields = array_unique(
-			$this->includedFields +
-			array_keys([
-				...$this->validationRules,
-			])
+			array_merge(
+				array_keys($this->validationRules),
+				$this->includedFields
+			)
 		);
 
 		return [
