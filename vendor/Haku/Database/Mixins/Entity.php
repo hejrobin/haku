@@ -44,6 +44,7 @@ trait Entity
 
 	protected readonly array $validationRules;
 	protected readonly array $timestampFields;
+	protected readonly array $unfilteredTimestampFields;
 	protected readonly array $omittedFields;
 	protected readonly array $includedFields;
 	protected readonly array $aggregatedFields;
@@ -90,6 +91,7 @@ trait Entity
 		$includedFields = [];
 		$timestampFields = [];
 		$aggregatedFields = [];
+		$unfilteredTimestampFields = [];
 
 		$properties = $ref->getProperties();
 
@@ -117,6 +119,7 @@ trait Entity
 				'includedFields',
 				'aggregatedFields',
 				'transformFields',
+				'unfilteredTimestampFields',
 			];
 
 			$propertyIsIgnored =
@@ -180,6 +183,11 @@ trait Entity
 							break;
 						case Timestamp::class:
 							$timestampFields[] = $property->getName();
+
+							if ($attr->unfiltered === true)
+							{
+								$unfilteredTimestampFields[] = $property->getName();
+							}
 							break;
 						case Validates::class:
 							// Parse validation rules
@@ -212,10 +220,10 @@ trait Entity
 
 		$this->validationRules = $validationRules;
 		$this->timestampFields = $timestampFields;
+		$this->unfilteredTimestampFields = $unfilteredTimestampFields;
 		$this->omittedFields = $omittedFields;
 		$this->includedFields = $includedFields;
 		$this->aggregatedFields = $aggregatedFields;
-
 	}
 
 	/**
@@ -434,9 +442,11 @@ trait Entity
 					continue;
 				}
 
+				// Only filter out unfiltered timestamps
 				if (
 					$filterTimestamps === true &&
-					in_array($property->getName(), $this->timestampFields)
+					in_array($property->getName(), $this->timestampFields) &&
+					!in_array($property->getName(), $this->unfilteredTimestampFields)
 				) {
 					continue;
 				}

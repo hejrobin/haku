@@ -8,6 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Exception;
 use JsonSerializable;
+use AllowDynamicProperties;
 
 use Haku\Database\Exceptions\{
 	DatabaseException,
@@ -25,6 +26,7 @@ use Haku\Database\Mixins\Entity;
 use function Haku\haku;
 use function Haku\Generic\Strings\camelCaseFromSnakeCase;
 
+#[AllowDynamicProperties]
 abstract class Model implements JsonSerializable
 {
 

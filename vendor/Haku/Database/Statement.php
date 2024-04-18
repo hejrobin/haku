@@ -50,6 +50,8 @@ trait Statement
 
 			$result = $statement->fetch(PDO::FETCH_ASSOC);
 
+			if (!$result) return null;
+
 			return $this->marshal($result);
 		}
 		catch (PDOException $exception)
