@@ -305,11 +305,36 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
+	 *	Calls mutator for each fields, e.g "mutateTitle".
+	 *	This will override the parameter value for insert/update.
+	 */
+	protected function mutateRecord(array $record): array
+	{
+		foreach ($record as $field => $value)
+		{
+			$mutator = sprintf('mutate%s', ucfirst($field));
+
+			if (method_exists($this, $mutator))
+			{
+				$record[$field] = call_user_func_array([$this, $mutator], [$value]);
+			}
+		}
+
+		return $record;
+	}
+
+	public function hydrate(array | object $partialRecord)
+	{
+		$payload = $this->unmarshalRecord((array) $partialRecord);
+		$this->assign($payload);
+	}
+
+	/**
 	 *	Attempts to create or update model.
 	 */
 	public function save(
 		bool $ignoreValidationStatus = false,
-		bool $unmarshalBeforeSave = false,
+		bool $unmarshalBeforeSave = true,
 	): ?static
 	{
 		$db = haku('db');
@@ -334,6 +359,8 @@ abstract class Model implements JsonSerializable
 		{
 			$record = $this->unmarshalRecord($record);
 		}
+
+		$record = $this->mutateRecord($record);
 
 		$updatedModel = null;
 

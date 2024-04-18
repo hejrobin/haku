@@ -234,6 +234,8 @@ class Headers
 	 */
 	public function send(): void
 	{
+		if (headers_sent()) return;
+
 		header($this->status->asString());
 
 		foreach ($this->headers as $header => $value)
