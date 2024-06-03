@@ -8,7 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Haku\Console\Command;
 
-use function Haku\package;
+use function Haku\manifest;
 
 class Version extends Command
 {
@@ -20,7 +20,7 @@ class Version extends Command
 
 	public function invoke(): bool
 	{
-		$pkg = package();
+		$pkg = manifest();
 
 		$this->output->output($pkg->version);
 
