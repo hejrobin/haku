@@ -59,6 +59,7 @@ function decodeBase64Url(string $value): string
 	);
 }
 
-function random($byteSize = 16): string {
+function random(int $byteSize = 16): string
+{
 	return base64_encode(random_bytes($byteSize));
 }

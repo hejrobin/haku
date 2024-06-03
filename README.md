@@ -4,9 +4,9 @@ A tiny web application framework with big ambitions.
 
 #### Core Concepts
 
-1. **Native Language Features** <br /> Haku aims to have a small footprint, without any external dependencies and relies soley on the power of native PHP 8.3 features.
-2. **Development Versatility** <br /> Haku might have a limited feature-set out of the box, but does provide a great foundation to build and add bespoke libraries and components.
-3. **Developer Friendly** <br /> Haku ships with a command line tool that helps you generate code, run code tests and set up a development server all from your terminal of choice.
+1. **Native Features First** <br /> Haku aims to have a small footprint, without any external dependencies and relies soley on the power of native PHP 8.3 features.
+2. **Developer Friendly** <br /> Haku ships with a command line tool that helps you generate code, run code tests and set up a development server all from your terminal of choice.
+3. **Sprouting Codebase** <br /> Haku might have a limited feature-set out of the box, but does provide a great foundation to build and add bespoke libraries and components.
 
 ---
 
@@ -54,6 +54,3 @@ Haku ships with its own command line tool, `haku` which provides some helpful co
 
 * Database Migrations
 * Framework Upgrade Commands
-* Configurable JWT Methodology
-	- Either do new token per request, or;
-	- Short lived JWT token + refresh token.
