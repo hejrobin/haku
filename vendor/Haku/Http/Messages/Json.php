@@ -23,6 +23,14 @@ class Json extends Message
 		return new self((array) $data, $status, $headers);
 	}
 
+	public static function error(
+		string $message,
+		Status $status = Status::NotFound
+	): self
+	{
+		return new self([ 'error' => $message ], $status, []);
+	}
+
 	protected function render(array $data): string
 	{
 		return json_encode($data, \JSON_PRETTY_PRINT | \JSON_NUMERIC_CHECK);

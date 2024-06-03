@@ -326,12 +326,6 @@ function delegate(string $path, Headers $headers): array
 			return true;
 		}
 
-		if ($hasPatternMatch && !$hasMethodMatch)
-		{
-			// 405 Method Not Allowed
-			throw new StatusException(405);
-		}
-
 		return $hasPatternMatch && $hasMethodMatch;
 	});
 

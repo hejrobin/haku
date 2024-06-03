@@ -9,4 +9,10 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use \Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Timestamp {}
+class Timestamp {
+
+	public function __construct(
+		public bool $unfiltered = false
+	) {}
+
+}
