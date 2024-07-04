@@ -101,6 +101,8 @@ class Upgrade extends Command
 			rename($source, $target);
 		}
 
+		deleteDirectory(resolvePath("vendor/Haku"));
+
 		$source = resolvePath("private/{$this->identifier}/vendor/Haku");
 		$target = resolvePath("vendor/Haku");
 
