@@ -22,7 +22,6 @@ class Rand extends Command
 
 	public function invoke(): bool
 	{
-
 		$this->output->success(random(32));
 
 		return true;

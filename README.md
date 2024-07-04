@@ -15,8 +15,8 @@ A tiny web application framework with big ambitions.
 #### Prerequisites
 
 * [PHP >= 8.3](https://www.php.net/releases/8.3/en.php)
-* [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php)
 * [mbstring](https://www.php.net/manual/en/ref.mbstring.php)
+* [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php)
 
 ### Installing Haku
 
@@ -50,7 +50,12 @@ Haku ships with its own command line tool, `haku` which provides some helpful co
 
 ---
 
+### Updating your Haku project
+
+If you've forked Haku to use in your project, sometimes you might want to upgrade to the latest version. This requires * [PHP ZIP Extension](https://www.php.net/manual/en/class.ziparchive.php), and then you can run `php haku upgrade` to fetch the latest repository changes available.
+
+---
+
 ### Planned Features
 
 * Database Migrations
-* Framework Upgrade Commands

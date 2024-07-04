@@ -29,6 +29,7 @@ try
 
 	$engine->registerCommand(new Console\Commands\Init());
 	$engine->registerCommand(new Console\Commands\Version());
+	$engine->registerCommand(new Console\Commands\Upgrade());
 	$engine->registerCommand(new Console\Commands\Serve());
 	$engine->registerCommand(new Console\Commands\Routes());
 	$engine->registerCommand(new Console\Commands\Test());
