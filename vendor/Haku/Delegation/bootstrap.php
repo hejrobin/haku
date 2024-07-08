@@ -282,10 +282,16 @@ function parseRouteAttributes(
 
 /**
  *	Converts middlewares from "foo" to "App\Middlewares\Foo"
+ *	And @foo to "Haku\Delegation\Middlewares\Foo"
  */
 function normalizeMiddlewarePathName(string $unresolved): string
 {
 	$namespace = ['App', 'Middlewares'];
+
+	if (\str_starts_with(needle: '@', haystack: $unresolved))
+	{
+		$namespace = ['Haku', 'Delegation', 'Middlewares'];
+	}
 
 	$parts = explode('/', $unresolved);
 	$parts = array_map(fn($part) => ucfirst(camelCaseFromSnakeCase($part)), $parts);

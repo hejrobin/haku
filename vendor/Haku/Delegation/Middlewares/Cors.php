@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Middlewares;
+namespace Haku\Delegation\Middlewares;
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
