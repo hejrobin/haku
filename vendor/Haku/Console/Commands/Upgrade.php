@@ -62,8 +62,6 @@ class Upgrade extends Command
 
 	protected function extractSource(): void
 	{
-		$errors = [];
-
 		if (file_exists($this->target()))
 		{
 			$zip = new Archiver();
@@ -76,6 +74,11 @@ class Upgrade extends Command
 				$zip->extractTo(resolvePath('private'), $this->coreFiles());
 
 				$errors = $zip->extractDirectoryTo(
+					resolvePath("private/{$this->identifier}/private"),
+					"{$this->identifier}/private"
+				);
+
+				$zip->extractDirectoryTo(
 					resolvePath("private/{$this->identifier}/vendor"),
 					"{$this->identifier}/vendor"
 				);
@@ -93,8 +96,6 @@ class Upgrade extends Command
 	{
 		$files = $this->coreFiles();
 
-		deleteDirectory(resolvePath("private/generator-templates"));
-
 		foreach ($files as $file)
 		{
 			$source = resolvePath("private/{$file}");
@@ -102,6 +103,13 @@ class Upgrade extends Command
 
 			rename($source, $target);
 		}
+
+		deleteDirectory(resolvePath("private/generator-templates"));
+
+		rename(
+			resolvePath("private/{$this->identifier}/private/generator-templates"),
+			resolvePath("private/generator-templates"),
+		);
 
 		deleteDirectory(resolvePath("vendor/Haku"));
 
