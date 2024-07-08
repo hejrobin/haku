@@ -11,7 +11,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
  *
  *	@throws Haku\Jwt\TokenException
  */
-function encodeToken(array $context, int $maxAge = AccessTokenTTL): string
+function encodeToken(array $context, int $maxAge = HAKU_JWT_TOKEN_TTL): string
 {
 	$token = new Token(Algorithm::HS256);
 
