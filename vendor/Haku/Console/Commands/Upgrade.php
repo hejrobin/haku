@@ -93,6 +93,8 @@ class Upgrade extends Command
 	{
 		$files = $this->coreFiles();
 
+		deleteDirectory(resolvePath("private/generator-templates"));
+
 		foreach ($files as $file)
 		{
 			$source = resolvePath("private/{$file}");
