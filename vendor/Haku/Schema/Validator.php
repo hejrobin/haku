@@ -6,6 +6,8 @@ namespace Haku\Schema;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Haku\Schema\Exceptions\ValidationException;
+
 class Validator
 {
 
@@ -109,7 +111,8 @@ class Validator
 				$validLength = $fieldValueLength === $min;
 
 				$error = sprintf("'%s': invalid length, expected %d, got: %d", $field, $min, $fieldValueLength);
-			} elseif ($expectsRangeBetween)
+			}
+			elseif ($expectsRangeBetween)
 			{
 				$validLength = $fieldValueLength >= $min && $fieldValueLength <= $max;
 
@@ -120,7 +123,8 @@ class Validator
 					$max,
 					$fieldValueLength,
 				);
-			} elseif ($expectsRangeFrom)
+			}
+			elseif ($expectsRangeFrom)
 			{
 				$validLength = $fieldValueLength >= $min;
 
@@ -130,7 +134,8 @@ class Validator
 					$min,
 					$fieldValueLength,
 				);
-			} elseif ($expectsRangeTo)
+			}
+			elseif ($expectsRangeTo)
 			{
 				$validLength = $fieldValueLength <= $max;
 
@@ -240,8 +245,7 @@ class Validator
 	protected function validateStrongPassword(string $field, array $record): ValidationResult
 	{
 		$isStrongPassword = $this->validateRegex($field, $record, '^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$');
-
-		$error = sprintf("'%s': is not a strong password", $field, $record[$field]);
+		$error = sprintf("'%s': is not a strong password", $field);
 
 		return new ValidationResult($isStrongPassword->success, $isStrongPassword->error);
 	}
@@ -253,7 +257,7 @@ class Validator
 	{
 		$isValid = false;
 
-		$error = sprintf("'%s': is not a valid UNIX timestamp", $field, $record[$field]);
+		$error = sprintf("'%s': is not a valid UNIX timestamp", $field);
 
 		$timestamp = $record[$field] ?? '';
 

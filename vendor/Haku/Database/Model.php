@@ -366,11 +366,11 @@ abstract class Model implements JsonSerializable
 
 		$updatedModel = null;
 
-		if ($this->isPersistent() && property_exists($this, 'updatedAt'))
+		if ($this->isPersistent() && method_exists($this, 'setUpdatedAt'))
 		{
 			$record['updatedAt'] = time();
 		}
-		elseif (!$this->isPersistent() && property_exists($this, 'createdAt'))
+		elseif (!$this->isPersistent() && method_exists($this, 'setCreatedAt'))
 		{
 			$record['createdAt'] = time();
 		}
