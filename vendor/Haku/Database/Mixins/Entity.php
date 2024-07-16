@@ -91,6 +91,7 @@ trait Entity
 		$includedFields = [];
 		$timestampFields = [];
 		$aggregatedFields = [];
+		$transformFields = [];
 		$unfilteredTimestampFields = [];
 
 		$properties = $ref->getProperties();
@@ -211,7 +212,7 @@ trait Entity
 						case Spatial::class:
 							$includedFields[] = $property->getName();
 							$aggregatedFields[$property->getName()] = $attr->aggregate;
-							$this->transformFields[$property->getName()] = $attr->transform;
+							$transformFields[$property->getName()] = $attr->transform;
 							break;
 					}
 				}
@@ -224,6 +225,7 @@ trait Entity
 		$this->omittedFields = $omittedFields;
 		$this->includedFields = $includedFields;
 		$this->aggregatedFields = $aggregatedFields;
+		$this->transformFields = $transformFields;
 	}
 
 	/**
