@@ -8,6 +8,9 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 $mockedJsonPayload = '';
 
+/**
+ *	Creates a mocked JSON payload used for testing payloads.
+ */
 function mockJsonPayload(array $data)
 {
 	global $mockedJsonPayload;
@@ -15,6 +18,9 @@ function mockJsonPayload(array $data)
 	$mockedJsonPayload = \json_encode($data);
 }
 
+/**
+ *	Returns a moced JSON if present, {@see mockJsonPayload}. Only used internally by the spec runner.
+ */
 function getMockedJsonPayload(): string
 {
 	global $mockedJsonPayload;

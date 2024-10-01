@@ -8,9 +8,15 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use ZipArchive;
 
+/**
+ *	This class works with zip files
+ */
 class Archiver extends ZipArchive
 {
 
+	/**
+	 *	Extracts contents of a zip file to a target directory.
+	 */
 	public function extractDirectoryTo(string $target, string $source): array
 	{
 		$errors = [];

@@ -13,7 +13,6 @@ use Haku\Console\Commands\Generators\{
 	AvailableGenerators
 };
 
-
 use function Haku\Console\resolveArguments;
 use function Haku\Console\Commands\Generators\getGeneratorInstance;
 
