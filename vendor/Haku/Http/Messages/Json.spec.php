@@ -28,7 +28,7 @@ spec('Http/Messages/Json', function()
 
 			$json = json_encode(
 				['data' => 'hello world'],
-				\JSON_PRETTY_PRINT | \JSON_NUMERIC_CHECK
+				\JSON_NUMERIC_CHECK
 			);
 
 			return expectAll(

@@ -12,6 +12,8 @@ class Fetch
 {
 	private $curl;
 
+	protected mixed $info;
+
 	protected Headers $headers;
 
 	/**
@@ -25,11 +27,6 @@ class Fetch
 		$this->headers = new Headers($headers);
 
 		$this->curl = curl_init($uri);
-
-		$this->setOptions([
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_HTTPHEADER => $this->headers->getAll(true)
-		]);
 	}
 
 	/**
@@ -55,7 +52,7 @@ class Fetch
 	/**
 	 *	Makes a JSON request
 	 */
-	public function json(Json $payload = null): object
+	public function json(array $payload = null): object
 	{
 		if (!$this->headers->has('Accept'))
 		{
@@ -66,10 +63,21 @@ class Fetch
 
 		if ($this->method === Method::Post && $payload !== null)
 		{
-			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $payload->asRendered());
+			$data = json_encode($payload);
+
+			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
+
+			$this->headers->set('Content-Length', strval(strlen($data)));
 		}
 
+		$this->setOptions([
+			CURLOPT_CUSTOMREQUEST => $this->method->asString(),
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_HTTPHEADER => $this->headers->getAll(true)
+		]);
+
 		$response = curl_exec($this->curl);
+		$this->info = curl_getinfo($this->curl);
 
 		curl_close($this->curl);
 
@@ -79,11 +87,6 @@ class Fetch
 		}
 
 		return json_decode($response);
-	}
-
-	public function close()
-	{
-		curl_close($this->curl);
 	}
 
 }

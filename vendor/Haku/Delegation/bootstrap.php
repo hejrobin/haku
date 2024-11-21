@@ -189,6 +189,7 @@ function pathToRegex(
 	}
 
 	$pattern = trim($pattern, '/');
+	$pattern = preg_replace("#(^|[^:])//+#", "\\1/", $pattern);
 
 	return "~^{$pattern}$~ix";
 }

@@ -11,16 +11,28 @@ use Haku\Http\{
 	Status
 };
 
+define('DEFAULT_PRETTY_PRINT', HAKU_ENVIRONMENT === 'dev');
+
 class Json extends Message
 {
+
+	protected bool $formatNumbers;
+	protected bool $prettyPrint;
 
 	public static function from(
 		mixed $data,
 		Status $status = Status::OK,
 		array $headers = [],
+		bool $formatNumbers = true,
+		bool $prettyPrint = DEFAULT_PRETTY_PRINT,
 	): self
 	{
-		return new self((array) $data, $status, $headers);
+		$self = new self((array) $data, $status, $headers);
+
+		$self->formatNumbers = $formatNumbers;
+		$self->prettyPrint = $prettyPrint;
+
+		return $self;
 	}
 
 	public static function error(
@@ -31,9 +43,17 @@ class Json extends Message
 		return new self([ 'error' => $message ], $status, []);
 	}
 
+	private function resolveEncodeOptions(): int
+	{
+		$prettyPrint = $this->prettyPrint ? \JSON_PRETTY_PRINT : 0;
+		$formatNumbers = $this->formatNumbers ? \JSON_NUMERIC_CHECK : 0;
+
+		return $prettyPrint | $formatNumbers;
+	}
+
 	protected function render(array $data): string
 	{
-		return json_encode($data, \JSON_PRETTY_PRINT | \JSON_NUMERIC_CHECK);
+		return json_encode($data, $this->resolveEncodeOptions());
 	}
 
 	public function valid(): bool
