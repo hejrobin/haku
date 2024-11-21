@@ -203,10 +203,26 @@ class Headers
 		}
 	}
 
-	public function getAll(): array
+	/**
+	 *	Returns all headers as key value pairs, if $flatten is true array will be "key: value".
+	 */
+	public function getAll(bool $flatten = false): array
 	{
+		if ($flatten)
+		{
+			$headers = [];
+
+			foreach ($this->headers as $name => $value)
+			{
+				array_push($headers, "{$name}: {$value}");
+			}
+
+			return $headers;
+		}
+
 		return $this->headers;
 	}
+
 
 	/**
 	 *	Flushes *all* set headers of current instance.
