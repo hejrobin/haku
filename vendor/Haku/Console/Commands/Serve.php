@@ -45,7 +45,8 @@ class Serve extends Command
 
 			$this->output->break();
 
-			shell_exec(sprintf('HAKU_ENVIRONMENT=%s php -d variables_order=EGPCS -S %s:%s', $env, $host, $port));
+			putenv(sprintf('HAKU_ENVIRONMENT=%s', $env));
+			shell_exec(sprintf('php -S %s:%s', $host, $port));
 
 			return true;
 		}
