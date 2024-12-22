@@ -129,6 +129,13 @@ class Upgrade extends Command
 
 	public function invoke(): bool
 	{
+		if (PHP_OS_FAMILY === 'Windows')
+		{
+			$this->output->error('windows support for this command is still pending...');
+
+			return false;
+		}
+
 		$this->output->output('downloading latest haku files...');
 
 		$this->download();
