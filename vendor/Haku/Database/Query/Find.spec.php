@@ -112,6 +112,25 @@ spec('Database/Query/Find', function()
 			return expect($actual)->toEqual($expect);
 		});
 
+		it('creates a query with custom where clause', function()
+		{
+			[$actual, $parameters] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::is('completed', true),
+					Where::custom('title', 'CONTAINS({field}, "hello")')
+				]
+			);
+
+			$expect = sprintf(
+				'SELECT tasks.completed FROM tasks WHERE tasks.completed = :%s AND CONTAINS(tasks.title, "hello") LIMIT 0, 1',
+				...array_keys($parameters)
+			);
+
+			return expect($actual)->toEqual($expect);
+		});
+
 	});
 
 	describe('Find::count', function()

@@ -227,6 +227,8 @@ abstract class Model implements JsonSerializable
 
 	public function restore(): ?static
 	{
+		$self = new static();
+
 		if ($this->isSoftDeleteable() && $this->deletedAt !== null)
 		{
 			$db = haku('db');

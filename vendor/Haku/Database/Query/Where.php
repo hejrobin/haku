@@ -64,4 +64,9 @@ class Where
 		return [$field, null, 'IS NOT NULL', static::getGlue()];
 	}
 
+	public static function custom(string $field, string $pattern): array
+	{
+		return [$field, null, $pattern, static::getGlue(), true];
+	}
+
 }

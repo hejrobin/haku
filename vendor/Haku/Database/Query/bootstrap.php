@@ -47,6 +47,7 @@ function normalizeConditions(
 		?string $value,
 		string $condition,
 		string $param,
+		bool $isCustom = false,
 	) {
 		$conditions = [];
 		$parameters = [];
@@ -62,13 +63,23 @@ function normalizeConditions(
 
 			$parameters[$param] = $value;
 		}
-		else
+		else if ($isCustom === false)
 		{
 			$conditions[] = sprintf(
 				'%1$s %2$s',
 				$fieldName,
 				$condition,
 			);
+		}
+		else
+		{
+			$condition = str_ireplace(
+				['{field}'],
+				[$fieldName],
+				$condition
+			);
+
+			$conditions[] = $condition;
 		}
 
 		return [$conditions, $parameters];
@@ -79,6 +90,7 @@ function normalizeConditions(
 		$addTo = 'where';
 
 		[$field, $value, $condition, $glue] = $clause;
+		$isCustom = count($clause) === 5;
 
 		$field = snakeCaseFromCamelCase($field);
 		$fieldName = normalizeField($tableName, $field);
@@ -99,6 +111,7 @@ function normalizeConditions(
 			$value,
 			$condition,
 			$param,
+			$isCustom
 		);
 
 		$lastWhereClause = array_pop(array_slice($whereClauses, -1));
