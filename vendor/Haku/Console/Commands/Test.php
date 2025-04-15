@@ -6,6 +6,8 @@ namespace Haku\Console\Commands;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Override;
+
 use Haku\Console\Command;
 
 use Haku\Spec\Runner;
@@ -52,7 +54,7 @@ class Test extends Command
 
 			if ($runner->numTests() === 0)
 			{
-				$this->output->info('no tests found!', 'spec');
+				$this->output->info('no tests found!');
 				$didInvoke = true;
 
 				return false;

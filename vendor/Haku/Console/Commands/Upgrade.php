@@ -6,18 +6,11 @@ namespace Haku\Console\Commands;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-
 use Haku\Console\Command;
 use Haku\Filesystem\Archiver;
 
 use function Haku\resolvePath;
-use function Haku\Filesystem\{
-	directoryList,
-	deleteDirectory,
-	fileCompare
-};
+use function Haku\Filesystem\deleteDirectory;
 
 class Upgrade extends Command
 {

@@ -60,7 +60,7 @@ trait Factory
 		array $classMethodArguments = [],
 	): object
 	{
-		if (is_null($instanceName))
+		if ($instanceName === null)
 		{
 			$instanceName = lcfirst(array_pop(explode('\\', $className)));
 		}
@@ -68,7 +68,7 @@ trait Factory
 		if ($this->get($instanceName) !== null)
 		{
 			throw new FrameworkException(
-				sprintf('Class %s already initialized.', get_class($instance))
+				sprintf('Class %s already initialized.', $instanceName)
 			);
 		}
 

@@ -11,7 +11,6 @@ use JsonSerializable;
 use AllowDynamicProperties;
 
 use Haku\Database\Exceptions\{
-	DatabaseException,
 	ModelException
 };
 
@@ -24,7 +23,6 @@ use Haku\Database\Query\{
 use Haku\Database\Mixins\Entity;
 
 use function Haku\haku;
-use function Haku\Generic\Strings\camelCaseFromSnakeCase;
 
 #[AllowDynamicProperties]
 abstract class Model implements JsonSerializable

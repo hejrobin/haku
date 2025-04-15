@@ -12,7 +12,6 @@ use \ReflectionProperty;
 use \ReflectionAttribute;
 
 use Haku\Database\Exceptions\{
-	DatabaseException,
 	EntityException
 };
 
@@ -28,7 +27,6 @@ use Haku\Database\Attributes\{
 
 use Haku\Schema\{
 	Validator,
-	ValidatorResultSet,
 };
 
 enum EntityValidationType: string {
@@ -327,7 +325,7 @@ trait Entity
 
 					if (!array_key_exists($requiredWithField, $this->validationRules))
 					{
-						throw new ValidatorException(
+						throw new EntityException(
 							'Required with field not present in validations.',
 						);
 					}

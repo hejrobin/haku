@@ -17,7 +17,7 @@ trait Marshaller
 	/**
 	 *	Changes the case of keys in a named object.
 	 */
-	protected function marshal(?array $record): array
+	protected function marshal(?array $record): array | null
 	{
 		if (!$record)
 		{
@@ -37,7 +37,7 @@ trait Marshaller
 	/**
 	 *	Changes the case of keys in a named object.
 	 */
-	protected function unmarshal(?array $record): array
+	protected function unmarshal(?array $record): array | null
 	{
 		if (!$record)
 		{

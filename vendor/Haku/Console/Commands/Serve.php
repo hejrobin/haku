@@ -6,6 +6,8 @@ namespace Haku\Console\Commands;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Override;
+
 use Haku\Console\Command;
 
 class Serve extends Command

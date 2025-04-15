@@ -6,6 +6,8 @@ namespace Haku\Console\Commands;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Override;
+
 use Haku\Console\Command;
 
 use function Haku\resolvePath;
@@ -40,7 +42,8 @@ class Init extends Command
 			return false;
 		}
 
-		$environment = array_shift(array_keys($args));
+		$keys = array_keys($args);
+		$environment = array_shift($keys);
 
 		$inputPath = resolvePath('private', 'generator-templates', 'env.tmpl');
 		$outputPath = resolvePath(sprintf('config.%s.php', $environment));

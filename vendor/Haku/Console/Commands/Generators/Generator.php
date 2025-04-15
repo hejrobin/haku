@@ -28,7 +28,7 @@ abstract class Generator
 	{
 		$args = $this->arguments;
 
-		if (is_null($nameArgument) || empty($nameArgument))
+		if ($nameArgument === null || empty($nameArgument))
 		{
 			$nameArgument = ucfirst($args->{$args->generator});
 		}
