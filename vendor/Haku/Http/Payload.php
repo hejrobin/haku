@@ -8,8 +8,6 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Haku\Schema\Schema;
 
-use function Haku\Spec\Mocking\getMockedJsonPayload;
-
 class Payload
 {
 	protected string $raw;
@@ -22,9 +20,7 @@ class Payload
 	{
 		$this->schema = new Schema($schema);
 
-		$this->raw = HAKU_ENVIRONMENT !== 'test' ?
-			file_get_contents('php://input') :
-			getMockedJsonPayload();
+		$this->raw = getRawRequestPayload();
 
 		if (json_validate($this->raw))
 		{

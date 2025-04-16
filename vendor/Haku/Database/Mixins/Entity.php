@@ -6,14 +6,14 @@ namespace Haku\Database\Mixins;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-
 use \ReflectionClass;
 use \ReflectionProperty;
 use \ReflectionAttribute;
 
-use Haku\Database\Exceptions\{
-	EntityException
-};
+use Haku\Schema\Validator;
+use Haku\Schema\Exceptions\ValidationException;
+
+use Haku\Database\Exceptions\EntityException;
 
 use Haku\Database\Attributes\{
 	PrimaryKey,
@@ -23,10 +23,6 @@ use Haku\Database\Attributes\{
 	Validates,
 	Aggregate,
 	Spatial
-};
-
-use Haku\Schema\{
-	Validator,
 };
 
 enum EntityValidationType: string {
@@ -54,7 +50,7 @@ trait Entity
 	/**
 	 *	Fetches attribute data of current model.
 	 *
-	 *	@throws Haku\Database\Exceptions\EntityException
+	 *	@throws \Haku\Database\Exceptions\EntityException
 	 */
 	protected function prepareEntity(): void
 	{
@@ -159,6 +155,13 @@ trait Entity
 			$attributes = array_filter($attributes, function (
 				ReflectionAttribute $attribute,
 			) use ($validAttributeNames) {
+				$attributeName = array_pop(explode('\\', $attribute->getName()));
+
+				// Allow for custom validates attributes
+				if (str_starts_with($attributeName, 'Validates')) {
+					return true;
+				}
+
 				return in_array($attribute->getName(), $validAttributeNames);
 			});
 
@@ -170,8 +173,16 @@ trait Entity
 				foreach ($attributes as $attribute)
 				{
 					$attr = $attribute->newInstance();
+					$attributeName = $attribute->getName();
 
-					switch ($attribute->getName())
+					$attributeNameWithoutNamespace = array_pop(explode('\\', $attributeName ));
+
+					if (str_starts_with($attributeNameWithoutNamespace, 'Validates'))
+					{
+						$attributeName = Validates::class;
+					}
+
+					switch ($attributeName)
 					{
 						case PrimaryKey::class:
 							$this->primaryKeyName = $property->getName();
@@ -289,7 +300,7 @@ trait Entity
 	/**
 	 *	Returns an array of validator resultsets.
 	 *
-	 *	@return ValidationResultSet[]
+	 *	@return []
 	 */
 	protected function validateByType(EntityValidationType $validationType): array
 	{
@@ -325,7 +336,7 @@ trait Entity
 
 					if (!array_key_exists($requiredWithField, $this->validationRules))
 					{
-						throw new EntityException(
+						throw new ValidationException(
 							'Required with field not present in validations.',
 						);
 					}
