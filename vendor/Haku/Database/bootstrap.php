@@ -52,3 +52,25 @@ function databaseType(ConnectionType $connectionType): bool
 
 	return ConnectionType::from(HAKU_DATABASE_TYPE) === $connectionType;
 }
+
+function sqlValueFrom(mixed $value): mixed
+{
+	if (is_numeric($value))
+	{
+		return $value;
+	}
+	else if (is_bool($value))
+	{
+		return $value ? 'TRUE' : 'FALSE';
+	}
+	else if (is_string($value))
+	{
+		return '"' . addslashes($value) . '"';
+	}
+	else if (is_array($value))
+	{
+		return '"' . implode(', ', $value) . '"';
+	}
+
+	return null;
+}

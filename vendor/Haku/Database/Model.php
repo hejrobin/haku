@@ -203,6 +203,41 @@ abstract class Model implements JsonSerializable
 		];
 	}
 
+	public static function associate(
+		array $sourceRecord,
+		string $sourceColumn,
+		string $targetColumn,
+		string $sourceRecordProperty
+	): array
+	{
+		$sourceRecords = $sourceRecord['records'];
+
+		$identifiables = array_map('\Haku\Database\sqlValueFrom', array_column($sourceRecords, $sourceColumn));
+		$inQuery = sprintf('{field} IN (%s)', implode(', ', $identifiables));
+
+		$records = self::findAll(
+			where: [
+				Where::custom($targetColumn, $inQuery)
+			]
+		);
+
+		$sourceRecords = array_map(function($record) use ($records, $sourceColumn, $targetColumn, $sourceRecordProperty)
+		{
+			$faces = array_filter($records, function($item) use ($record, $sourceColumn, $targetColumn)
+			{
+				return $item[$targetColumn] === $record[$sourceColumn];
+			});
+
+			$record[$sourceRecordProperty] = array_values($faces);
+
+			return $record;
+		}, $sourceRecords);
+
+		$sourceRecord['records'] = $sourceRecords;
+
+		return $sourceRecord;
+	}
+
 	public static function delete(int $primaryKey): bool
 	{
 		$self = new static();
