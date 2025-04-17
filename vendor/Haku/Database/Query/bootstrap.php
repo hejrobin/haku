@@ -240,3 +240,40 @@ function normalizeOrderByClauses(
 
 	return $conditions;
 }
+
+/**
+ *	Add *simple* joins, for more complex queries consider writing the SQL queries manually
+ *	Joins are defined as an array of ['table' => 'bar', 'on' => ['foo_column', 'bar_column']]
+ */
+function normalizeSimpleJoin(
+	string $tableName,
+	array $joins
+): array
+{
+	$statements = [];
+
+	if (count($joins) > 0)
+	{
+		foreach($joins as $join)
+		{
+			if (array_key_exists('table', $join) && array_key_exists('on', $join))
+			{
+				[$sourceColumn, $targetColumn] = $join['on'];
+
+				array_push(
+					$statements,
+					'JOIN',
+					$join['table'],
+					'ON',
+					sprintf(
+						'%s = %s',
+						normalizeField($tableName, $sourceColumn),
+						normalizeField($join['table'], $targetColumn)
+					),
+				);
+			}
+		}
+	}
+
+	return $statements;
+}

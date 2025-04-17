@@ -9,6 +9,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use function Haku\Database\Query\{
 	normalizeField,
 	normalizeConditions,
+	normalizeSimpleJoin,
 };
 
 class Find
@@ -49,29 +50,9 @@ class Find
 			$tableName,
 		];
 
-		// Add *simple* joins, for more complex queries consider writing the SQL queries manually
-		// Joins are defined as an array of ['table' => 'bar', 'on' => ['foo_column', 'bar_column']]
 		if (count($joins) > 0)
 		{
-			foreach($joins as $join)
-			{
-				if (array_key_exists('table', $join) && array_key_exists('on', $join))
-				{
-					[$sourceColumn, $targetColumn] = $join['on'];
-
-					array_push(
-						$querySegments,
-						'JOIN',
-						$join['table'],
-						'ON',
-						sprintf(
-							'%s = %s',
-							normalizeField($tableName, $sourceColumn),
-							normalizeField($join['table'], $targetColumn)
-						),
-					);
-				}
-			}
+			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
 		}
 
 		// Get normalized WHERE and HAVING
@@ -167,6 +148,7 @@ class Find
 		string $countFieldName = 'id',
 		array $aggregateFields = [],
 		array $where = [],
+		array $joins = [],
 	): array
 	{
 		if (count($aggregateFields) > 0)
@@ -176,6 +158,7 @@ class Find
 				countFieldName: $countFieldName,
 				aggregateFields: $aggregateFields,
 				where: $where,
+				joins: $joins,
 			);
 		}
 		else
@@ -184,6 +167,7 @@ class Find
 				tableName: $tableName,
 				countFieldName: $countFieldName,
 				where: $where,
+				joins: $joins,
 			);
 		}
 	}
@@ -195,6 +179,7 @@ class Find
 		string $tableName,
 		string $countFieldName = 'id',
 		array $where = [],
+		array $joins = [],
 	): array
 	{
 		// Get normalized WHERE and HAVING
@@ -209,6 +194,11 @@ class Find
 			'FROM',
 			$tableName,
 		];
+
+		if (count($joins) > 0)
+		{
+			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
+		}
 
 		$parameters = $conditions->where->parameters;
 
@@ -238,6 +228,7 @@ class Find
 		string $countFieldName = 'id',
 		array $aggregateFields = [],
 		array $where = [],
+		array $joins = [],
 	): array
 	{
 		// Get normalized WHERE and HAVING
@@ -264,6 +255,11 @@ class Find
 			'FROM',
 			$tableName,
 		];
+
+		if (count($joins) > 0)
+		{
+			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
+		}
 
 		$parameters = [
 			...$conditions->where->parameters,

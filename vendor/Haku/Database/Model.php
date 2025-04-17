@@ -124,7 +124,8 @@ abstract class Model implements JsonSerializable
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
 		bool $includeDeleted = false,
-		?string $countFieldName = null
+		?string $countFieldName = null,
+		array $joins = [],
 	): ?array
 	{
 		$self = new static();
@@ -145,7 +146,8 @@ abstract class Model implements JsonSerializable
 			tableName: $self->tableName,
 			countFieldName: $countFieldName,
 			aggregateFields: $self->getAggregateFields(),
-			where: $where
+			where: $where,
+			joins: $joins,
 		);
 
 		$numRecords = $db->fetchColumn($countQuery, $countParams);
@@ -175,6 +177,7 @@ abstract class Model implements JsonSerializable
 			tableName: $self->tableName,
 			fields: $self->getRecordFields(),
 			aggregateFields: $self->getAggregateFields(),
+			joins: $joins,
 			where: $where,
 			orderBy: $orderBy,
 			limit: $limit,
