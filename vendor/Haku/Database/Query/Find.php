@@ -9,7 +9,6 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use function Haku\Database\Query\{
 	normalizeField,
 	normalizeConditions,
-	normaizeOrderByClauses,
 };
 
 class Find
@@ -25,6 +24,7 @@ class Find
 		array $orderBy = [],
 		int $limit = Find::DefaultFetchLimit,
 		int $offset = 0,
+		array $joins = [],
 	): array
 	{
 		// Normalize non-aggregate fields
@@ -48,6 +48,31 @@ class Find
 			'FROM',
 			$tableName,
 		];
+
+		// Add *simple* joins, for more complex queries consider writing the SQL queries manually
+		// Joins are defined as an array of ['table' => 'bar', 'on' => ['foo_column', 'bar_column']]
+		if (count($joins) > 0)
+		{
+			foreach($joins as $join)
+			{
+				if (array_key_exists('table', $join) && array_key_exists('on', $join))
+				{
+					[$sourceColumn, $targetColumn] = $join['on'];
+
+					array_push(
+						$querySegments,
+						'JOIN',
+						$join['table'],
+						'ON',
+						sprintf(
+							'%s = %s',
+							normalizeField($tableName, $sourceColumn),
+							normalizeField($join['table'], $targetColumn)
+						),
+					);
+				}
+			}
+		}
 
 		// Get normalized WHERE and HAVING
 		$conditions = (object) normalizeConditions(
@@ -120,15 +145,17 @@ class Find
 		array $aggregateFields = [],
 		array $where = [],
 		array $orderBy = [],
+		array $joins = [],
 	): array
 	{
 		return static::all(
 			tableName: $tableName,
 			fields: $fields,
 			aggregateFields: $aggregateFields,
+			joins: $joins,
 			where: $where,
 			orderBy: $orderBy,
-			limit: 1
+			limit: 1,
 		);
 	}
 

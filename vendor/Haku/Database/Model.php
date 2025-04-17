@@ -60,8 +60,6 @@ abstract class Model implements JsonSerializable
 		$self = new static();
 		$db = haku('db');
 
-		$result = [];
-
 		if ($self->isSoftDeleteable() && !$includeDeleted) {
 			$where[] = Where::null('deletedAt');
 		}

@@ -201,6 +201,21 @@ spec('Database/Query/Find', function()
 			return expect($actual)->toEqual($expect);
 		});
 
+		it('can create simple joins', function()
+		{
+			[$actual] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				joins: [
+					[ 'table' => 'attachments', 'on' => ['id', 'task_id'] ]
+				]
+			);
+
+			$expect = 'SELECT tasks.completed FROM tasks JOIN attachments ON tasks.id = attachments.task_id LIMIT 0, 1';
+
+			return expect($actual)->toEqual($expect);
+		});
+
 	});
 
 });
