@@ -100,7 +100,10 @@ function generateApplicationRoutes(): array
 			{
 				if (array_key_exists('path', $parent))
 				{
-					$route['path'] = cleanPath("/{$parent['path']}/{$route['path']}");
+					$currentPath = $route['path'] ?? '/';
+					$parentPath = $parent['path'];
+
+					$route['path'] = cleanPath("/{$parentPath}/{$currentPath}");
 				}
 
 				if (array_key_exists('middlewares', $parent))
