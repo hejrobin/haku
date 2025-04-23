@@ -203,6 +203,20 @@ abstract class Model implements JsonSerializable
 		];
 	}
 
+	/**
+	 *	This method fetches records associated to an already fetched one, in a one-to-many manner.
+	 *
+	 *	@example
+	 *		$task = Task::find(1);
+	 *		$task = SubTasks::associate($task, 'id', 'task_id', 'subTasks');
+	 *
+	 *	@param array $sourceRecord
+	 *	@param string $sourceColumn
+	 *	@param string $targetColumn
+	 *	@param string $sourceRecordProperty
+	 *
+	 *	@return array
+	 */
 	public static function associate(
 		array $sourceRecord,
 		string $sourceColumn,

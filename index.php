@@ -21,7 +21,6 @@ use Haku\Http\{
 	Status,
 	Headers,
 	Method,
-	Message,
 	Messages\Json,
 	Exceptions\StatusException,
 };
@@ -30,8 +29,6 @@ use function Haku\{
 	autoloadResolver,
 	loadEnvironment,
 	loadBootstrap,
-	resolvePath,
-	config,
 };
 
 use function Haku\Generic\Url\path;
@@ -124,7 +121,7 @@ finally
 	/**
 	 *	Output errors captured outside of output buffer
 	 */
-	if ($__throwable instanceof \Throwable)
+	if ($__throwable instanceof Throwable)
 	{
 		header('Content-Type: application/json');
 

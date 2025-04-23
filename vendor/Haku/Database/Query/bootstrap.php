@@ -6,11 +6,7 @@ namespace Haku\Database\Query;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use Haku\Generic\Query\Filter;
-use Haku\Database\Query\Where;
-
 use function Haku\Generic\Strings\{
-	camelCaseFromSnakeCase,
 	snakeCaseFromCamelCase,
 };
 
@@ -114,8 +110,11 @@ function normalizeConditions(
 			$isCustom
 		);
 
-		$lastWhereClause = array_pop(array_slice($whereClauses, -1));
-		$lastHavingClause = array_pop(array_slice($havingClauses, -1));
+		$lastWhere = array_slice($whereClauses, -1);
+		$lastWhereClause = array_pop($lastWhere);
+
+		$lastHaving = array_slice($havingClauses, -1);
+		$lastHavingClause = array_pop($lastHaving);
 
 		if ($currentWhereIndex > 0 && !in_array($lastWhereClause, $glues))
 		{
@@ -145,8 +144,11 @@ function normalizeConditions(
 		$currentIndex++;
 	}
 
-	$lastWhereClause = array_pop(array_slice($whereClauses, -1));
-	$lastHavingClause = array_pop(array_slice($havingClauses, -1));
+	$lastWhere = array_slice($whereClauses, -1);
+	$lastWhereClause = array_pop($lastWhere);
+
+	$lastHaving = array_slice($havingClauses, -1);
+	$lastHavingClause = array_pop($lastHaving);
 
 	if (in_array($lastWhereClause, $glues))
 	{

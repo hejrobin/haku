@@ -217,3 +217,15 @@ function config(string $variable, string $fallback): void
 
 	define($variable, $fallback);
 }
+
+/**
+ *	Queries do not have an autoload feature set up (on purpose), load these manually.
+ *
+ *	@param string $fileName
+ *
+ *	@return void
+ */
+function loadApplicationQueries(string $fileName)
+{
+	require_once resolvePath('app/queries/' .  $fileName . '.php');
+}

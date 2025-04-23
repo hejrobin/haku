@@ -56,7 +56,7 @@ spec('Haku/Database/Query/Write', function()
 
 		it('can generate a proper DELETE query', function()
 		{
-			[$actual, $parameters] = Write::delete(
+			[$actual] = Write::delete(
 				tableName: 'tasks',
 				where: [
 					Where::is('id', 1)
@@ -70,7 +70,7 @@ spec('Haku/Database/Query/Write', function()
 
 		it('can generate a "soft delete" query', function()
 		{
-			[$actual, $parameters] = Write::softDelete(
+			[$actual] = Write::softDelete(
 				tableName: 'tasks',
 				where: [
 					Where::is('id', 1)
@@ -84,7 +84,7 @@ spec('Haku/Database/Query/Write', function()
 
 		it('can create a valid transform query', function()
 		{
-			[$actual, $parameters] = Write::update(
+			[$actual] = Write::update(
 				tableName: 'tasks',
 				values: [ 'location' => 'POINT(44.80243702247711 -68.7850096478809)' ],
 				where: [

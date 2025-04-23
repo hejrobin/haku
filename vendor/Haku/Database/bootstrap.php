@@ -6,13 +6,16 @@ namespace Haku\Database;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use function Haku\haku;
-
 use Haku\Database\{
-	Connection,
 	ConnectionType,
 };
 
+/**
+ *	Validates whether or not a database configuration is set.
+ *	It does not validate whether or not the settings are correct.
+ *
+ *	@return bool
+ */
 function isConfigured(): bool
 {
 	$allVariablesDefined =
@@ -43,6 +46,13 @@ function isConfigured(): bool
 	return true;
 }
 
+/**
+ *	Validates if configured database connectyion type is of a specific type.
+ *
+ *	@param \Haku\Database\ConnectionType $connectionType
+ *
+ *	@return bool
+ */
 function databaseType(ConnectionType $connectionType): bool
 {
 	if (!isConfigured())
@@ -53,6 +63,13 @@ function databaseType(ConnectionType $connectionType): bool
 	return ConnectionType::from(HAKU_DATABASE_TYPE) === $connectionType;
 }
 
+/**
+ *	Returns a SQL value from a mixed varoable.
+ *
+ *	@param mixed $value
+ *
+ *	@return mixed
+ */
 function sqlValueFrom(mixed $value): mixed
 {
 	if (is_numeric($value))

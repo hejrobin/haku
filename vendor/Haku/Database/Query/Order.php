@@ -8,8 +8,6 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Haku\Generic\Query\Params;
 
-use function Haku\Database\normalizeField;
-
 enum Direction: string
 {
 

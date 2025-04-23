@@ -23,7 +23,7 @@ trait Factory
 	/**
 	 *	Attempts to set/store instance.
 	 *
-	 *	@throws Haku\Exceptions\FrameworkException
+	 *	@throws \Haku\Exceptions\FrameworkException
 	 */
 	protected function set(string $instanceName, object $instance): void
 	{
@@ -51,7 +51,7 @@ trait Factory
 	 *	Creates a new instance and returns the newly instanicated class.
 	 *	This is only recommended when class instances needs to be global.
 	 *
-	 *	@throws Haku\Exceptions\FrameworkException
+	 *	@throws \Haku\Exceptions\FrameworkException
 	 */
 	public function initialize(
 		string $className,
