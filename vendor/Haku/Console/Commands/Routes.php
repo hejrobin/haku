@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Haku\Console\Commands;
 
+use function Haku\resolvePath;
+
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
@@ -23,6 +25,7 @@ class Routes extends Command
 	{
 		return [
 			'--inspect|output routes as a printed tree|',
+			'--postman|generates a Postman collection|',
 		];
 	}
 
@@ -98,6 +101,24 @@ class Routes extends Command
 
 	}
 
+	protected function generatePostmanCollection(array $routes): bool
+	{
+		$collection = generatePostmanCollection(routes: $routes);
+
+		// @todo Make sure file export can be named
+		$targetFilePath = resolvePath('private/haku_routes_postman_collection.json');
+		$json = json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+		$didWrite = file_put_contents($targetFilePath, $json);
+
+		if ($didWrite)
+		{
+			$this->output->info(sprintf('generated postman collection >> %s', $targetFilePath));
+		}
+
+		return $didWrite !== false;
+	}
+
 	public function invoke(): bool
 	{
 		$routes = generateApplicationRoutes();
@@ -107,6 +128,11 @@ class Routes extends Command
 		{
 			print_r($routes);
 			return true;
+		}
+
+		if (array_key_exists('postman', $args))
+		{
+			return $this->generatePostmanCollection($routes);
 		}
 
 		$routeIndent = $this->getMaxRoutePathIndent($routes);
@@ -122,4 +148,84 @@ class Routes extends Command
 		return true;
 	}
 
+}
+
+function generatePostmanCollection(array $routes): array
+{
+	$groupedCollection = [];
+
+	$collection = [
+		'info' => [
+			'name' => 'Haku API Collection',
+			'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+		],
+		'item' => [],
+		'variable' => [
+			[
+				'key' => 'base_url',
+				'value' => 'http://localhost:8000',
+			]
+		],
+	];
+
+	foreach($routes as $route)
+	{
+		$baseUrl = '{{base_url}}';
+    $className = basename(str_replace('\\', '/', $route['callback'][0]));
+
+		$path = $route['path'];
+    $segments = array_filter(explode('/', $path));
+		$rawPath = preg_replace('/{([^}]+)}/', '{{$1}}', $path);
+
+		$postmanPath = array_map(function ($seg)
+		{
+			return preg_replace('/{([^}]+)}/', '{{$1}}', $seg);
+		}, array_values($segments));
+
+		$requestMethod = $route['method']->asString();
+
+		$requestItem = [
+			'name' => "{$requestMethod} {$route['path']}",
+			'request' => [
+				'method' => $requestMethod,
+				'header' => [],
+				'url' => [
+					'raw' => "{$baseUrl}{$rawPath}",
+					'host' => [$baseUrl],
+					'path' => $postmanPath,
+				],
+			],
+		];
+
+		$groupedCollection[$className][] = $requestItem;
+	}
+
+	foreach ($groupedCollection as $controller => $items)
+	{
+		$collection['item'][] = [
+			'name' => $controller,
+			'item' => $items
+		];
+	}
+
+	return $collection;
+}
+
+function collectPostmanUrlVariables(array $segments): array
+{
+	$variables = [];
+
+	foreach ($segments as $segment)
+	{
+		if (preg_match('/^{(.+)}$/', $segment, $matches))
+		{
+			$variables[] = [
+				'key' => $matches[1],
+				'value' => '',
+				'description' => "Path variable '{$matches[1]}'"
+			];
+		}
+	}
+
+	return $variables;
 }
