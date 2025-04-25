@@ -16,8 +16,8 @@ define('DEFAULT_PRETTY_PRINT', HAKU_ENVIRONMENT === 'dev');
 class Json extends Message
 {
 
-	protected bool $formatNumbers;
-	protected bool $prettyPrint;
+	protected bool $formatNumbers = true;
+	protected bool $prettyPrint = true;
 
 	public static function from(
 		mixed $data,

@@ -229,3 +229,18 @@ function loadApplicationQueries(string $fileName)
 {
 	require_once resolvePath('app/queries/' .  $fileName . '.php');
 }
+
+/**
+ *	Logs to PHP dev-server console.
+ *
+ *	@param string $message
+ *
+ *	@return void
+ */
+function log(string $message): void
+{
+	if (php_sapi_name() === 'cli-server')
+	{
+		error_log('<Haku> ' . $message);
+	}
+}

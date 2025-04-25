@@ -15,8 +15,6 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 
 use Throwable;
 
-use Haku\Exceptions\FrameworkException;
-
 use Haku\Http\{
 	Status,
 	Headers,

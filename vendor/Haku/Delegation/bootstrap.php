@@ -26,7 +26,7 @@ use Haku\Http\{
 };
 
 use function Haku\{
-	haku,
+	log,
 	cleanPath,
 	resolvePath
 };
@@ -341,6 +341,8 @@ function delegate(string $path, Headers $headers): array
 
 	if (!$foundRoute)
 	{
+		log(sprintf('Route "%s" not found.', $path));
+
 		// 404 Not Found
 		throw new StatusException(404);
 	}
