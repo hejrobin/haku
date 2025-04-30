@@ -239,7 +239,10 @@ abstract class Model implements JsonSerializable
 		{
 			$faces = array_filter($records, function($item) use ($record, $sourceColumn, $targetColumn)
 			{
-				return $item[$targetColumn] === $record[$sourceColumn];
+				if (isset($record) && isset($item))
+				{
+					return $item[$targetColumn] === $record[$sourceColumn];
+				}
 			});
 
 			$record[$sourceRecordProperty] = array_values($faces);
