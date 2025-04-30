@@ -52,7 +52,7 @@ Haku ships with its own command line tool, `haku` which provides some helpful co
 
 ### Updating your Haku project
 
-If you've forked Haku to use in your project, sometimes you might want to upgrade to the latest version. This requires * [PHP ZIP Extension](https://www.php.net/manual/en/class.ziparchive.php), and then you can run `php haku upgrade` to fetch the latest repository changes available.
+If you've forked Haku to use in your project, sometimes you might want to upgrade to the latest version. This requires [PHP ZIP Extension](https://www.php.net/manual/en/class.ziparchive.php), and then you can run `php haku upgrade` to fetch the latest repository changes available.
 
 ---
 

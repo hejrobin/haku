@@ -105,8 +105,11 @@ class Routes extends Command
 	{
 		$collection = generatePostmanCollection(routes: $routes);
 
+		$applicationName = defined('HAKU_APPLICATION_NAME') ? HAKU_APPLICATION_NAME : 'Haku';
+		$targetFileName = strtolower(trim(preg_replace('#\W+#', '_', $applicationName), '_'));
+
 		// @todo Make sure file export can be named
-		$targetFilePath = resolvePath('private/haku_routes_postman_collection.json');
+		$targetFilePath = resolvePath(sprintf('private/postman_%s.json', $targetFileName));
 		$json = json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 		$didWrite = file_put_contents($targetFilePath, $json);
@@ -152,11 +155,13 @@ class Routes extends Command
 
 function generatePostmanCollection(array $routes): array
 {
+	$applicationName = defined('HAKU_APPLICATION_NAME') ? HAKU_APPLICATION_NAME : 'Haku';
+
 	$groupedCollection = [];
 
 	$collection = [
 		'info' => [
-			'name' => 'Haku API Collection',
+			'name' => sprintf("%s API", $applicationName),
 			'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
 		],
 		'item' => [],
