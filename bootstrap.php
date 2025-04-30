@@ -21,7 +21,7 @@ if (isConfigured()) {
 		]
 	);
 
-	$db->connect(
+	$db->login(
 		HAKU_DATABASE_USER,
 		HAKU_DATABASE_PASS
 	);

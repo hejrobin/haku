@@ -21,11 +21,15 @@ class Find
 		string $tableName,
 		array $fields,
 		array $aggregateFields = [],
+
 		array $where = [],
+		array $joins = [],
 		array $orderBy = [],
+
 		int $limit = Find::DefaultFetchLimit,
 		int $offset = 0,
-		array $joins = [],
+
+		?string $overrideFromTable = null,
 	): array
 	{
 		// Normalize non-aggregate fields
@@ -47,7 +51,7 @@ class Find
 			'SELECT',
 			implode(', ', $normalizedFields),
 			'FROM',
-			$tableName,
+			$overrideFromTable ?? $tableName,
 		];
 
 		if (count($joins) > 0)
@@ -124,13 +128,17 @@ class Find
 		string $tableName,
 		array $fields,
 		array $aggregateFields = [],
+
+		array $joins = [],
 		array $where = [],
 		array $orderBy = [],
-		array $joins = [],
+
+		?string $overrideFromTable = null,
 	): array
 	{
 		return static::all(
 			tableName: $tableName,
+			overrideFromTable: $overrideFromTable,
 			fields: $fields,
 			aggregateFields: $aggregateFields,
 			joins: $joins,
@@ -147,8 +155,9 @@ class Find
 		string $tableName,
 		string $countFieldName = 'id',
 		array $aggregateFields = [],
-		array $where = [],
+
 		array $joins = [],
+		array $where = [],
 	): array
 	{
 		if (count($aggregateFields) > 0)
@@ -157,8 +166,8 @@ class Find
 				tableName: $tableName,
 				countFieldName: $countFieldName,
 				aggregateFields: $aggregateFields,
-				where: $where,
 				joins: $joins,
+				where: $where,
 			);
 		}
 		else
@@ -166,8 +175,8 @@ class Find
 			return self::simpleCount(
 				tableName: $tableName,
 				countFieldName: $countFieldName,
-				where: $where,
 				joins: $joins,
+				where: $where,
 			);
 		}
 	}
@@ -178,8 +187,9 @@ class Find
 	protected static function simpleCount(
 		string $tableName,
 		string $countFieldName = 'id',
-		array $where = [],
+
 		array $joins = [],
+		array $where = [],
 	): array
 	{
 		// Get normalized WHERE and HAVING
@@ -227,8 +237,10 @@ class Find
 		string $tableName,
 		string $countFieldName = 'id',
 		array $aggregateFields = [],
-		array $where = [],
+
 		array $joins = [],
+		array $where = [],
+
 	): array
 	{
 		// Get normalized WHERE and HAVING

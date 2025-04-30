@@ -19,7 +19,10 @@ class Connection extends PDO
 	protected array $driverOptions = [];
 
 	/**
-	 *	Prepares database connection string.
+	 *	Prepares database connection string to be used when calling {{@see Connection::login}}.
+	 *
+	 *	@param ConnectionType $type,
+	 *	@param string $database
 	 */
 	public function __construct(
 		public ConnectionType $type,
@@ -63,8 +66,14 @@ class Connection extends PDO
 
 	/**
 	 *	Establishes a connection to a database.
+	 *
+	 *	@param string $username
+	 *	@param string $password
+	 *	@param array $databaseOptions
+	 *
+	 *	@return void
 	 */
-	public function connect(
+	public function login(
 		string $username,
 		string $password,
 		array $databaseOptions = [],

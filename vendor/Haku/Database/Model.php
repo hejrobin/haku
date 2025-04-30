@@ -119,19 +119,17 @@ abstract class Model implements JsonSerializable
 	}
 
 	public static function paginate(
+		array $joins = [],
 		array $where = [],
 		array $orderBy = [],
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
 		bool $includeDeleted = false,
 		?string $countFieldName = null,
-		array $joins = [],
 	): ?array
 	{
 		$self = new static();
 		$db = haku('db');
-
-		$result = [];
 
 		if ($self->isSoftDeleteable() && !$includeDeleted) {
 			$where[] = Where::null('deletedAt');
@@ -221,7 +219,8 @@ abstract class Model implements JsonSerializable
 		array $sourceRecord,
 		string $sourceColumn,
 		string $targetColumn,
-		string $sourceRecordProperty
+		string $sourceRecordProperty,
+		int $limit = Model::DefaultFetchLimit,
 	): array
 	{
 		$sourceRecords = $sourceRecord['records'];
@@ -230,6 +229,7 @@ abstract class Model implements JsonSerializable
 		$inQuery = sprintf('{field} IN (%s)', implode(', ', $identifiables));
 
 		$records = self::findAll(
+			limit: $limit,
 			where: [
 				Where::custom($targetColumn, $inQuery)
 			]

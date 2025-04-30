@@ -9,7 +9,6 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use Haku\Delegation\Route;
 
 use Haku\Http\{
-	Method,
 	Message,
 	Messages\Json
 };

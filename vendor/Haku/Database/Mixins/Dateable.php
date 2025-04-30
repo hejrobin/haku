@@ -6,7 +6,6 @@ namespace Haku\Database\Mixins;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-
 trait Dateable
 {
 

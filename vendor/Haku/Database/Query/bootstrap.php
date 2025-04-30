@@ -15,6 +15,12 @@ function normalizeField(
 	string $fieldName
 ): string
 {
+	// Do not normalize already normalized fields
+	if (stripos($fieldName, '.') !== false)
+	{
+		return snakeCaseFromCamelCase($fieldName);
+	}
+
 	return sprintf('%s.%s', $tableName, snakeCaseFromCamelCase($fieldName));
 }
 
@@ -101,6 +107,7 @@ function normalizeConditions(
 
 		$currentIndex = $addTo === 'where' ? $currentWhereIndex : $currentHavingIndex;
 		$param = sprintf('%s_%s_%s_%d', $addTo, $tableName, $field, $currentIndex);
+		$param = str_ireplace('.', '_', $param);
 
 		[$conditions, $parameters] = $normalizeCondition(
 			$fieldName,

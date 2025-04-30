@@ -36,7 +36,7 @@ spec('Haku/Database/Query/Write', function()
 
 		it('can generate a proper UPDATE query', function()
 		{
-			[$actual, $parameters] = Write::update(
+			[$actual] = Write::update(
 				tableName: 'tasks',
 				values: [ 'title' => 'Write db specs' ],
 				where: [
