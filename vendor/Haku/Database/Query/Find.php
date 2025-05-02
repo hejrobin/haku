@@ -30,6 +30,7 @@ class Find
 		int $offset = 0,
 
 		?string $overrideFromTable = null,
+		?bool $distinct = false,
 	): array
 	{
 		// Normalize non-aggregate fields
@@ -49,6 +50,7 @@ class Find
 
 		$querySegments = [
 			'SELECT',
+			$distinct ? 'DISTINCT' : '',
 			implode(', ', $normalizedFields),
 			'FROM',
 			$overrideFromTable ?? $tableName,
@@ -134,6 +136,7 @@ class Find
 		array $orderBy = [],
 
 		?string $overrideFromTable = null,
+		?bool $distinct = false,
 	): array
 	{
 		return static::all(
@@ -145,6 +148,7 @@ class Find
 			where: $where,
 			orderBy: $orderBy,
 			limit: 1,
+			distinct: $distinct,
 		);
 	}
 
