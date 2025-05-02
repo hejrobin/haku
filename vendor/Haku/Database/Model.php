@@ -55,6 +55,7 @@ abstract class Model implements JsonSerializable
 		int $limit = Model::DefaultFetchLimit,
 		int $offset = 0,
 		bool $includeDeleted = false,
+		bool $distinct = false,
 	): ?array
 	{
 		$self = new static();
@@ -72,6 +73,7 @@ abstract class Model implements JsonSerializable
 			orderBy: $orderBy,
 			limit: $limit,
 			offset: $offset,
+			distinct: $distinct,
 		);
 
 		return $db->fetchAll($query, $parameters) ?? [];
@@ -80,6 +82,7 @@ abstract class Model implements JsonSerializable
 	public static function findOne(
 		array $where = [],
 		bool $includeDeleted = false,
+		bool $distinct = false,
 	): ?static
 	{
 		$self = new static();
@@ -97,6 +100,7 @@ abstract class Model implements JsonSerializable
 			fields: $self->getRecordFields(),
 			aggregateFields: $self->getAggregateFields(),
 			where: $where,
+			distinct: $distinct,
 		);
 
 		$result = $db->fetch($query, $parameters);
@@ -126,6 +130,7 @@ abstract class Model implements JsonSerializable
 		int $limit = Model::DefaultFetchLimit,
 		bool $includeDeleted = false,
 		?string $countFieldName = null,
+		?bool $distinct = false,
 	): ?array
 	{
 		$self = new static();
@@ -180,6 +185,7 @@ abstract class Model implements JsonSerializable
 			orderBy: $orderBy,
 			limit: $limit,
 			offset: $offset,
+			distinct: $distinct,
 		);
 
 		$records = $db->fetchAll($query, $parameters) ?? [];
