@@ -24,6 +24,7 @@ class Find
 
 		array $where = [],
 		array $joins = [],
+		array $groupBy = [],
 		array $orderBy = [],
 
 		int $limit = Find::DefaultFetchLimit,
@@ -84,7 +85,20 @@ class Find
 			);
 		}
 
-		// @todo Add GROUP BY
+		// Add GROUP BY
+		if (count($groupBy) > 0)
+		{
+			$groupBy = array_map(
+				fn(string $field) => normalizeField($tableName, $field),
+				$groupBy,
+			);
+
+			$querySegments = array_merge(
+				$querySegments,
+				['GROUP BY'],
+				$groupBy
+			);
+		}
 
 		// Add HAVING
 		if (count($conditions->having->clauses) > 0)
@@ -138,6 +152,7 @@ class Find
 
 		array $joins = [],
 		array $where = [],
+		array $groupBy = [],
 		array $orderBy = [],
 
 		?string $overrideFromTable = null,
@@ -152,6 +167,7 @@ class Find
 			aggregateFields: $aggregateFields,
 			joins: $joins,
 			where: $where,
+			groupBy: $groupBy,
 			orderBy: $orderBy,
 			limit: 1,
 		);
