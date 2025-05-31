@@ -17,6 +17,9 @@ class Builder
 	protected array $fields = [];
 	protected array $joins = [];
 	protected array $where = [];
+	protected array $groupBy = [];
+	protected array $having = [];
+	protected array $orderBy = [];
 
 	protected ?int $limit = null;
 	protected ?int $offset = null;
@@ -39,6 +42,17 @@ class Builder
 	public function from(string $table): self
 	{
 		$this->table = $table;
+
+		return $this;
+	}
+
+	public function join(array $joins): self
+	{
+		foreach ($joins as $alias => $on)
+		{
+			$onClause = is_array($on) ? "{$on[0]} = {$on[1]}" : $on;
+			$this->joins[] = "JOIN $alias ON $onClause";
+		}
 
 		return $this;
 	}
@@ -100,6 +114,45 @@ class Builder
 			return $this->addRawCondition('OR', $condition, $params);
 	}
 
+	public function groupBy(string ...$fields): self
+	{
+		$this->groupBy = array_merge($this->groupBy, $fields);
+
+		return $this;
+	}
+
+	public function having(string $field, mixed $value, string $glue = '='): self {
+    $param = $this->normalizeParameter($field);
+
+		$this->bindings[$param] = $value;
+		$this->having[] = "$field $glue $param";
+
+		return $this;
+	}
+
+	public function havingRaw(string $condition, mixed ...$params): self
+	{
+		$replaced = $condition;
+
+		foreach ($params as $param)
+		{
+			$placeholder = $this->normalizeParameter('having');
+			$replaced = preg_replace('/\?/', $placeholder, $replaced, 1);
+			$this->bindings[$placeholder] = $param;
+		}
+
+		$this->having[] = $replaced;
+
+		return $this;
+	}
+
+	public function orderBy(string $field, string $direction = 'ASC'): self
+	{
+		$this->orderBy[] = "$field " . strtoupper($direction);
+
+		return $this;
+	}
+
 	public function limit(int $limit): self
 	{
 		$this->limit = $limit;
@@ -140,6 +193,21 @@ class Builder
 			}
 
 			$sql[] = "WHERE " . implode('', $clauses);
+		}
+
+		if ($this->groupBy)
+		{
+			$sql[] = "GROUP BY " . implode(', ', $this->groupBy);
+		}
+
+		if ($this->having)
+		{
+			$sql[] = "HAVING " . implode(' AND ', $this->having);
+		}
+
+		if ($this->orderBy)
+		{
+			$sql[] = "ORDER BY " . implode(', ', $this->orderBy);
 		}
 
 		if ($this->limit !== null)

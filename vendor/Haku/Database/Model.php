@@ -49,13 +49,31 @@ abstract class Model implements JsonSerializable
 		return new static($record);
 	}
 
+	/**
+	 * Finds all recorfs for specific clauses.
+	 *
+	 *	@param bool $distinct
+	 *
+	 *	@param array $where
+	 *	@param array $orderBy
+	 *
+	 *	@param int $limit
+	 *	@param int $offset
+	 *
+	 *	@param bool $includeDeleted
+	 *
+	 *	@return array
+	 */
 	public static function findAll(
+		bool $distinct = false,
+
 		array $where = [],
 		array $orderBy = [],
+
 		int $limit = Model::DefaultFetchLimit,
 		int $offset = 0,
+
 		bool $includeDeleted = false,
-		bool $distinct = false,
 	): ?array
 	{
 		$self = new static();
@@ -79,6 +97,15 @@ abstract class Model implements JsonSerializable
 		return $db->fetchAll($query, $parameters) ?? [];
 	}
 
+	/**
+	 *	Finds a single record.
+	 *
+	 *	@param array $where
+	 *	@param bool $includeDeleted
+	 *	@param bool $distinct
+	 *
+	 *	@return Model|null
+	 */
 	public static function findOne(
 		array $where = [],
 		bool $includeDeleted = false,
@@ -122,15 +149,37 @@ abstract class Model implements JsonSerializable
 		);
 	}
 
+	/**
+	 *	Creates a paginated resultsrt.
+	 *
+	 *	@param mixed $distinct
+	 *	@param array $additionalFields
+	 *
+	 *	@param array $joins
+	 *	@param array $where
+	 *	@param array $orderBy
+	 *
+	 *	@param int $page
+	 *	@param int $limit
+	 *
+	 *	@param bool $includeDeleted
+	 *	@param mixed $countFieldName
+	 *
+	 *	@return array
+	 */
 	public static function paginate(
+		bool $distinct = false,
+		array $additionalFields = [],
+
 		array $joins = [],
 		array $where = [],
 		array $orderBy = [],
+
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
+
 		bool $includeDeleted = false,
 		?string $countFieldName = null,
-		?bool $distinct = false,
 	): ?array
 	{
 		$self = new static();
@@ -149,8 +198,8 @@ abstract class Model implements JsonSerializable
 			tableName: $self->tableName,
 			countFieldName: $countFieldName,
 			aggregateFields: $self->getAggregateFields(),
-			where: $where,
 			joins: $joins,
+			where: $where,
 		);
 
 		$numRecords = $db->fetchColumn($countQuery, $countParams);
@@ -178,7 +227,7 @@ abstract class Model implements JsonSerializable
 
 		[$query, $parameters] = Find::all(
 			tableName: $self->tableName,
-			fields: $self->getRecordFields(),
+			fields: [...$self->getRecordFields(), ...$additionalFields],
 			aggregateFields: $self->getAggregateFields(),
 			joins: $joins,
 			where: $where,
@@ -189,7 +238,7 @@ abstract class Model implements JsonSerializable
 		);
 
 		$records = $db->fetchAll($query, $parameters) ?? [];
-		$records = array_map(fn($record) => static::from($record)->json(), $records);
+		$records = array_map(fn($record) => static::from($record)->json(additionalFields: $additionalFields), $records);
 
 		return [
 			'pagination' => [
@@ -247,11 +296,21 @@ abstract class Model implements JsonSerializable
 			{
 				if (isset($record) && isset($item))
 				{
-					return $item[$targetColumn] === $record[$sourceColumn];
+					if (
+						array_key_exists($targetColumn, $item) &&
+						array_key_exists($sourceColumn, $record)
+					) {
+						return $item[$targetColumn] === $record[$sourceColumn];
+					}
+
+					return false;
 				}
 			});
 
-			$record[$sourceRecordProperty] = array_values($faces);
+			if(count($faces) > 0)
+			{
+				$record[$sourceRecordProperty] = array_values($faces);
+			}
 
 			return $record;
 		}, $sourceRecords);
@@ -261,12 +320,20 @@ abstract class Model implements JsonSerializable
 		return $sourceRecord;
 	}
 
-	public static function delete(int $primaryKey): bool
+	/**
+	 *	Attempts to delete a record, if it is soft-deletable it will soft delete.
+	 *
+	 *	@param int $primaryKey
+	 *	@param bool $forceDelete
+	 *
+	 *	@return bool
+	 */
+	public static function delete(int $primaryKey, bool $forceDelete = false): bool
 	{
 		$self = new static();
 		$db = haku('db');
 
-		if ($self->isSoftDeleteable())
+		if ($self->isSoftDeleteable() && !$forceDelete)
 		{
 			[$query, $parameters] = Write::softDelete($self->tableName, [
 				Where::is($self->primaryKeyName, $primaryKey),
@@ -282,6 +349,11 @@ abstract class Model implements JsonSerializable
 		return $db->execute($query, $parameters);
 	}
 
+	/**
+	 *	Attempts to restore a soft deleted entity.
+	 *
+	 *	@return Model|null
+	 */
 	public function restore(): ?static
 	{
 		$self = new static();
@@ -307,16 +379,26 @@ abstract class Model implements JsonSerializable
 		return null;
 	}
 
-	public function jsonSerialize(): mixed
+	public function jsonSerialize(
+		bool $skipValidation = false,
+		array $additionalFields = []
+	): mixed
 	{
-		$errors = $this->validate();
-
-		if (count($errors) > 0)
+		if (!$skipValidation)
 		{
-			return null;
+			$errors = $this->validate();
+
+			if (count($errors) > 0)
+			{
+				return null;
+			}
 		}
 
-		$record = $this->getRecord(filterPrivate: true, filterAggregates: false);
+		$record = $this->getRecord(
+			filterPrivate: true,
+			filterAggregates: false,
+			additionalFields: $additionalFields
+		);
 
 		return $this->marshalRecord($record);
 	}
@@ -324,9 +406,12 @@ abstract class Model implements JsonSerializable
 	/**
 	 *	Alias for {@see Model::jsonSerialize}
 	 */
-	public function json(): mixed
+	public function json(
+		bool $skipValidation = false,
+		array $additionalFields = []
+	): mixed
 	{
-		return $this->jsonSerialize();
+		return $this->jsonSerialize($skipValidation, $additionalFields);
 	}
 
 	/**

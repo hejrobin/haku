@@ -251,10 +251,11 @@ function normalizeOrderByClauses(
 }
 
 /**
- *	Add *simple* joins, for more complex queries consider writing the SQL queries manually
+ *	Add  joins, for more complex queries consider writing the SQL queries manually
  *	Joins are defined as an array of ['table' => 'bar', 'on' => ['foo_column', 'bar_column']]
+ *	It can also handle subquerues; [ 'subQuery' => $subQuery, 'on' => ['foo_column', 'bar_column'], 'as' => 'sub' ]
  */
-function normalizeSimpleJoin(
+function normalizeJoinStatements(
 	string $tableName,
 	array $joins
 ): array
@@ -265,8 +266,31 @@ function normalizeSimpleJoin(
 	{
 		foreach($joins as $join)
 		{
-			if (array_key_exists('table', $join) && array_key_exists('on', $join))
-			{
+			if (
+				array_key_exists('subQuery', $join) &&
+				array_key_exists('table', $join) &&
+				array_key_exists('on', $join) &&
+				array_key_exists('as', $join)
+			) {
+				[$sourceColumn, $targetColumn] = $join['on'];
+
+				array_push(
+					$statements,
+					'JOIN',
+					sprintf("(%s)", $join['subQuery']),
+					sprintf('AS %s', $join['as']),
+					'ON',
+					sprintf(
+						'%s = %s',
+						normalizeField($tableName, $sourceColumn),
+						normalizeField($join['table'], $targetColumn)
+					),
+				);
+			}
+			else if (
+				array_key_exists('table', $join) &&
+				array_key_exists('on', $join)
+			) {
 				[$sourceColumn, $targetColumn] = $join['on'];
 
 				array_push(

@@ -411,8 +411,11 @@ trait Entity
 	protected function getRecord(
 		bool $filterPrivate = false,
 		bool $filterOmitted = true,
+
 		bool $filterTimestamps = false,
-		bool $filterAggregates = true
+		bool $filterAggregates = true,
+
+		array $additionalFields = [],
 	): array
 	{
 		$ref = new ReflectionClass(static::class);
@@ -420,7 +423,11 @@ trait Entity
 		$record = [];
 
 		$properties = $ref->getProperties();
-		$validProperties = $this->getExposeablePropertyNames();
+
+		$validProperties = [
+			...$this->getExposeablePropertyNames(),
+			...$additionalFields,
+		];
 
 		if ($filterAggregates === false)
 		{
@@ -472,16 +479,22 @@ trait Entity
 	protected function getRecordFields(
 		bool $filterPrivate = false,
 		bool $filterOmitted = true,
+
 		bool $filterTimestamps = false,
-		bool $filterAggregates = true
+		bool $filterAggregates = true,
+
+		array $additionalFields = [],
 	): array
 	{
 		return array_keys(
 			$this->getRecord(
 				filterPrivate:$filterPrivate,
 				filterOmitted: $filterOmitted,
+
 				filterTimestamps: $filterTimestamps,
-				filterAggregates: $filterAggregates
+				filterAggregates: $filterAggregates,
+
+				additionalFields: $additionalFields,
 			),
 		);
 	}

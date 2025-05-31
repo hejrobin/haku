@@ -28,9 +28,12 @@ trait Searchable
 	public static function search(
 		array $criteria,
 
+		array $additionalFields = [],
+
 		array $joins = [],
 		array $where = [],
 		array $orderBy = [],
+
 		int $page = 1,
 		int $limit = Model::DefaultFetchLimit,
 
@@ -112,21 +115,22 @@ trait Searchable
 			$nextPage = null;
 		}
 
+		$fields = [...$self->getRecordFields(), ...$additionalFields];
+
 		[$query, $parameters] = Find::all(
 			tableName: $self->tableName,
-
-			fields: $self->getRecordFields(),
+			fields: $fields,
 			aggregateFields: $self->getAggregateFields(),
 			joins: $joins,
 			where: $where,
 			orderBy: $orderBy,
 			limit: $limit,
 			offset: $offset,
-			overrideFromTable: $searchableTableName,
+			overrideFromTable: $searchableTableName
 		);
 
 		$records = $db->fetchAll($query, $parameters) ?? [];
-		$records = array_map(fn($record) => static::from($record)->json(), $records);
+		$records = array_map(fn($record) => static::from($record)->json(additionalFields: $additionalFields), $records);
 
 		return [
 			'pagination' => [
@@ -136,7 +140,6 @@ trait Searchable
 				'nextPage' => $nextPage,
 			],
 			'meta' => [
-				'keywords' => $criteria['keywords'],
 				'numRecordsTotal' => $numRecords,
 				'numRecordsPerPage' => $limit,
 				'numRecordsOnCurrentPage' => count($records),

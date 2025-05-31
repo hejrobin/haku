@@ -9,7 +9,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use function Haku\Database\Query\{
 	normalizeField,
 	normalizeConditions,
-	normalizeSimpleJoin,
+	normalizeJoinStatements,
 };
 
 class Find
@@ -58,7 +58,7 @@ class Find
 
 		if (count($joins) > 0)
 		{
-			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
+			array_push($querySegments, ...normalizeJoinStatements($tableName, $joins));
 		}
 
 		// Get normalized WHERE and HAVING
@@ -115,10 +115,15 @@ class Find
 		}
 
 		// Add LIMIT
-		$querySegments[] = sprintf('LIMIT %2$d, %1$d', $limit, $offset);
+		if ($limit > 0)
+		{
+			$querySegments[] = sprintf('LIMIT %2$d, %1$d', $limit, $offset);
+		}
+
+		$query = preg_replace('/\s+/', ' ', implode(' ', $querySegments));
 
 		return [
-			implode(' ', $querySegments),
+			$query,
 			$parameters
 		];
 	}
@@ -140,6 +145,7 @@ class Find
 	): array
 	{
 		return static::all(
+			distinct: $distinct,
 			tableName: $tableName,
 			overrideFromTable: $overrideFromTable,
 			fields: $fields,
@@ -148,7 +154,6 @@ class Find
 			where: $where,
 			orderBy: $orderBy,
 			limit: 1,
-			distinct: $distinct,
 		);
 	}
 
@@ -211,7 +216,7 @@ class Find
 
 		if (count($joins) > 0)
 		{
-			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
+			array_push($querySegments, ...normalizeJoinStatements($tableName, $joins));
 		}
 
 		$parameters = $conditions->where->parameters;
@@ -274,7 +279,7 @@ class Find
 
 		if (count($joins) > 0)
 		{
-			array_push($querySegments, ...normalizeSimpleJoin($tableName, $joins));
+			array_push($querySegments, ...normalizeJoinStatements($tableName, $joins));
 		}
 
 		$parameters = [
