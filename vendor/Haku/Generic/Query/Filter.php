@@ -21,7 +21,7 @@ class Filter
 	/**
 	 *	Parses a JSON string of objects.
 	 *
-	 *	@param Haku\Generic\Query\FilterProperty[] $unresolved
+	 *	@param array $unresolved
 	 */
 	public static function from(array $unresolved): self
 	{
@@ -48,17 +48,21 @@ class Filter
 		return $self;
 	}
 
-	/**
-	 *	Validates if
-	 */
 	public function has(
 		string $name,
 		FilterOperator $operator,
 	): bool
 	{
+		return $this->get($name, $operator) !== null;
+	}
+
+	public function get(
+		string $name,
+		FilterOperator $operator,
+	): ?FilterProperty {
 		return find($this->filters, function(FilterProperty $property) use ($name, $operator) {
 			return $property->name === $name && $property->operator === $operator;
-		}) !== null;
+		});
 	}
 
 	public function add(
@@ -75,9 +79,9 @@ class Filter
 	public function remove(
 		string $name,
 		FilterOperator $operator,
-	): bool
+	): void
 	{
-		$this->filters = array_filter($this->filters, function(FilterProperty $property) {
+		$this->filters = array_filter($this->filters, function(FilterProperty $property) use ($name, $operator) {
 			return $property->name !== $name && $property->operator !== $operator;
 		});
 	}

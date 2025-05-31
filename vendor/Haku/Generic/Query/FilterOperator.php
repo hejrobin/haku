@@ -26,4 +26,7 @@ enum FilterOperator: string
 	case Null = 'null';
 	case NotNull = 'notNull';
 
+	case Contains = 'contains';
+	case Custom = 'custom';
+
 }

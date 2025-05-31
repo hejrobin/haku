@@ -55,6 +55,11 @@ class Conditions
 
 		foreach ($filter->getFilters() as $property)
 		{
+			if ($property->operator->value === 'custom')
+			{
+				continue;
+			}
+
 			foreach ($property->values as $value)
 			{
 				$where[] = call_user_func_array(
