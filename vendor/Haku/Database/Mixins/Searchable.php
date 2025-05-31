@@ -46,7 +46,7 @@ trait Searchable
 			array_key_exists('couple', $criteria) === false ||
 			array_key_exists('keywords', $criteria) === false
 		) {
-			throw ModelException('Invalid search criteria.');
+			throw new ModelException('Invalid search criteria.');
 		}
 
 		$self = new static();
