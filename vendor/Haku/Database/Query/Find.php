@@ -96,7 +96,7 @@ class Find
 			$querySegments = array_merge(
 				$querySegments,
 				['GROUP BY'],
-				$groupBy
+				[implode(', ', $groupBy)]
 			);
 		}
 

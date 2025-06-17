@@ -238,6 +238,8 @@ abstract class Model implements JsonSerializable
 		);
 
 		$records = $db->fetchAll($query, $parameters) ?? [];
+
+		$additionalFields = array_map(fn($field) => end(explode('.', $field)), $additionalFields);
 		$records = array_map(fn($record) => static::from($record)->json(additionalFields: $additionalFields), $records);
 
 		return [
@@ -489,13 +491,6 @@ abstract class Model implements JsonSerializable
 		{
 			throw new ModelException(
 				sprintf('Cannot save %s before validation.', static::class),
-			);
-		}
-
-		if ($ignoreValidationStatus === false && $this->isValid === false)
-		{
-			throw new ModelException(
-				sprintf('Cannot save %s, validation failed.', static::class),
 			);
 		}
 

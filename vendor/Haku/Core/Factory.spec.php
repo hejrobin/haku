@@ -19,11 +19,14 @@ class MockFactory
 	use Factory;
 }
 
-class MockClass {
+class MockClass
+{
+
 	public function helloWorld(): string
 	{
 		return 'Hello World!';
 	}
+
 }
 
 spec('Core\Factory', function()

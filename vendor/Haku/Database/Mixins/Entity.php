@@ -426,7 +426,6 @@ trait Entity
 
 		$validProperties = [
 			...$this->getExposeablePropertyNames(),
-			...$additionalFields,
 		];
 
 		if ($filterAggregates === false)
@@ -470,6 +469,14 @@ trait Entity
 				}
 
 				$record[$property->getName()] = $propertyValue;
+			}
+		}
+
+		foreach ($additionalFields as $field)
+		{
+			if (property_exists($this, $field))
+			{
+				$record[$field] = $this->$field;
 			}
 		}
 

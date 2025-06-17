@@ -22,6 +22,8 @@ class Filter
 	 *	Parses a JSON string of objects.
 	 *
 	 *	@param array $unresolved
+	 *
+	 *	@return self
 	 */
 	public static function from(array $unresolved): self
 	{
@@ -48,6 +50,14 @@ class Filter
 		return $self;
 	}
 
+	/**
+	 *	Validates whether or not a specific filter property is set.
+	 *
+	 *	@param string $name
+	 *	@param \Haku\Generic\Query\FilterOperator $operator
+	 *
+	 *	@return bool
+	 */
 	public function has(
 		string $name,
 		FilterOperator $operator,

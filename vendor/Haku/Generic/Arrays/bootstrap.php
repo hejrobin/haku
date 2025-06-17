@@ -27,11 +27,24 @@ function any(
 	return false;
 }
 
+/**
+ *	Finds a specific entry in an array based on condition constraint in callback.
+ *
+ *	@param array $array
+ *	@param callable $callback
+ *
+ *	@return mixed
+ */
 function find(
 	array $array,
 	callable $callback
 ): mixed
 {
+	if (function_exists('array_find'))
+	{
+		return array_find($array, $callback);
+	}
+
 	foreach ($array as $item)
 	{
 		if (call_user_func($callback, $item) === true)

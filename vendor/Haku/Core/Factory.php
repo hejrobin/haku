@@ -37,6 +37,13 @@ trait Factory
 		$this->__instances[$instanceName] = $instance;
 	}
 
+	/**
+	 *	Returns a regestered interface, if it exists.
+	 *
+	 *	@param string $instanceName
+	 *
+	 *	@return mixed
+	 */
 	public function get(string $instanceName): ?object
 	{
 		if ($this->has($instanceName))

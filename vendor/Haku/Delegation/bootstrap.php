@@ -324,17 +324,9 @@ function delegate(string $path, Headers $headers): array
 
 	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
 	{
-		// @note Check with trailing slash to also match optional parameters properly
-		$hasPatternMatch =
-			preg_match($route['pattern'], cleanPath($path)) === 1 ||
-			preg_match($route['pattern'], cleanPath($path) . '/') === 1;
+		$hasPatternMatch = preg_match($route['pattern'], cleanPath($path));
 
-		$hasMethodMatch = $route['method'] === $requestMethod;
-
-		if ($requestMethod === Method::Options)
-		{
-			return true;
-		}
+		$hasMethodMatch = $route['method'] === $requestMethod || $requestMethod === Method::Options;
 
 		return $hasPatternMatch && $hasMethodMatch;
 	});

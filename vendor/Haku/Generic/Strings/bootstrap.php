@@ -7,7 +7,11 @@ namespace Haku\Generic\Strings;
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
 /**
- *	Hyphenates a string
+ *	Hyphenates a string by normalizing accents, whitespace and combines it into a hyphenated string.
+ *
+ *	@param string $unresolvedString
+ *	@param string $wordDelimiter = '-'
+ *	@param array $wordReplacements
  */
 function hyphenate(
 	string $unresolvedString,

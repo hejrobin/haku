@@ -11,6 +11,9 @@ use function Haku\Generic\Strings\{
 	snakeCaseFromCamelCase,
 };
 
+/**
+ *	 Converts record keys from snake_case (in database) to camel-case (for JSON).
+ */
 trait Marshaller
 {
 
