@@ -14,7 +14,6 @@ use Haku\Spec\Runner;
 use Haku\Spec\Reporters\DefaultReporter;
 
 use function Haku\{
-	config,
 	loadEnvironment,
 };
 

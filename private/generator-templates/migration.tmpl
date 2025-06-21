@@ -1,0 +1,29 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Migrations;
+
+/* @note Deny direct file access */
+if (defined('HAKU_ROOT_PATH') === false) exit;
+
+use Haku\Database\{
+	Connection,
+	Migration
+};
+
+class %migration% implements Migration
+{
+
+	public function up(Connection $db): void
+	{
+		// @todo Add up migration logic for %migration%.
+	}
+
+	public function down(Connection $db): void
+	{
+		// @todo Add down migration logic for %migration%.
+	}
+
+}
+
+return new %migration%();

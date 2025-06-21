@@ -14,6 +14,12 @@ if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
 	exit;
 }
 
+use function Haku\{
+	autoloadResolver,
+	loadEnvironment,
+	loadBootstrap,
+};
+
 $didThrow = false;
 
 try
@@ -24,6 +30,8 @@ try
 	]);
 
 	autoloadResolver();
+	loadEnvironment();
+	loadBootstrap();
 
 	$engine = new Console\Engine();
 
@@ -35,6 +43,7 @@ try
 	$engine->registerCommand(new Console\Commands\Test());
 	$engine->registerCommand(new Console\Commands\Make());
 	$engine->registerCommand(new Console\Commands\Rand());
+	$engine->registerCommand(new Console\Commands\Migrate());
 
 	$engine->run();
 

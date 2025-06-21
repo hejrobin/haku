@@ -16,6 +16,7 @@ enum AvailableGenerators: string
 	case Spec = 'spec';
 	case Route = 'route';
 	case Model = 'model';
+	case Migration = 'migration';
 	case Middleware = 'middleware';
 
 	public static function list(): array
