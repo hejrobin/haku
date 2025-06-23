@@ -10,6 +10,10 @@ use Haku\Console\Output;
 
 use function Haku\resolvePath;
 
+/**
+ *	An abstract class that handles code generation for "haku make".
+ *	A generator requires a *.tmpl file to work.
+ */
 abstract class Generator
 {
 
@@ -18,6 +22,17 @@ abstract class Generator
 		protected Output $output,
 	) {}
 
+	/**
+	 *	Attempts to generate code from a template.
+	 *
+	 *	@param string $templateFileName
+	 *	@param string $outputFilePattern
+	 *	@param mixed $templateVariables
+	 *	@param string $targetRootPath
+	 *	@param mixed $nameArgument
+	 *
+	 *	@return bool
+	 */
 	protected function generate(
 		string $templateFileName,
 		string $outputFilePattern,

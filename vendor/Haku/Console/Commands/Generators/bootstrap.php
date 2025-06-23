@@ -10,6 +10,12 @@ use ReflectionClass;
 
 use Haku\Console\Output;
 
+/**
+ *	Enum for available code generators.
+ *	These always have a corresponding generator class.
+ *
+ *	@enum string AvailableGenerators
+ */
 enum AvailableGenerators: string
 {
 
@@ -26,6 +32,15 @@ enum AvailableGenerators: string
 
 }
 
+/**
+ *	Returns a new instance of a generator class.
+ *
+ *	@param string $generatorClassName
+ *	@param object $commandArguments
+ *	@param \Haku\Console\Output $output
+ *
+ *	@return \Haku\Console\Commands\Generators\Generator | null
+ */
 function getGeneratorInstance(
 	string $generatorClassName,
 	object $commandArguments,

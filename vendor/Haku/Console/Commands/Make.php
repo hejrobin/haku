@@ -18,6 +18,9 @@ use Haku\Console\Commands\Generators\{
 use function Haku\Console\resolveArguments;
 use function Haku\Console\Commands\Generators\getGeneratorInstance;
 
+/**
+ * Code generation command "make", see {@see vendor/Haku/Console/Commands/Generators}.
+ */
 class Make extends Command
 {
 

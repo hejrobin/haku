@@ -19,7 +19,6 @@ use Haku\Jwt\Exceptions\{
 	IntegrityException,
 };
 
-
 class Token
 {
 

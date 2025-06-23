@@ -17,6 +17,9 @@ use Haku\Database\Migration;
 
 use function Haku\haku;
 
+/**
+ *	A very simplistic database migration handler, this will create a table in the database to keep track of migrations.
+ */
 class Migrate extends Command
 {
 

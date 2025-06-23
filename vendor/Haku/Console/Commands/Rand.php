@@ -10,6 +10,8 @@ use Haku\Console\Command;
 use function Haku\Generic\Strings\random;
 
 /**
+ *	Simple random string generator command.
+ *
  *	@todo Add --size parameter
  */
 class Rand extends Command

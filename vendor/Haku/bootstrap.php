@@ -12,12 +12,7 @@ use RecursiveRegexIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 
-/**
- *	Alias class for Exception
- *
- *	@see https://www.php.net/manual/en/class.exception.php
- */
-class VendorException extends Exception {}
+use \Haku\Exceptions\VendorException;
 
 /**
  *	Resolves relative path into an absolute path with safe directory separator.
@@ -186,7 +181,7 @@ function manifest(): object
 /**
  *	Returns Kernel instance, or initialized instance inside factory if instanceName is passed.
  *
- *	@throws Haku\Exceptions\VendorException
+ *	@throws \Haku\Exceptions\VendorException
  *
  *	@return object
  */

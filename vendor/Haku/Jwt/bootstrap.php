@@ -6,10 +6,12 @@ namespace Haku\Jwt;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+use Haku\Jwt\Exceptions\TokenException;
+
 /**
  *	Encodes a JWT payload using HS256.
  *
- *	@throws Haku\Jwt\TokenException
+ *	@throws \Haku\Jwt\Exceptions\TokenException
  */
 function encodeToken(array $context, int $maxAge = 0): string
 {
@@ -38,7 +40,7 @@ function encodeToken(array $context, int $maxAge = 0): string
 /**
  *	Decodes a JWT string.
  *
- *	@throws Haku\Jwt\TokenException
+ *	@throws \Haku\Jwt\Exceptions\TokenException
  */
 function decodeToken(string $authToken): Token
 {

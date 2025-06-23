@@ -13,6 +13,9 @@ use Haku\Console\Command;
 use function Haku\resolvePath;
 use function Haku\Generic\Strings\random;
 
+/**
+ *	Init command for haku, allows for preparing and creating environments.
+ */
 class Init extends Command
 {
 

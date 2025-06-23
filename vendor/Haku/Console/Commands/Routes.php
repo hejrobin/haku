@@ -17,6 +17,9 @@ use Haku\Console\{
 
 use function Haku\Delegation\generateApplicationRoutes;
 
+/**
+ *	A command that list all available routes. Can return full route definitions or create a postman collection file.
+ */
 class Routes extends Command
 {
 
