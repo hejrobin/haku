@@ -40,8 +40,8 @@ spec('Jwt\Algorithm', function()
 				expect('\\Haku\\Jwt\\Algorithm::get')
 					->withArguments(['HS256'])
 					->not()->toThrow(AlgorithmException::class),
-				expect(Algorithm::get('HS256'))->toHaveProperty('crypt', 'SHA256'),
-				expect(Algorithm::get('HS256'))->toHaveProperty('protocol', 'hash_hmac'),
+				expect(Algorithm::get('HS256'))->toHavePropertyValue('crypt', 'SHA256'),
+				expect(Algorithm::get('HS256'))->toHavePropertyValue('protocol', 'hash_hmac'),
 			);
 		});
 
