@@ -210,7 +210,10 @@ function config(string $variable, string $fallback): void
 	$value = getenv($variable);
 	$value ??= $fallback;
 
-	define($variable, $fallback);
+	if(!defined($variable))
+	{
+		define($variable, $fallback);
+	}
 }
 
 /**

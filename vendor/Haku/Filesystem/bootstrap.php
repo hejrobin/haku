@@ -85,3 +85,33 @@ function fileCompare(string $fileA, string $fileB): bool
 
 	return false;
 }
+
+/**
+ *	Gets and normalizes uploaded arrays.
+ *
+ *	@return array[]
+ */
+function getUploadedFiles(?array $files): array
+{
+	$result = [];
+
+	if (!$files)
+	{
+		$files = $_FILES;
+	}
+
+	if (count($files) === 0)
+	{
+		return $result;
+	}
+
+	foreach($files as $outerKey => $outer)
+	{
+		foreach ($outer as $innerKey => $value)
+		{
+			$result[$innerKey][$outerKey] = $value;
+		}
+	}
+
+	return $result;
+}
