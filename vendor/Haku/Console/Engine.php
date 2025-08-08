@@ -30,7 +30,7 @@ class Engine extends Output
 
 		foreach ($this->commands as $trigger => $command)
 		{
-			$indentLength = calculateIndentLength(array_keys($this->commands), $trigger) + 2;
+			$indentLength = calculateIndentLength([...array_keys($this->commands), $trigger]) + 2;
 
 			$commandName = str_pad($command->name(), $indentLength);
 

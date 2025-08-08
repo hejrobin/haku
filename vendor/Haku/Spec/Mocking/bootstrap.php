@@ -19,11 +19,18 @@ function mockJsonPayload(array $data)
 }
 
 /**
- *	Returns a moced JSON if present, {@see mockJsonPayload}. Only used internally by the spec runner.
+ *	Returns a mocked JSON if present, {@see mockJsonPayload}. Only used internally by the spec runner.
  */
 function getMockedJsonPayload(): string
 {
 	global $mockedJsonPayload;
 
 	return $mockedJsonPayload;
+}
+
+function resetMockedJsonPayload(): void
+{
+	global $mockedJsonPayload;
+
+	$mockedJsonPayload = '';
 }

@@ -9,18 +9,21 @@ use function Haku\Spec\{
 	describe,
 	it,
 	expect,
-	expectAll,
+	afterEach,
 };
 
 use function Haku\Spec\Mocking\{
 	mockJsonPayload,
-	getMockedJsonPayload
+	resetMockedJsonPayload
 };
 
 use Haku\Http\Payload;
 
 spec('Http/Payload', function()
 {
+	afterEach(function() {
+		resetMockedJsonPayload();
+	});
 
 	describe('Validation', function()
 	{
