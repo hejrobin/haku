@@ -6,7 +6,6 @@ namespace Haku;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use Exception;
 use RegexIterator;
 use RecursiveRegexIterator;
 use RecursiveIteratorIterator;
@@ -144,6 +143,13 @@ function autoloadResolver()
 
 function loadEnvironment(string $fallbackEnvironment = 'dev')
 {
+	global $argv;
+
+	if (isset($argv[1]) && $argv[1] === 'test')
+	{
+		$fallbackEnvironment = 'test';
+	}
+
 	config('HAKU_ENVIRONMENT', $fallbackEnvironment);
 
 	$configFilePath = sprintf('config.%s.php', HAKU_ENVIRONMENT);

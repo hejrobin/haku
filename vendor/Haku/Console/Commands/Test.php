@@ -43,7 +43,6 @@ class Test extends Command
 			$filterOnly = $this->arguments->arguments['only'] ?? '';
 			$filterOmit = $this->arguments->arguments['omit'] ?? '';
 
-			loadEnvironment('test');
 			loadSpecTests(
 				only: $filterOnly,
 				omit: $filterOmit,
