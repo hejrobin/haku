@@ -60,7 +60,7 @@ final class DefaultReporter extends Reporter
 
 	protected function header(): void
 	{
-		$this->output->info('loaded test config', 'spec');
+		$this->output->info('loaded test config');
 
 		$this->output->info(
 			sprintf(
@@ -69,8 +69,7 @@ final class DefaultReporter extends Reporter
 					$this->runner->numTests(),
 					Ansi::Yellow
 				)
-			),
-			'spec'
+			)
 		);
 
 		$this->output->break();
@@ -86,8 +85,7 @@ final class DefaultReporter extends Reporter
 				$this->output->format($report->numPassed, Ansi::Green),
 				$this->output->format($report->numFailed, Ansi::Red),
 				$this->output->format($report->numSkipped, Ansi::Blue),
-			),
-			'spec',
+			)
 		);
 
 		$this->output->info(
@@ -97,8 +95,7 @@ final class DefaultReporter extends Reporter
 					round($report->timeElapsed, 6),
 					Ansi::Yellow
 				)
-			),
-			'spec',
+			)
 		);
 	}
 

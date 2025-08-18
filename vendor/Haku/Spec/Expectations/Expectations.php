@@ -285,7 +285,7 @@ final class Expectations implements ExpectationsInterface
 			success: call_user_func("is_$typeName", $this->actual),
 			errorMessage: "expectation is not type of '$typeName'",
 			inverseErrorMessage: "expectation is type of '$typeName'",
-			actual: gettype($this->actual), // @todo Fix this to match $validObhectTypes
+			actual: gettype($this->actual), // @todo Fix this to match $validObjectTypes
 			expect: $typeName,
 		);
 	}

@@ -191,17 +191,17 @@ class Test
 
 				if ($caseCallbackResult === true)
 				{
-					$this->pass($caseDescription);
+					$this->pass();
 					$specReport[$caseDescription] = ['pass', $caseDescription, null];
 				}
 				elseif ($caseCallbackResult === false)
 				{
-					$this->fail($caseDescription);
+					$this->fail();
 					$specReport[$caseDescription] = ['fail', $caseDescription, $caseCallbackResultText, $actual, $expect];
 				}
 				else
 				{
-					$this->skip($caseDescription);
+					$this->skip();
 					$specReport[$caseDescription] = ['skip', $caseDescription, null];
 				}
 

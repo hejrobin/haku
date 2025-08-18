@@ -16,8 +16,9 @@ use Haku\Http\{
 	Request,
 	Headers,
 	Method,
+	Message,
+	Status,
 	Messages\Json,
-	Exceptions\StatusException
 };
 
 use Haku\Spec\Expectations\{
@@ -212,10 +213,10 @@ class RouteExpectationResult
 {
 
 	public function __construct(
-		public \Haku\Http\Request $request,
-		public \Haku\Http\Message $response,
-		public \Haku\Http\Headers $headers,
-		public \Haku\Http\Status $status,
+		public Request $request,
+		public Message $response,
+		public Headers $headers,
+		public Status $status,
 	) {}
 
 }
