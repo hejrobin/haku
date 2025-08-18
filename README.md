@@ -1,26 +1,17 @@
-# Haku
-![Haku Development Status](https://img.shields.io/badge/in%20development-007580) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/hejrobin/haku/spec.yml)
-
-A tiny web application framework with big ambitions.
+# Haku ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/hejrobin/haku/spec.yml)
+<sup>A tiny web application framework with big ambitions.</sup>
 
 > [!IMPORTANT]
-> Haku is still in development, and is not meant for production use right now.
-
----
+> Haku is still in development, and is not meant for production use right now, but do feel free to test it out and discuss.
 
 Haku is a small, opinionated web application framework built for JSON APIs. It aims to have a small footprint without any external dependencies or extensions, relying on native PHP 8.3 features.
 
+-----
+
 ## Getting Started
 
-#### What to expect
-
-Haku aspires to work "out-of-the-box" and doesn not use Composer. It is built to quickly build small to medium sized RESTful JSON APIs.
-
-#### Prerequisites
-
-* [PHP >= 8.3](https://www.php.net/releases/8.3/en.php)
-* [mbstring](https://www.php.net/manual/en/ref.mbstring.php)
-* [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php)
+> [!NOTE]
+> Make sure you have [PHP 8.3 or newer](https://www.php.net/releases/8.3/en.php) installed with [mbstring](https://www.php.net/manual/en/ref.mbstring.php) and [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php).
 
 ### Installing Haku
 
@@ -37,25 +28,48 @@ php haku init --dev
 
 ```
 
----
+You might also need to run `haku init --test` to enable a testing environment.
 
-## Haku Command Line Tools
+-----
 
-Haku ships with its own command line tool, `haku` which provides some helpful commands to aid you in the development of your project. You can always run `haku --help` to see what commands are available.
+## Features & Philosophies
+
+#### ✨ Native Features First
+
+Haku aims to have a small footprint, without any external dependencies and relies soley on the power of native [PHP 8.3 features](https://www.php.net/releases/8.3/en.php).
+
+#### ✨ Testing Is Built In
+
+Haku ships with a simple test/spec runner inspired by [Jest](https://jestjs.io/). Writing tests for your code should be quick and easy, Haku tries to help with that.
+
+#### ✨ Useful Tooling
+
+Ships with a tiny command line interface, a built in development server and code generators.
 
 | Command | Description |
 | --- | --- |
-| `php haku init`|  Creates required configuration files, if you add `--dev` or `--test` configuration files for those environments will be created.
-| `php haku serve`|  Starts a development server using [PHP's built in server](https://www.php.net/manual/en/features.commandline.webserver.php).
-| `php haku make <generator>`|  Invokes one of the code generators that Haku ships with, run `php haku make --help` to see available generators.
-| `php haku test`|  Runs all available `*.spec.php` tests in the workspace, you can control what tests to run with the flags `--only` or `--omit`.
-| `php haku version`| Shows current haku version.
-| `php haku routes` | Lists all available routes based on defined application routes.
+| `php haku init`|  Creates required configuration files, if you add `--dev` or `--test` configuration files for those environments will be created. |
+| `php haku serve`|  Starts a development server using [PHP's built in server](https://www.php.net/manual/en/features.commandline.webserver.php). |
+| `php haku make <generator>`|  Invokes one of the code generators that Haku ships with, run `php haku make --help` to see available generators. |
+| `php haku test`|  Runs all available `*.spec.php` tests in the workspace, you can control what tests to run with the flags `--only` or `--omit`. |
+| `php haku version`| Shows current haku version. |
+| `php haku routes` | Lists all available routes based on defined application routes. |
+| `php haku upgrade` | Downloads and merges the lost recent code from the main branch. |
 
+-----
 
-### Updating your Haku project
+## FAQ
 
-> [!CAUTION]
-> The upgrade command is currently disabled for *Windows* and untested in **nix* environments.
+#### ❇️ Why doesn't Haku use Composer?
 
-If you've forked Haku to use in your project, sometimes you might want to upgrade to the latest version. This requires [PHP ZIP Extension](https://www.php.net/manual/en/class.ziparchive.php), and then you can run `php haku upgrade` to fetch the latest repository changes available.
+I wanted to build a framework that has a "_batteries included_" kind of philosophy, without external dependencies, just the bare minimum needed to create a JSON API.
+  
+While [Composer](https://getcomposer.org/) is an amazing and convenient tool, it isn't really the approach I wanted for Haku.
+
+#### ❇️ Does Haku follow any coding standards guidelines?
+
+Yes, Haku follows [PSR-1](https://www.php-fig.org/psr/psr-1/). 
+
+-----
+
+👋🏻 Happy coding!
