@@ -49,40 +49,75 @@ function normalizeConditions(
 		?string $value,
 		string $condition,
 		string $param,
-		bool $isCustom = false,
+		string $customTransform = '',
 	) {
 		$conditions = [];
 		$parameters = [];
 
-		if (is_null($value) === false)
-		{
-			$conditions[] = sprintf(
-				'%1$s %2$s :%3$s',
+		$hasValue = is_null($value) === false;
+		$options = new \stdClass();
+
+		if ($hasValue) {
+			$options->pattern = '%1$s %2$s :%3$s';
+			$options->args = [
 				$fieldName,
 				$condition,
-				$param,
-			);
+				$param
+			];
 
 			$parameters[$param] = $value;
 		}
-		else if ($isCustom === false)
-		{
-			$conditions[] = sprintf(
-				'%1$s %2$s',
+
+		if (!$customTransform && !$hasValue) {
+			$options->pattern = '%1$s %2$s';
+			$options->args = [
 				$fieldName,
 				$condition,
-			);
+			];
 		}
-		else
-		{
-			$condition = str_ireplace(
-				['{field}'],
-				[$fieldName],
-				$condition
-			);
 
-			$conditions[] = $condition;
+		if ($customTransform !== '') {
+			$customPattern = '%1$s %2$s';
+
+			$options->args = [
+				$fieldName,
+				$param,
+			];
+
+			switch ($customTransform) {
+				case 'transformIn':
+					$customPattern = '%1$s IN (:%2$s)';
+					break;
+
+				case 'transformNotIn':
+					$customPattern = '%1$s NOT IN (:%2$s)';
+					break;
+
+				case 'transformContains':
+					$customPattern = 'CONTAINS(%1$s, :%2$s)';
+					break;
+
+				case 'transformNotContains':
+					$customPattern = 'NOT CONTAINS(%1$s, :%2$s)';
+					break;
+
+				case 'transformFuzzyMatch':
+					$customPattern = 'MATCH(%1$s) AGAINST(:%2$s WITH QUERY EXPANSION';
+					break;
+
+				case 'transformBooleanMatch':
+					$customPattern = 'MATCH(%1$s) AGAINST(:%2$s IN BOOLEAN MODE)';
+					break;
+
+				case 'transformNaturalMatch':
+					$customPattern = 'MATCH(%1$s) AGAINST(:%2$s IN NATURAL LANGUAGE MODE)';
+					break;
+			}
+
+			$options->pattern = $customPattern;
 		}
+
+		$conditions[] = sprintf($options->pattern, ...$options?->args ?? []);
 
 		return [$conditions, $parameters];
 	};
@@ -92,7 +127,7 @@ function normalizeConditions(
 		$addTo = 'where';
 
 		[$field, $value, $condition, $glue] = $clause;
-		$isCustom = count($clause) === 5;
+		$customTransform = $clause[4] ?? '';
 
 		$field = snakeCaseFromCamelCase($field);
 		$fieldName = normalizeField($tableName, $field);
@@ -114,7 +149,7 @@ function normalizeConditions(
 			$value,
 			$condition,
 			$param,
-			$isCustom
+			$customTransform
 		);
 
 		$lastWhere = array_slice($whereClauses, -1);

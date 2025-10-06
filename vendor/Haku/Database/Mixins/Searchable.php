@@ -77,9 +77,9 @@ trait Searchable
 		];
 
 		$where = [
-			Where::custom(
+			Where::match(
 				sprintf('%s.keywords', $searchableTableName),
-				sprintf("MATCH({field}) AGAINST('%s' IN BOOLEAN MODE)", implode(' ', $criteria['keywords']))
+				$criteria['keywords']
 			),
 			...$where,
 		];

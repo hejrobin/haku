@@ -119,12 +119,66 @@ spec('Database/Query/Find', function()
 				fields: ['completed'],
 				where: [
 					Where::is('completed', true),
-					Where::custom('title', 'CONTAINS({field}, "hello")')
+					Where::contains('title', '"hello"')
 				]
 			);
 
 			$expect = sprintf(
-				'SELECT tasks.completed FROM tasks WHERE tasks.completed = :%s AND CONTAINS(tasks.title, "hello") LIMIT 0, 1',
+				'SELECT tasks.completed FROM tasks WHERE tasks.completed = :%s AND CONTAINS(tasks.title, :%s) LIMIT 0, 1',
+				...array_keys($parameters)
+			);
+
+			return expect($actual)->toEqual($expect);
+		});
+
+		it('can create in queries', function()
+		{
+			[$actual, $parameters] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::in('rarity', 'foo bar baz')
+				]
+			);
+
+			$expect = sprintf(
+				'SELECT tasks.completed FROM tasks WHERE tasks.rarity IN (:%s) LIMIT 0, 1',
+				...array_keys($parameters)
+			);
+
+			return expect($actual)->toEqual($expect);
+		});
+
+		it('can create contains queries', function()
+		{
+			[$actual, $parameters] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::contains('rarity', 'rare')
+				]
+			);
+
+			$expect = sprintf(
+				'SELECT tasks.completed FROM tasks WHERE CONTAINS(tasks.rarity, :%s) LIMIT 0, 1',
+				...array_keys($parameters)
+			);
+
+			return expect($actual)->toEqual($expect);
+		});
+
+		it('can create match queries', function()
+		{
+			[$actual, $parameters] = Find::one(
+				tableName: 'tasks',
+				fields: ['completed'],
+				where: [
+					Where::match('title', 'buy milk', 'boolean')
+				]
+			);
+
+			$expect = sprintf(
+				'SELECT tasks.completed FROM tasks WHERE MATCH(tasks.title) AGAINST(:%s IN BOOLEAN MODE) LIMIT 0, 1',
 				...array_keys($parameters)
 			);
 

@@ -6,8 +6,6 @@ namespace Haku\Http;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
-use Haku\Http\Message\Json;
-
 class Fetch
 {
 	private $curl;

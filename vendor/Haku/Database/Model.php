@@ -283,12 +283,11 @@ abstract class Model implements JsonSerializable
 		$sourceRecords = $sourceRecord['records'];
 
 		$identifiables = array_map('\Haku\Database\sqlValueFrom', array_column($sourceRecords, $sourceColumn));
-		$inQuery = sprintf('{field} IN (%s)', implode(', ', $identifiables));
 
 		$records = self::findAll(
 			limit: $limit,
 			where: [
-				Where::custom($targetColumn, $inQuery)
+				Where::in($targetColumn, implode(', ', $identifiables))
 			]
 		);
 

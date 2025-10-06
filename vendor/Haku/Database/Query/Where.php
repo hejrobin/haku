@@ -64,9 +64,38 @@ class Where
 		return [$field, null, 'IS NOT NULL', static::getGlue()];
 	}
 
-	public static function custom(string $field, string $pattern): array
+	public static function in(string $field, mixed $value): array
 	{
-		return [$field, null, $pattern, static::getGlue(), true];
+		return [$field, $value, '', static::getGlue(), 'transformIn'];
+	}
+
+	public static function notIn(string $field, mixed $value): array
+	{
+		return [$field, $value, '', static::getGlue(), 'transformNotIn'];
+	}
+
+	public static function contains(string $field, mixed $value): array
+	{
+		return [$field, $value, '', static::getGlue(), 'transformContains'];
+	}
+
+	public static function notContains(string $field, mixed $value): array
+	{
+		return [$field, $value, '', static::getGlue(), 'transformNotContains'];
+	}
+
+	public static function match(string $field, mixed $value, string $mode = 'boolean'): array
+	{
+		switch ($mode)
+		{
+			case 'fuzzy':
+				return [$field, $value, '', static::getGlue(), 'transformFuzzyMatch'];
+			case 'boolean':
+				return [$field, $value, '', static::getGlue(), 'transformBooleanMatch'];
+			case 'natural':
+			default:
+				return [$field, $value, '', static::getGlue(), 'transformNaturalMatch'];
+		}
 	}
 
 }
