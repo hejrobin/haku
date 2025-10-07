@@ -98,11 +98,16 @@ catch(Throwable $throwable)
 		Status::from(500)
 	);
 
-	$__outputBuffer = Json::from([
+	$response = [
 		'code' => 500,
 		'error' => $throwable->getMessage(),
-		'trace' => $throwable->getTrace(),
-	]);
+	];
+
+	if (HAKU_ENV === 'dev' || HAKU_ENV === 'test') {
+		$response['trace'] = $throwable->getTrace();
+	}
+
+	$__outputBuffer = Json::from($response);
 }
 finally
 {

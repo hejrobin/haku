@@ -151,7 +151,7 @@ function pathToRegex(
 			$match,
 		);
 
-		// Path includes a paramerer ( "{foo}" )
+		// Path includes a parameter ( "{foo}" )
 		if (array_key_exists('parameter', $match))
 		{
 			$prefix = '';

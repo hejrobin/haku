@@ -69,12 +69,33 @@ class Fetch
 		}
 
 		$this->setOptions([
+			CURLOPT_SSL_VERIFYPEER => true,
+			CURLOPT_SSL_VERIFYHOST => 2,
+			CURLOPT_FOLLOWLOCATION => false,
+			CURLOPT_MAXREDIRS => 0,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_CONNECTTIMEOUT => 10,
+
 			CURLOPT_CUSTOMREQUEST => $this->method->asString(),
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HTTPHEADER => $this->headers->getAll(true)
 		]);
 
 		$response = curl_exec($this->curl);
+
+		if ($response === false)
+		{
+			$error = curl_error($this->curl);
+			$errno = curl_errno($this->curl);
+
+			curl_close($this->curl);
+
+			throw new Exceptions\HttpException(
+			sprintf('cURL error %d: %s', $errno, $error)
+			);
+		}
+
+
 		$this->info = curl_getinfo($this->curl);
 
 		curl_close($this->curl);
