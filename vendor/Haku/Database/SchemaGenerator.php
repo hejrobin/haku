@@ -173,23 +173,24 @@ class SchemaGenerator
 				continue;
 			}
 
-			// Parse comma-separated rules
-			$parts = array_map('trim', explode(',', $ruleString));
+			// Parse rules - supports both comma and pipe separators
+			$parts = preg_split('/\s*[,|]\s*/', $ruleString);
+			$parts = array_map('trim', $parts);
 
 			foreach ($parts as $rule)
 			{
-				// Match len: patterns (e.g., "len: ..123", "len: 5", "len: 1..10")
+				// Match len: or len patterns (e.g., "len: ..123", "len:3..64", "len: 5", "len: 1..10")
 				if (preg_match('/^len:\s*(?P<min>\d+)?(?P<dots>\.\.)?(?P<max>\d+)?$/', $rule, $matches))
 				{
 					// Extract max length from different patterns
 					if (!empty($matches['max']))
 					{
-						// Patterns: "len: ..123" or "len: 1..123"
+						// Patterns: "len: ..123" or "len: 1..123" or "len:3..64"
 						return intval($matches['max']);
 					}
 					elseif (!empty($matches['min']) && empty($matches['dots']))
 					{
-						// Pattern: "len: 5" (exact length)
+						// Pattern: "len: 5" or "len:5" (exact length)
 						return intval($matches['min']);
 					}
 				}
@@ -216,15 +217,16 @@ class SchemaGenerator
 				continue;
 			}
 
-			// Parse comma-separated rules
-			$parts = array_map('trim', explode(',', $ruleString));
+			// Parse rules - supports both comma and pipe separators
+			$parts = preg_split('/\s*\|\s*/', $ruleString);
+			$parts = array_map('trim', $parts);
 
 			foreach ($parts as $rule)
 			{
-				// Match enum: pattern (e.g., "enum: foo, bar, baz")
+				// Match enum: pattern (e.g., "enum: foo, bar, baz" or "enum:foo,bar,baz")
 				if (preg_match('/^enum:\s*(.+)$/', $rule, $matches))
 				{
-					// Extract and clean enum values
+					// Extract and clean enum values (comma-separated within the enum rule)
 					$enumString = $matches[1];
 					$values = array_map('trim', explode(',', $enumString));
 
