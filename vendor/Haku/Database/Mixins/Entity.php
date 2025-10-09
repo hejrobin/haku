@@ -22,7 +22,8 @@ use Haku\Database\Attributes\{
 	Included,
 	Validates,
 	Aggregate,
-	Spatial
+	Spatial,
+	Relation
 };
 
 enum EntityValidationType: string {
@@ -43,6 +44,7 @@ trait Entity
 	protected readonly array $includedFields;
 	protected readonly array $aggregatedFields;
 	protected array $transformFields;
+	protected readonly array $relationFields;
 
 	protected bool $isValid = false;
 	protected bool $hasChanges = false;
@@ -87,6 +89,7 @@ trait Entity
 		$aggregatedFields = [];
 		$transformFields = [];
 		$unfilteredTimestampFields = [];
+		$relationFields = [];
 
 		$properties = $ref->getProperties();
 
@@ -98,6 +101,7 @@ trait Entity
 			Validates::class,
 			Aggregate::class,
 			Spatial::class,
+			Relation::class,
 		];
 
 		foreach ($properties as $property)
@@ -115,6 +119,7 @@ trait Entity
 				'aggregatedFields',
 				'transformFields',
 				'unfilteredTimestampFields',
+				'relationFields',
 			];
 
 			$propertyIsIgnored =
@@ -223,6 +228,22 @@ trait Entity
 							$aggregatedFields[$property->getName()] = $attr->aggregate;
 							$transformFields[$property->getName()] = $attr->transform;
 							break;
+						case Relation::class:
+							$foreignKey = $attr->foreignKey;
+
+							// Default foreign key: camelCase of model name + 'Id'
+							if ($foreignKey === null) {
+								$modelParts = explode('\\', $attr->model);
+								$modelName = end($modelParts);
+								$foreignKey = lcfirst($modelName) . 'Id';
+							}
+
+							$relationFields[$property->getName()] = [
+								'model' => $attr->model,
+								'type' => $attr->type,
+								'foreignKey' => $foreignKey,
+							];
+							break;
 					}
 				}
 			}
@@ -235,6 +256,7 @@ trait Entity
 		$this->includedFields = $includedFields;
 		$this->aggregatedFields = $aggregatedFields;
 		$this->transformFields = $transformFields;
+		$this->relationFields = $relationFields;
 	}
 
 	/**

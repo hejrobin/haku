@@ -21,6 +21,7 @@ use Haku\Database\Query\{
 };
 
 use Haku\Database\Mixins\Entity;
+use Haku\Database\RelationType;
 
 use function Haku\haku;
 
@@ -259,69 +260,6 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
-	 *	This method fetches records associated to an already fetched one, in a one-to-many manner.
-	 *
-	 *	@example
-	 *		$task = Task::find(1);
-	 *		$task = SubTasks::associate($task, 'id', 'task_id', 'subTasks');
-	 *
-	 *	@param array $sourceRecord
-	 *	@param string $sourceColumn
-	 *	@param string $targetColumn
-	 *	@param string $sourceRecordProperty
-	 *
-	 *	@return array
-	 */
-	public static function associate(
-		array $sourceRecord,
-		string $sourceColumn,
-		string $targetColumn,
-		string $sourceRecordProperty,
-		int $limit = Model::DefaultFetchLimit,
-	): array
-	{
-		$sourceRecords = $sourceRecord['records'];
-
-		$identifiables = array_map('\Haku\Database\sqlValueFrom', array_column($sourceRecords, $sourceColumn));
-
-		$records = self::findAll(
-			limit: $limit,
-			where: [
-				Where::in($targetColumn, implode(', ', $identifiables))
-			]
-		);
-
-		$sourceRecords = array_map(function($record) use ($records, $sourceColumn, $targetColumn, $sourceRecordProperty)
-		{
-			$faces = array_filter($records, function($item) use ($record, $sourceColumn, $targetColumn)
-			{
-				if (isset($record) && isset($item))
-				{
-					if (
-						array_key_exists($targetColumn, $item) &&
-						array_key_exists($sourceColumn, $record)
-					) {
-						return $item[$targetColumn] === $record[$sourceColumn];
-					}
-
-					return false;
-				}
-			});
-
-			if(count($faces) > 0)
-			{
-				$record[$sourceRecordProperty] = array_values($faces);
-			}
-
-			return $record;
-		}, $sourceRecords);
-
-		$sourceRecord['records'] = $sourceRecords;
-
-		return $sourceRecord;
-	}
-
-	/**
 	 *	Attempts to delete a record, if it is soft-deletable it will soft delete.
 	 *
 	 *	@param int $primaryKey
@@ -554,6 +492,125 @@ abstract class Model implements JsonSerializable
 		{
 			throw $exception;
 		}
+	}
+
+	/**
+	 *	Loads a specific relation for this model instance.
+	 *
+	 *	@param string $relationName The property name of the relation
+	 *	@param array $where Additional where conditions
+	 *	@param array $orderBy Order by conditions
+	 *	@param int $limit Limit for hasMany relations
+	 *
+	 *	@return static
+	 */
+	public function loadRelation(
+		string $relationName,
+		array $where = [],
+		array $orderBy = [],
+		int $limit = Model::DefaultFetchLimit
+	): static
+	{
+		if (!isset($this->relationFields[$relationName]))
+		{
+			throw new ModelException(
+				sprintf('Relation "%s" not defined on %s.', $relationName, static::class)
+			);
+		}
+
+		$relation = $this->relationFields[$relationName];
+		$relatedModel = $relation['model'];
+		$relationType = $relation['type'];
+		$foreignKey = $relation['foreignKey'];
+
+		switch ($relationType)
+		{
+			case RelationType::BelongsTo:
+				// This model has a foreign key pointing to the related model
+				if (!property_exists($this, $foreignKey))
+				{
+					throw new ModelException(
+						sprintf('Foreign key property "%s" not found on %s.', $foreignKey, static::class)
+					);
+				}
+
+				$foreignKeyValue = $this->$foreignKey ?? null;
+
+				if ($foreignKeyValue === null)
+				{
+					$this->$relationName = null;
+				}
+				else
+				{
+					$relatedInstance = $relatedModel::find($foreignKeyValue);
+					$this->$relationName = $relatedInstance;
+				}
+				break;
+
+			case RelationType::HasOne:
+				// Related model has a foreign key pointing to this model
+				$primaryKey = $this->getPrimaryKey();
+
+				if ($primaryKey === null)
+				{
+					$this->$relationName = null;
+				}
+				else
+				{
+					$conditions = [
+						Where::is($foreignKey, $primaryKey),
+						...$where
+					];
+
+					$relatedInstance = $relatedModel::findOne($conditions);
+					$this->$relationName = $relatedInstance;
+				}
+				break;
+
+			case RelationType::HasMany:
+				// Related model has a foreign key pointing to this model
+				$primaryKey = $this->getPrimaryKey();
+
+				if ($primaryKey === null)
+				{
+					$this->$relationName = [];
+				}
+				else
+				{
+					$conditions = [
+						Where::is($foreignKey, $primaryKey),
+						...$where
+					];
+
+					$relatedInstances = $relatedModel::findAll(
+						where: $conditions,
+						orderBy: $orderBy,
+						limit: $limit
+					);
+
+					$this->$relationName = $relatedInstances;
+				}
+				break;
+		}
+
+		return $this;
+	}
+
+	/**
+	 *	Loads all relations defined on this model instance.
+	 *
+	 *	@param int $limit Limit for hasMany relations
+	 *
+	 *	@return static
+	 */
+	public function loadAllRelations(int $limit = Model::DefaultFetchLimit): static
+	{
+		foreach (array_keys($this->relationFields) as $relationName)
+		{
+			$this->loadRelation($relationName, limit: $limit);
+		}
+
+		return $this;
 	}
 
 }
