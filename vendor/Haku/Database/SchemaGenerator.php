@@ -16,6 +16,8 @@ use Haku\Database\Attributes\{
 	Timestamp,
 };
 
+use function Haku\Generic\Strings\snakeCaseFromCamelCase;
+
 /**
  *	Simple schema generator that analyzes model attributes to generate a migration.
  */
@@ -62,7 +64,7 @@ class SchemaGenerator
 
 			if (!empty($pkAttributes))
 			{
-				$primaryKeys[] = $property->getName();
+				$primaryKeys[] = snakeCaseFromCamelCase($property->getName());
 			}
 		}
 
@@ -86,7 +88,7 @@ class SchemaGenerator
 	 */
 	private static function generateColumnDefinition(ReflectionProperty $property): ?string
 	{
-		$columnName = $property->getName();
+		$columnName = snakeCaseFromCamelCase($property->getName());
 
 		$schemaAttributes = $property->getAttributes(Schema::class);
 
@@ -120,11 +122,9 @@ class SchemaGenerator
 			$timestampDefault = $timestamp->default;
 		}
 
-
 		$sqlType = self::toSqlType($typeName, $isPrimaryKey, $isTimestamp, $timestampDefault);
 
 		$definition = "`{$columnName}` {$sqlType}";
-
 
 		if (
 			!$nullable &&
