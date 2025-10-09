@@ -58,7 +58,7 @@ class Connection extends PDO
 
 		if ($this->type === ConnectionType::MySQL)
 		{
-			$databaseOptions[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES utf8';
+			$databaseOptions[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES utf8mb4';
 		}
 
 		return $databaseOptions;
