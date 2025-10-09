@@ -277,6 +277,41 @@ class Validator
 	}
 
 	/**
+	 *	Validates that field content doesn't exceed MySQL TEXT column size limit (65,535 bytes).
+	 *
+	 *	@pattern "text"
+	 */
+	protected function validateText(string $field, array $record): ValidationResult
+	{
+		$isValid = false;
+		$maxBytes = 65535;
+
+		$error = sprintf("'%s': exceeds TEXT column size limit", $field);
+
+		if (!empty($record[$field]))
+		{
+			$byteLength = strlen($record[$field]);
+			$isValid = $byteLength <= $maxBytes;
+
+			if (!$isValid)
+			{
+				$error = sprintf(
+					"'%s': exceeds TEXT column size limit of %d bytes, got: %d bytes",
+					$field,
+					$maxBytes,
+					$byteLength,
+				);
+			}
+		}
+		else
+		{
+			$isValid = true;
+		}
+
+		return new ValidationResult($isValid, $error);
+	}
+
+	/**
 	 *	Parses a rule, whether or not it has arguments. e.g. "foo: Foo"
 	 */
 	protected function parseRule(string $rule): array

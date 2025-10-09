@@ -21,6 +21,13 @@ class Migration extends Generator
 			return $this->generateFromModel();
 		}
 
+		if (!property_exists($this->arguments, 'migration') || empty($this->arguments->migration))
+		{
+			$this->output->error('migration name is required');
+
+			return false;
+		}
+
 		$migrationName = $this->arguments->migration;
 		$migrationFileName = snakeCaseFromCamelCase($migrationName);
 
@@ -42,9 +49,16 @@ class Migration extends Generator
 
 	protected function generateFromModel(): bool
 	{
-		$modelName = $this->arguments->migration;
-		$modelClass = "App\\Models\\{$modelName}";
+		$modelName = $this->arguments->arguments['model'] ?? null;
 
+		if (empty($modelName))
+		{
+			$this->output->error('--model flag requires a model name');
+
+			return false;
+		}
+
+		$modelClass = "App\\Models\\{$modelName}";
 		$modelFile = resolvePath('app', 'models', "{$modelName}.php");
 
 		if (!file_exists($modelFile))

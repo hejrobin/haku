@@ -14,6 +14,7 @@ use Haku\Database\Attributes\{
 	PrimaryKey,
 	Schema,
 	Timestamp,
+	Validates,
 };
 
 use function Haku\Generic\Strings\snakeCaseFromCamelCase;
@@ -122,7 +123,19 @@ class SchemaGenerator
 			$timestampDefault = $timestamp->default;
 		}
 
-		$sqlType = self::toSqlType($typeName, $isPrimaryKey, $isTimestamp, $timestampDefault);
+		$maxLength = null;
+		$enumValues = null;
+
+		$validatesAttributes = $property->getAttributes(Validates::class);
+
+		if (!empty($validatesAttributes))
+		{
+			$validates = $validatesAttributes[0]->newInstance();
+			$maxLength = self::extractMaxLengthFromValidates($validates);
+			$enumValues = self::extractEnumValuesFromValidates($validates);
+		}
+
+		$sqlType = self::toSqlType($typeName, $isPrimaryKey, $isTimestamp, $timestampDefault, $maxLength, $enumValues);
 
 		$definition = "`{$columnName}` {$sqlType}";
 
@@ -143,7 +156,87 @@ class SchemaGenerator
 		return $definition;
 	}
 
-	private static function toSqlType(string $phpType, bool $isPrimaryKey, bool $isTimestamp, bool $timestampDefault): string
+	/**
+	 *	Extract max length from Validates attribute len: constraint
+	 */
+	private static function extractMaxLengthFromValidates(Validates $validates): ?int
+	{
+		$rules = array_filter([
+			$validates->onCreate,
+			$validates->onUpdate,
+		]);
+
+		foreach ($rules as $ruleString)
+		{
+			if ($ruleString === null)
+			{
+				continue;
+			}
+
+			// Parse comma-separated rules
+			$parts = array_map('trim', explode(',', $ruleString));
+
+			foreach ($parts as $rule)
+			{
+				// Match len: patterns (e.g., "len: ..123", "len: 5", "len: 1..10")
+				if (preg_match('/^len:\s*(?P<min>\d+)?(?P<dots>\.\.)?(?P<max>\d+)?$/', $rule, $matches))
+				{
+					// Extract max length from different patterns
+					if (!empty($matches['max']))
+					{
+						// Patterns: "len: ..123" or "len: 1..123"
+						return intval($matches['max']);
+					}
+					elseif (!empty($matches['min']) && empty($matches['dots']))
+					{
+						// Pattern: "len: 5" (exact length)
+						return intval($matches['min']);
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 *	Extract enum values from Validates attribute enum: constraint
+	 */
+	private static function extractEnumValuesFromValidates(Validates $validates): ?array
+	{
+		$rules = array_filter([
+			$validates->onCreate,
+			$validates->onUpdate,
+		]);
+
+		foreach ($rules as $ruleString)
+		{
+			if ($ruleString === null)
+			{
+				continue;
+			}
+
+			// Parse comma-separated rules
+			$parts = array_map('trim', explode(',', $ruleString));
+
+			foreach ($parts as $rule)
+			{
+				// Match enum: pattern (e.g., "enum: foo, bar, baz")
+				if (preg_match('/^enum:\s*(.+)$/', $rule, $matches))
+				{
+					// Extract and clean enum values
+					$enumString = $matches[1];
+					$values = array_map('trim', explode(',', $enumString));
+
+					return array_filter($values);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static function toSqlType(string $phpType, bool $isPrimaryKey, bool $isTimestamp, bool $timestampDefault, ?int $maxLength = null, ?array $enumValues = null): string
 	{
 		if ($isPrimaryKey && $phpType === 'int')
 		{
@@ -160,12 +253,20 @@ class SchemaGenerator
 			return 'TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP';
 		}
 
+		// If enum values are provided, generate ENUM type
+		if ($enumValues !== null && !empty($enumValues))
+		{
+			$quotedValues = array_map(fn($v) => "'{$v}'", $enumValues);
+
+			return 'ENUM(' . implode(', ', $quotedValues) . ')';
+		}
+
 		return match ($phpType)
 		{
 			'int' => 'INT',
 			'float' => 'FLOAT',
 			'bool' => 'TINYINT(1)',
-			'string' => 'VARCHAR(255)',
+			'string' => $maxLength !== null ? "VARCHAR({$maxLength})" : 'VARCHAR(255)',
 			'array' => 'JSON',
 			'object' => 'JSON',
 			default => 'TEXT',
