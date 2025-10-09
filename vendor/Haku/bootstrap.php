@@ -159,7 +159,7 @@ function loadEnvironment(string $fallbackEnvironment = 'dev')
 		header('content-type: text/plain');
 
 		echo sprintf("panic: no such environment: %s\n", HAKU_ENVIRONMENT);
-		echo sprintf("run 'php haku init --%s' in your terminal\n", HAKU_ENVIRONMENT);
+		echo sprintf("run 'php haku env --name %s' in your terminal\n", HAKU_ENVIRONMENT);
 
 		exit -1;
 	}

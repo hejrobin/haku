@@ -48,3 +48,4 @@ enum Ansi: int
 		return 'm';
 	}
 }
+

@@ -24,11 +24,9 @@ gh repo clone hejrobin/haku project-name
 
 cd project-name
 
-php haku init --dev
+php haku-init
 
 ```
-
-You might also need to run `haku init --test` to enable a testing environment.
 
 -----
 
@@ -48,7 +46,8 @@ Ships with a tiny command line interface, a built in development server and code
 
 | Command | Description |
 | --- | --- |
-| `php haku init`|  Creates required configuration files, if you add `--dev` or `--test` configuration files for those environments will be created. |
+| `php haku-init`| Creates required configuration files, for initial setup |
+| `php haku env` | Creates, or refreshes an already defined environment |
 | `php haku serve`|  Starts a development server using [PHP's built in server](https://www.php.net/manual/en/features.commandline.webserver.php). |
 | `php haku make <generator>`|  Invokes one of the code generators that Haku ships with, run `php haku make --help` to see available generators. |
 | `php haku test`|  Runs all available `*.spec.php` tests in the workspace, you can control what tests to run with the flags `--only` or `--omit`. |

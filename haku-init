@@ -1,0 +1,111 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+namespace Haku;
+
+error_reporting(E_ALL & ~E_NOTICE);
+
+define('HAKU_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+define('HAKU_PHP_VERSION', '8.3.0');
+
+if (version_compare(PHP_VERSION, HAKU_PHP_VERSION, '<')) {
+	echo sprintf("Haku requires PHP %s, version %s installed.\n", HAKU_PHP_VERSION, PHP_VERSION);
+	exit(1);
+}
+
+// Simple autoloader just for this script
+spl_autoload_register(function ($class) {
+	$prefix = 'Haku\\';
+	$baseDir = __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'Haku' . DIRECTORY_SEPARATOR;
+
+	$len = strlen($prefix);
+	if (strncmp($prefix, $class, $len) !== 0) {
+		return;
+	}
+
+	$relativeClass = substr($class, $len);
+	$file = $baseDir . str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass) . '.php';
+
+	if (file_exists($file)) {
+		require $file;
+	}
+});
+
+// Random string generator for keys
+function generateRandomKey(): string
+{
+	$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	$length = 64;
+	$randomString = '';
+
+	for ($i = 0; $i < $length; $i++) {
+		$randomString .= $characters[random_int(0, strlen($characters) - 1)];
+	}
+
+	return $randomString;
+}
+
+function createEnvironmentConfig(string $environment, Console\Output $output): bool
+{
+	$inputPath = HAKU_ROOT_PATH . 'private' . DIRECTORY_SEPARATOR . 'generator-templates' . DIRECTORY_SEPARATOR . 'env.tmpl';
+	$outputPath = HAKU_ROOT_PATH . sprintf('config.%s.php', $environment);
+
+	if (!file_exists($inputPath)) {
+		$output->error('environment template not found');
+		return false;
+	}
+
+	$contents = file_get_contents($inputPath);
+
+	$templateVariables = [
+		'signingKey' => generateRandomKey(),
+		'jwtSigningKey' => generateRandomKey(),
+	];
+
+	foreach($templateVariables as $variable => $value) {
+		$contents = str_replace("%{$variable}%", strval($value), $contents);
+	}
+
+	$bytes = file_put_contents($outputPath, $contents);
+
+	if ($bytes === 0) {
+		$output->error(sprintf('could not create %s environment', $environment));
+		return false;
+	}
+
+	$output->success(sprintf('created environment config for: %s', $environment));
+	return true;
+}
+
+// Main execution
+$output = new Console\Output();
+
+$output->output('initializing...');
+$output->break();
+
+$success = true;
+
+// Create dev environment
+if (!createEnvironmentConfig('dev', $output)) {
+	$success = false;
+}
+
+// Create test environment
+if (!createEnvironmentConfig('test', $output)) {
+	$success = false;
+}
+
+$output->break();
+
+if ($success) {
+	$output->info('initialization complete!');
+	$output->info('you can now use \'php haku\' commands');
+	$output->info('use \'php haku env --name <env> --regenerate\' to regenerate configs');
+
+	exit(0);
+} else {
+	$output->error('initialization failed, please check the errors above');
+
+	exit(1);
+}

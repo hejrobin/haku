@@ -21,6 +21,7 @@ haku/
 ├── index.php              # Main entry point, handles requests & exceptions
 ├── bootstrap.php          # Bootstrap configuration
 ├── haku                   # CLI tool for development
+├── haku-init              # Initial setup script (run first)
 ├── config.dev.php         # Development environment config
 ├── config.test.php        # Test environment config
 ├── app/                   # Application code
@@ -51,8 +52,13 @@ haku/
 4. Response buffered and returned as JSON
 5. Exceptions caught and formatted as JSON errors
 
+### Initial Setup
+**First time setup:** Run `php haku-init` to create initial environment configs
+- Creates both `config.dev.php` and `config.test.php` with random signing keys
+- Must be run before using any other `php haku` commands
+
 ### CLI Tool (`php haku`)
-- `init` - Creates config files (--dev, --test flags)
+- `env` - Creates/regenerates environment config files (--name dev|test|prod, --regenerate)
 - `serve` - Starts development server
 - `make <generator>` - Code generation
 - `test` - Runs *.spec.php tests (--only, --omit flags)
@@ -79,11 +85,12 @@ haku/
 - Can filter tests with --only or --omit flags
 
 ## Development Workflow
-1. Use `php haku serve` for local development
-2. Routes defined in [app/routes/](app/routes/)
-3. Middlewares process requests in [app/middlewares/](app/middlewares/)
-4. Components provide reusable logic
-5. Write tests alongside features
+1. **First time:** Run `php haku-init` to create environment configs
+2. Use `php haku serve` for local development
+3. Routes defined in [app/routes/](app/routes/)
+4. Middlewares process requests in [app/middlewares/](app/middlewares/)
+5. Components provide reusable logic
+6. Write tests alongside features
 
 ## Important Notes for Claude
 - **No Composer:** Don't suggest Composer packages - use native PHP only

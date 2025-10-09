@@ -35,7 +35,7 @@ try
 
 	$engine = new Console\Engine();
 
-	$engine->registerCommand(new Console\Commands\Init());
+	$engine->registerCommand(new Console\Commands\Env());
 	$engine->registerCommand(new Console\Commands\Version());
 	$engine->registerCommand(new Console\Commands\Upgrade());
 	$engine->registerCommand(new Console\Commands\Serve());
