@@ -8,12 +8,16 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use \Attribute;
 
+/**
+ *	Schema attribute for overriding property SQL definition in migrations
+ *	Example: #[Schema('TEXT NOT NULL')]
+ */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Timestamp {
+class Schema
+{
 
 	public function __construct(
-		public bool $unfiltered = false,
-		public bool $default = false
+		public string $definition
 	) {}
 
 }

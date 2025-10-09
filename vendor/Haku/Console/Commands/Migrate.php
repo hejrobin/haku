@@ -32,7 +32,8 @@ class Migrate extends Command
 	public function options(): array
 	{
 		return [
-			'--down|reverts the last migration|'
+			'--down|reverts the last migration|',
+			'--seed|runs seed method after migrations|'
 		];
 	}
 
@@ -85,6 +86,7 @@ class Migrate extends Command
 	private function runMigrations(): bool
 	{
 		$db = haku('db');
+		$withSeed = array_key_exists('seed', $this->arguments->arguments);
 
 		$numApplied = 0;
 
@@ -121,6 +123,7 @@ class Migrate extends Command
 			if (in_array($file, $appliedMigrations))
 			{
 				$this->output->info(sprintf('migration "%s" already applied, skipping...', $file));
+				continue;
 			}
 
 			$migrationFile = basename($file);
@@ -148,6 +151,21 @@ class Migrate extends Command
 				$numAppliedMigrations++;
 
 				$this->output->success(sprintf('applied migration "%s"', $migrationFile));
+
+				// Run seed if --seed flag is set and method exists
+				if ($withSeed && method_exists($migration, 'seed'))
+				{
+					try
+					{
+						$this->output->info(sprintf('seeding "%s"', $migrationFile));
+						$migration->seed($db);
+						$this->output->success(sprintf('seeded "%s"', $migrationFile));
+					}
+					catch (\Throwable $seedException)
+					{
+						$this->output->warn(sprintf('seed failed for "%s": %s', $migrationFile, $seedException->getMessage()));
+					}
+				}
 			}
 			catch (\Throwable $exception)
 			{

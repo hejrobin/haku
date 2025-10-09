@@ -16,12 +16,21 @@ class %migration% implements Migration
 
 	public function up(Connection $db): void
 	{
-		// @todo Add up migration logic for %migration%.
+		%upSql%
 	}
 
 	public function down(Connection $db): void
 	{
-		// @todo Add down migration logic for %migration%.
+		%downSql%
+	}
+
+	/**
+	 *	Optional: Seed data after migration
+	 *	Run with: php haku migrate --seed
+	 */
+	public function seed(Connection $db): void
+	{
+		%seedSql%
 	}
 
 }

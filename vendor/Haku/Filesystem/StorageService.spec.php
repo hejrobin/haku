@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-use function Haku\Filesystem\getUploadedFiles;
+
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
@@ -12,6 +12,8 @@ use function Haku\Spec\{
 	expect,
 	expectAll,
 };
+
+use function Haku\Filesystem\getUploadedFiles;
 
 use Haku\Filesystem\StorageService;
 

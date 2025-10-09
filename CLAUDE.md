@@ -75,6 +75,9 @@ haku/
 ## Database
 - Uses PDO PHP Extension
 - Migrations stored in [app/migrations/](app/migrations/)
+- Run migrations: `php haku migrate`
+- Revert last migration: `php haku migrate --down`
+- Run migrations with seeding: `php haku migrate --seed`
 - Queries organized in [app/queries/](app/queries/)
 - Models in [app/models/](app/models/)
 
@@ -112,7 +115,86 @@ haku/
 ### Adding a Model
 1. Create model in [app/models/](app/models/)
 2. Use code generator: `php haku make model`
-3. Add corresponding migration if needed
+3. Generate migration from model: `php haku make migration ModelName --model`
+
+### Generating Migrations from Models
+Models can automatically generate CREATE TABLE migrations by analyzing attributes:
+
+**Supported Attributes:**
+- `#[PrimaryKey]` - Generates INT UNSIGNED AUTO_INCREMENT primary key
+- `#[Timestamp]` - Generates TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP (auto-updates on row change)
+- `#[Timestamp(default: true)]` - Generates TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL (auto-populates on insert)
+- `#[Schema('CUSTOM SQL')]` - Override column definition with custom SQL
+- `#[Validates()]` - Tracked but doesn't affect schema
+- PHP type hints - Automatically mapped to SQL types (int→INT, string→VARCHAR(255), bool→TINYINT(1), etc.)
+
+**Example Model:**
+```php
+#[Entity('users')]
+class User extends Model {
+    #[PrimaryKey]
+    protected readonly int $id;
+
+    #[Schema('VARCHAR(100) UNIQUE NOT NULL')]
+    protected string $email;
+
+    protected string $name;  // Becomes VARCHAR(255) NOT NULL
+    protected ?int $age;      // Becomes INT DEFAULT NULL
+
+    #[Timestamp(default: true)]
+    protected readonly string $created_at;
+
+    #[Timestamp]
+    protected readonly string $updated_at;
+}
+```
+
+**Generate Migration:**
+```bash
+php haku make migration User --model
+```
+
+This creates a migration with the complete CREATE TABLE statement based on model attributes.
+
+### Seeding Data in Migrations
+Migrations can include an optional `seed()` method to populate tables with initial data:
+
+**Generated migrations include:**
+- `up()` - Creates the table
+- `down()` - Drops the table
+- `seed()` - Optional method for inserting seed data
+
+**Example Migration with Seed:**
+```php
+class CreateAccountTable implements Migration {
+    public function up(Connection $db): void {
+        $db->exec("CREATE TABLE IF NOT EXISTS `accounts` (...)");
+    }
+
+    public function down(Connection $db): void {
+        $db->exec("DROP TABLE IF EXISTS `accounts`;");
+    }
+
+    public function seed(Connection $db): void {
+        $db->exec("
+            INSERT INTO `accounts` (`email`, `username`, `password`, `is_active`)
+            VALUES
+                ('admin@example.com', 'admin', 'hashed_pass', 1),
+                ('user@example.com', 'testuser', 'hashed_pass', 1);
+        ");
+    }
+}
+```
+
+**Running Migrations:**
+- `php haku migrate` - Run migrations only
+- `php haku migrate --seed` - Run migrations and execute seed() methods
+- `php haku migrate --down` - Revert last migration
+
+**Notes:**
+- The `seed()` method is optional and only runs when `--seed` flag is used
+- Seed failures are caught and logged as warnings (won't stop migration)
+- Seeds run after the migration is committed
 
 ### Writing Tests
 1. Create `*.spec.php` file next to code

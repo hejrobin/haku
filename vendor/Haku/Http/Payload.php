@@ -19,7 +19,6 @@ class Payload
 	public function __construct(array $schema)
 	{
 		$this->schema = new Schema($schema);
-
 		$this->raw = getRawRequestPayload();
 
 		if (json_validate($this->raw))
