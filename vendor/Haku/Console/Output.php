@@ -12,6 +12,7 @@ defined('STDOUT') || define('STDOUT', fopen('php://stdout', 'w'));
 
 class Output
 {
+
 	protected bool $useAnsi = true;
 
 	public function __construct()
@@ -167,4 +168,5 @@ class Output
 	{
 		$this->output($message, 'ok', Ansi::Green);
 	}
+
 }

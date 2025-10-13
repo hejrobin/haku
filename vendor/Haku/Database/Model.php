@@ -31,7 +31,7 @@ abstract class Model implements JsonSerializable
 
 	use Entity;
 
-	protected const DefaultFetchLimit = 50;
+	protected const DefaultFetchLimit = 25;
 
 	protected Connection $connection;
 
@@ -51,7 +51,7 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
-	 * Finds all recorfs for specific clauses.
+	 *	Finds all recorfs for specific clauses.
 	 *
 	 *	@param bool $distinct
 	 *

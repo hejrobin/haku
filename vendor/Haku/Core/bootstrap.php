@@ -8,6 +8,8 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 final class Kernel
 {
+
 	use Singleton;
 	use Factory;
+
 }

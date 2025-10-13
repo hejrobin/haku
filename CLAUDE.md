@@ -104,6 +104,7 @@ haku/
 - **Namespaces:** All code uses `Haku\` namespace prefix
 - **Type Safety:** Use strict types (`declare(strict_types=1)`)
 - **Error Handling:** Throw `StatusException` for HTTP errors
+- **Code Style:** Use Allman style - opening curly brackets on new lines for functions, classes, conditionals, and loops
 
 ## Common Tasks
 
@@ -131,7 +132,8 @@ Models can automatically generate CREATE TABLE migrations by analyzing attribute
 **Example Model:**
 ```php
 #[Entity('users')]
-class User extends Model {
+class User extends Model
+{
     #[PrimaryKey]
     protected readonly int $id;
 
@@ -166,16 +168,20 @@ Migrations can include an optional `seed()` method to populate tables with initi
 
 **Example Migration with Seed:**
 ```php
-class CreateAccountTable implements Migration {
-    public function up(Connection $db): void {
+class CreateAccountTable implements Migration
+{
+    public function up(Connection $db): void
+    {
         $db->exec("CREATE TABLE IF NOT EXISTS `accounts` (...)");
     }
 
-    public function down(Connection $db): void {
+    public function down(Connection $db): void
+    {
         $db->exec("DROP TABLE IF EXISTS `accounts`;");
     }
 
-    public function seed(Connection $db): void {
+    public function seed(Connection $db): void
+    {
         $db->exec("
             INSERT INTO `accounts` (`email`, `username`, `password`, `is_active`)
             VALUES

@@ -8,7 +8,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Haku\Database\{
 	Connection,
-	Migration
+	Migration\Migration
 };
 
 class %migration% implements Migration
@@ -16,12 +16,12 @@ class %migration% implements Migration
 
 	public function up(Connection $db): void
 	{
-		%upSql%
+		%up%
 	}
 
 	public function down(Connection $db): void
 	{
-		%downSql%
+		%down%
 	}
 
 	/**
@@ -30,7 +30,7 @@ class %migration% implements Migration
 	 */
 	public function seed(Connection $db): void
 	{
-		%seedSql%
+		%seed%
 	}
 
 }

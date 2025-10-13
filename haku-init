@@ -81,6 +81,16 @@ function createEnvironmentConfig(string $environment, Console\Output $output): b
 // Main execution
 $output = new Console\Output();
 
+if (
+	file_exists(HAKU_ROOT_PATH . 'config.dev.php') ||
+	file_exists(HAKU_ROOT_PATH . 'config.test.php')
+) {
+	$output->info('haku already initialized');
+	$output->info('use \'php haku env --name <env> --regenerate\' to regenerate configs');
+
+	exit(0);
+}
+
 $output->output('initializing...');
 $output->break();
 

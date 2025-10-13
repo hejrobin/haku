@@ -32,12 +32,17 @@ function hyphenate(
 	return $resolvedString;
 }
 
-function camelCaseFromSnakeCase(string $unresolved): string
+function camelCaseFromSnakeCase(string $unresolved, bool $uppercaseFirstLetter = false): string
 {
 	$resolved = trim(preg_replace('/[^a-z0-9]+/i', ' ', $unresolved));
 	$resolved = ucwords($resolved);
 	$resolved = str_replace(' ', '', $resolved);
 	$resolved = lcfirst($resolved);
+
+	if ($uppercaseFirstLetter)
+	{
+		$resolved = ucfirst($resolved);
+	}
 
 	return $resolved;
 }
