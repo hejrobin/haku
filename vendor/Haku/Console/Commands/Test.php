@@ -32,7 +32,9 @@ class Test extends Command
 	{
 		return [
 			'--only|runs test matching filter|',
-			'--omit|runs all tests except filter|'
+			'--omit|runs all tests except filter|',
+			'--tags|runs tests with matching tags (comma-separated)|',
+			'--exclude-tags|excludes tests with matching tags (comma-separated)|'
 		];
 	}
 
@@ -42,6 +44,8 @@ class Test extends Command
 		{
 			$filterOnly = $this->arguments->arguments['only'] ?? '';
 			$filterOmit = $this->arguments->arguments['omit'] ?? '';
+			$filterTags = $this->arguments->arguments['tags'] ?? '';
+			$excludeTags = $this->arguments->arguments['exclude-tags'] ?? '';
 
 			loadSpecTests(
 				only: $filterOnly,
@@ -49,6 +53,19 @@ class Test extends Command
 			);
 
 			$runner = Runner::getInstance();
+
+			// Set tag filters if provided
+			if (!empty($filterTags))
+			{
+				$tags = array_map('trim', explode(',', $filterTags));
+				$runner->setFilterTags($tags);
+			}
+
+			if (!empty($excludeTags))
+			{
+				$tags = array_map('trim', explode(',', $excludeTags));
+				$runner->setExcludeTags($tags);
+			}
 
 			if ($runner->numTests() === 0)
 			{

@@ -62,11 +62,49 @@ final class DefaultReporter extends Reporter
 	{
 		$this->output->info('loaded test config');
 
+		// Show active filters if any
+		if ($this->runner->hasFilters())
+		{
+			$filterMessages = [];
+
+			if (!empty($this->runner->getFilterTags()))
+			{
+				$filterMessages[] = sprintf(
+					'tags: %s',
+					$this->output->format(
+						implode(', ', $this->runner->getFilterTags()),
+						Ansi::Cyan
+					)
+				);
+			}
+
+			if (!empty($this->runner->getExcludeTags()))
+			{
+				$filterMessages[] = sprintf(
+					'exclude-tags: %s',
+					$this->output->format(
+						implode(', ', $this->runner->getExcludeTags()),
+						Ansi::Cyan
+					)
+				);
+			}
+
+			if (!empty($filterMessages))
+			{
+				$this->output->info(
+					sprintf('filters: %s', implode(', ', $filterMessages))
+				);
+			}
+		}
+
+		// Count actual tests that will run (after filtering)
+		$testsToRun = $this->runner->countActualTestsToRun();
+
 		$this->output->info(
 			sprintf(
 				'waiting for %s specs...',
 				$this->output->format(
-					$this->runner->numTests(),
+					$testsToRun,
 					Ansi::Yellow
 				)
 			)
@@ -202,6 +240,12 @@ final class DefaultReporter extends Reporter
 
 		foreach ($report->specs as $spec => $specs)
 		{
+			// Skip empty spec groups (no tests ran)
+			if (empty($specs))
+			{
+				continue;
+			}
+
 			$this->heading($spec, count($specs));
 			$this->output->break();
 

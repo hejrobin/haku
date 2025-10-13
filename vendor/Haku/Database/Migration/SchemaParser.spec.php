@@ -10,7 +10,6 @@ use function Haku\Spec\{
 	it,
 	expect,
 	expectAll,
-	beforeEach,
 };
 
 use Haku\Database\Migration\SchemaParser;

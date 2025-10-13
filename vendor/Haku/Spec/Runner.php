@@ -16,6 +16,8 @@ final class Runner
 
 	protected array $specs = [];
 
+	protected array $specTags = [];
+
 	protected array $report = [];
 
 	protected array $specReport = [];
@@ -33,6 +35,11 @@ final class Runner
 
 	protected ?Closure $beforeAllCallback = null;
 	protected ?Closure $afterAllCallback = null;
+
+	protected array $filterTags = [];
+	protected array $excludeTags = [];
+
+	protected int $actualTestsToRun = 0;
 
 	public static function getInstance(): self {
 		if (is_object(self::$__instance) === false)
@@ -113,14 +120,99 @@ final class Runner
 		return count($this->specs, COUNT_RECURSIVE) - $this->numSpecs();
 	}
 
+	public function setFilterTags(array $tags): void
+	{
+		$this->filterTags = $tags;
+	}
+
+	public function setExcludeTags(array $tags): void
+	{
+		$this->excludeTags = $tags;
+	}
+
+	public function getFilterTags(): array
+	{
+		return $this->filterTags;
+	}
+
+	public function getExcludeTags(): array
+	{
+		return $this->excludeTags;
+	}
+
+	public function hasFilters(): bool
+	{
+		return !empty($this->filterTags) || !empty($this->excludeTags);
+	}
+
+	public function countActualTestsToRun(): int
+	{
+		$count = 0;
+
+		foreach ($this->specs as $specDescription => $tests)
+		{
+			if (!$this->shouldRunSpec($specDescription))
+			{
+				continue;
+			}
+
+			foreach ($tests as $test)
+			{
+				$count += $test->numCases();
+			}
+		}
+
+		return $count;
+	}
+
 	public function describeSpec(
-		string $specDescription
+		string $specDescription,
+		array $tags = []
 	): void
 	{
 		$this->specDescription = $specDescription;
+		$this->specTags[$specDescription] = $tags;
 
 		$this->specs[$specDescription] = [];
 		$this->specReport[$specDescription] = [];
+	}
+
+	protected function shouldRunSpec(string $specDescription): bool
+	{
+		$tags = $this->specTags[$specDescription] ?? [];
+
+		// If filter tags are set, spec must have at least one matching tag
+		if (!empty($this->filterTags))
+		{
+			$hasMatchingTag = false;
+			foreach ($this->filterTags as $filterTag)
+			{
+				if (in_array($filterTag, $tags, true))
+				{
+					$hasMatchingTag = true;
+					break;
+				}
+			}
+
+			if (!$hasMatchingTag)
+			{
+				return false;
+			}
+		}
+
+		// If exclude tags are set, spec must not have any excluded tag
+		if (!empty($this->excludeTags))
+		{
+			foreach ($this->excludeTags as $excludeTag)
+			{
+				if (in_array($excludeTag, $tags, true))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public function registerTest(
@@ -155,6 +247,12 @@ final class Runner
 		{
 			foreach ($this->specs as $description => $tests)
 			{
+				// Check if this spec should run based on tags
+				if (!$this->shouldRunSpec($description))
+				{
+					continue;
+				}
+
 				foreach ($tests as $test)
 				{
 					$test->run();

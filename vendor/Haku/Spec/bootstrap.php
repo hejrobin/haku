@@ -29,13 +29,22 @@ use Haku\Spec\Expectations\{
 use function Haku\cleanPath;
 use function Haku\Generic\Arrays\find;
 use function Haku\Delegation\generateApplicationRoutes;
+use function Haku\Database\isConfigured as isDatabaseConfigured;
 
 function spec(
 	string $description,
-	Closure $container
+	Closure $container,
+	array $tags = []
 ): void
 {
-	Runner::getInstance()->describeSpec($description);
+	// Auto-exclude database tests if database is not configured
+	if (in_array('database', $tags, true) && !isDatabaseConfigured())
+	{
+		// Skip this spec entirely if it requires database but database is not configured
+		return;
+	}
+
+	Runner::getInstance()->describeSpec($description, $tags);
 
 	$container();
 }
