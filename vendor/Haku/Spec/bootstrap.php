@@ -144,7 +144,7 @@ function loadSpecTests(
 	?array $excludePaths = null,
 ): int
 {
-	$pathResolveRegExp = '/^.+[A-Z][a-z]+\.spec\.php$/';
+	$pathResolveRegExp = '/^.+[A-Za-z]+\.spec\.php$/';
 
 	$regexDirectoryIterator = new RegexIterator(
 		new RecursiveIteratorIterator(

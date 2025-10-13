@@ -16,7 +16,7 @@ class Request
 		private Method $method,
 		private array $callback,
 		private array $middlewares,
-		private Headers $headers,
+		private ?Headers $headers,
 		private array $parameters,
 	) {
 		if (!$headers)
