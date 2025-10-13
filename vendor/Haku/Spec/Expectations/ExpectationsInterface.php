@@ -162,4 +162,11 @@ interface ExpectationsInterface
 		Status $httpStatus,
 	): ExpectationResult;
 
+	/**
+	 *	Expects actual string to contain substring.
+	 */
+	public function toContain(
+		string $substring
+	): ExpectationResult;
+
 }

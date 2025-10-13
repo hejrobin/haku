@@ -538,4 +538,27 @@ final class Expectations implements ExpectationsInterface
 		);
 	}
 
+	public function toContain(
+		string $substring
+	): ExpectationResult
+	{
+		if (!is_string($this->actual))
+		{
+			return new ExpectationResult(
+				false,
+				$this->report("expectation is not a string")
+			);
+		}
+
+		$contains = str_contains($this->actual, $substring);
+
+		return $this->toExpectationResult(
+			success: $contains,
+			errorMessage: "expectation does not contain '$substring'",
+			inverseErrorMessage: "expectation contains '$substring'",
+			actual: $this->actual,
+			expect: $substring,
+		);
+	}
+
 }

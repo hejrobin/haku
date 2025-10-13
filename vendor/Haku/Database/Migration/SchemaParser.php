@@ -40,19 +40,40 @@ class SchemaParser
 
 	public function parse(string $modelName)
 	{
-		$path = $path = resolvePath('app', 'models', "{$modelName}.php");
-		$name = "App\\Models\\{$modelName}";
+		$paths = [
+			[
+				'path' => resolvePath('app', 'models', "{$modelName}.php"),
+				'namespace' => "App\\Models\\{$modelName}"
+			],
+			[
+				'path' => resolvePath('testing', 'models', "{$modelName}.php"),
+				'namespace' => "Testing\\Models\\{$modelName}"
+			],
+		];
 
-		if (!file_exists($path))
+		$path = null;
+		$name = null;
+
+		foreach ($paths as $candidate)
 		{
-			throw new FrameworkException(sprintf('File "%s" not found', $path));
+			if (file_exists($candidate['path']))
+			{
+				$path = $candidate['path'];
+				$name = $candidate['namespace'];
+				break;
+			}
+		}
+
+		if ($path === null)
+		{
+			throw new FrameworkException(sprintf('Model "%s" not found in app/models or testing/models', $modelName));
 		}
 
 		require_once $path;
 
 		if (!class_exists($name))
 		{
-			throw new FrameworkException(sprintf('Model "%s" not found', $name));
+			throw new FrameworkException(sprintf('Model class "%s" not found', $name));
 		}
 
 		$reflection = new ReflectionClass($name);
@@ -255,19 +276,40 @@ class SchemaParser
 
 	private function getTableNameFromModel(string $modelName): string
 	{
-		$path = resolvePath('app', 'models', "{$modelName}.php");
-		$className = "App\\Models\\{$modelName}";
+		$paths = [
+			[
+				'path' => resolvePath('app', 'models', "{$modelName}.php"),
+				'namespace' => "App\\Models\\{$modelName}"
+			],
+			[
+				'path' => resolvePath('testing', 'models', "{$modelName}.php"),
+				'namespace' => "Testing\\Models\\{$modelName}"
+			],
+		];
 
-		if (!file_exists($path))
+		$path = null;
+		$className = null;
+
+		foreach ($paths as $candidate)
 		{
-			throw new FrameworkException(sprintf('Related model file "%s" not found', $path));
+			if (file_exists($candidate['path']))
+			{
+				$path = $candidate['path'];
+				$className = $candidate['namespace'];
+				break;
+			}
+		}
+
+		if ($path === null)
+		{
+			throw new FrameworkException(sprintf('Related model "%s" not found in app/models or testing/models', $modelName));
 		}
 
 		require_once $path;
 
 		if (!class_exists($className))
 		{
-			throw new FrameworkException(sprintf('Related model "%s" not found', $className));
+			throw new FrameworkException(sprintf('Related model class "%s" not found', $className));
 		}
 
 		$reflection = new ReflectionClass($className);
