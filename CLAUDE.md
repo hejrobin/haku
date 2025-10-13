@@ -105,6 +105,7 @@ haku/
 - **Type Safety:** Use strict types (`declare(strict_types=1)`)
 - **Error Handling:** Throw `StatusException` for HTTP errors
 - **Code Style:** Use Allman style - opening curly brackets on new lines for functions, classes, conditionals, and loops
+- **Package Naming:** Framework packages/namespaces are pluralized (e.g., `Haku\Errors`, `Haku\Http\Messages`, `Haku\Database\Attributes`)
 
 ## Common Tasks
 

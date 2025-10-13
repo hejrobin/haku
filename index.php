@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Haku;
 
-error_reporting(E_ALL & ~E_NOTICE);
-
 define('HAKU_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
 define('HAKU_PHP_VERSION', '8.3.0');
 
@@ -51,6 +49,9 @@ try
 	autoloadResolver();
 	loadEnvironment();
 	loadBootstrap();
+
+	// Initialize error handling based on environment
+	\Haku\Errors\initialize(HAKU_ENV);
 
 	$__outputHeaders = new Headers([
 		'Content-Type' => 'application/json',
