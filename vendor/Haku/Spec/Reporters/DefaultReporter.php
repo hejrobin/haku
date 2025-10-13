@@ -222,7 +222,7 @@ final class DefaultReporter extends Reporter
 
 					$this->output->send(
 						$this->output->indent(3),
-						sprintf('%s: ', $this->output->format('recieved', Ansi::Red)),
+						sprintf('%s: ', $this->output->format('received', Ansi::Red)),
 						(string) $actual
 					);
 				}

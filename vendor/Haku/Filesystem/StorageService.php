@@ -66,7 +66,7 @@ abstract class StorageService
 		{
 			UPLOAD_ERR_INI_SIZE => 'file size too big (server limit)',
 			UPLOAD_ERR_FORM_SIZE => 'file size too big (form limit)',
-			UPLOAD_ERR_PARTIAL => 'recieved partial file',
+			UPLOAD_ERR_PARTIAL => 'received partial file',
 			UPLOAD_ERR_NO_FILE => 'no file present',
 			UPLOAD_ERR_NO_TMP_DIR => 'upload folder does not exist',
 			UPLOAD_ERR_CANT_WRITE => 'failed to write file to disk',

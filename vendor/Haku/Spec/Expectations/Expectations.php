@@ -398,7 +398,7 @@ final class Expectations implements ExpectationsInterface
 	}
 
 	/**
-	 *	Vaidates presence of a property in a class or instace.
+	 *	Validates presence of a property in a class or instance.
 	 */
 	public function toHaveProperty(
 		string $propertyName

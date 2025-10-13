@@ -47,7 +47,7 @@ function isConfigured(): bool
 }
 
 /**
- *	Validates if configured database connectyion type is of a specific type.
+ *	Validates if configured database connection type is of a specific type.
  *
  *	@param \Haku\Database\ConnectionType $connectionType
  *
@@ -64,7 +64,7 @@ function databaseType(ConnectionType $connectionType): bool
 }
 
 /**
- *	Returns a SQL value from a mixed varoable.
+ *	Returns a SQL value from a mixed variable.
  *
  *	@param mixed $value
  *

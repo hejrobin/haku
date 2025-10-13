@@ -51,7 +51,7 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
-	 *	Finds all recorfs for specific clauses.
+	 *	Finds all records for specific clauses.
 	 *
 	 *	@param bool $distinct
 	 *
@@ -151,7 +151,7 @@ abstract class Model implements JsonSerializable
 	}
 
 	/**
-	 *	Creates a paginated resultsrt.
+	 *	Creates a paginated result set.
 	 *
 	 *	@param mixed $distinct
 	 *	@param array $additionalFields
@@ -297,7 +297,7 @@ abstract class Model implements JsonSerializable
 	{
 		$self = new static();
 
-		if ($this->isSoftDeleteable() && $this->deletedAt !== null)
+		if ($this->isSoftDeleteable() && property_exists($this, 'deletedAt'))
 		{
 			$db = haku('db');
 
