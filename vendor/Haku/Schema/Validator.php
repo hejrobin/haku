@@ -81,7 +81,9 @@ class Validator
 
 		if (preg_match('/(?P<min>(?:\d+)?)(?P<dots>(?:\.{2})?)(?P<max>(?:\d+)?)/', $range, $matches))
 		{
-			extract($matches);
+			$min = $matches['min'] ?? '';
+			$dots = $matches['dots'] ?? '';
+			$max = $matches['max'] ?? '';
 
 			$hasMin = $min !== '';
 			$hasMax = $max !== '';

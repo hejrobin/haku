@@ -30,17 +30,15 @@ class Request
 		Headers $headers = null,
 	): self
 	{
-		extract($route);
-
 		return new self(
-			name: $name,
-			path: $path,
-			pattern: $pattern,
-			method: $method,
-			callback: $callback,
-			middlewares: $middlewares ?? [],
+			name: $route['name'],
+			path: $route['path'],
+			pattern: $route['pattern'],
+			method: $route['method'],
+			callback: $route['callback'],
+			middlewares: $route['middlewares'] ?? [],
 			headers: $headers,
-			parameters: $parameters ?? [],
+			parameters: $route['parameters'] ?? [],
 		);
 	}
 
