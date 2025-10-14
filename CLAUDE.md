@@ -117,7 +117,7 @@ haku/
 ### Adding a Model
 1. Create model in [app/models/](app/models/)
 2. Use code generator: `php haku make model`
-3. Generate migration from model: `php haku make migration ModelName --model`
+3. Generate migration from model: `php haku make migration migration_name --from ModelName`
 
 ### Generating Migrations from Models
 Models can automatically generate CREATE TABLE migrations by analyzing attributes:

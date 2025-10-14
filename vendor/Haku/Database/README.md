@@ -470,7 +470,7 @@ php haku migrate --down
 
 ```bash
 # Generate migration from model attributes
-php haku make migration User --model
+php haku make migration create_user_table --from User
 ```
 
 This reads the model's attributes and generates appropriate SQL:
