@@ -55,6 +55,13 @@ function resolveArguments(
 					explode(',', $tmpValue)
 				);
 			}
+			// Check if the next value is another flag (starts with --)
+			// If so, this is a boolean flag without a value
+			else if ($value !== null && str_starts_with($value, '--'))
+			{
+				$value = null;
+				$n--; // Don't skip the next arg since it's another flag
+			}
 
 			$args['arguments'][$key] = $value;
 			$n++; // Skip next arg
@@ -107,4 +114,32 @@ function resolveArguments(
 function calculateIndentLength(array $items): int
 {
 	return max(array_map('strlen', $items));
+}
+
+/**
+ *	Recursively loads all service files from Commands/Services directory.
+ *
+ *	@return void
+ */
+function loadConsoleServices(): void
+{
+	$servicesPath = HAKU_ROOT_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'Haku' . DIRECTORY_SEPARATOR . 'Console' . DIRECTORY_SEPARATOR . 'Commands' . DIRECTORY_SEPARATOR . 'Services';
+
+	if (!is_dir($servicesPath))
+	{
+		return;
+	}
+
+	$iterator = new \RecursiveIteratorIterator(
+		new \RecursiveDirectoryIterator($servicesPath, \RecursiveDirectoryIterator::SKIP_DOTS),
+		\RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	foreach ($iterator as $file)
+	{
+		if ($file->isFile() && $file->getExtension() === 'php')
+		{
+			require_once $file->getPathname();
+		}
+	}
 }

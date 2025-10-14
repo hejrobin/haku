@@ -20,6 +20,8 @@ use function Haku\{
 	loadBootstrap,
 };
 
+use function Haku\Console\loadConsoleServices;
+
 $didThrow = false;
 
 try
@@ -32,11 +34,13 @@ try
 	autoloadResolver();
 	loadEnvironment();
 	loadBootstrap();
+	loadConsoleServices();
 
 	$engine = new Console\Engine();
 
 	$engine->registerCommand(new Console\Commands\Env());
 	$engine->registerCommand(new Console\Commands\Version());
+	$engine->registerCommand(new Console\Commands\Release());
 	$engine->registerCommand(new Console\Commands\Upgrade());
 	$engine->registerCommand(new Console\Commands\Serve());
 	$engine->registerCommand(new Console\Commands\Routes());

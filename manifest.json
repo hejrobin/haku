@@ -1,7 +1,7 @@
 {
-	"name": "haku",
-	"version": "0.2.0",
-	"description": "A tiny web application framework with big ambitions.",
-	"author": "Robin Grass <hej@carbin.se>",
-  "license": "MIT"
+		"name": "haku",
+		"version": "0.3.0",
+		"description": "A tiny web application framework with big ambitions.",
+		"author": "Robin Grass <hej@carbin.se>",
+		"license": "MIT"
 }
