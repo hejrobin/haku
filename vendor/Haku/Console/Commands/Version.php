@@ -10,10 +10,7 @@ use Override;
 
 use Haku\Console\Command;
 
-use function Haku\{
-	manifest,
-	resolvePath
-};
+use function Haku\manifest;
 
 class Version extends Command
 {
@@ -34,166 +31,38 @@ class Version extends Command
 		];
 	}
 
-	/**
-	 *	Parses version string into components.
-	 *
-	 *	@param string $version
-	 *
-	 *	@return array [major, minor, patch]
-	 */
-	protected function parseVersion(string $version): array
-	{
-		if (!preg_match('/^(\d+)\.(\d+)\.(\d+)$/', $version, $matches))
-		{
-			return [0, 0, 0];
-		}
-
-		return [
-			'major' => (int) $matches[1],
-			'minor' => (int) $matches[2],
-			'patch' => (int) $matches[3],
-		];
-	}
-
-	/**
-	 *	Formats version components into string.
-	 *
-	 *	@param int $major
-	 *	@param int $minor
-	 *	@param int $patch
-	 *
-	 *	@return string
-	 */
-	protected function formatVersion(int $major, int $minor, int $patch): string
-	{
-		return sprintf('%d.%d.%d', $major, $minor, $patch);
-	}
-
-	/**
-	 *	Validates version string format.
-	 *
-	 *	@param string $version
-	 *
-	 *	@return bool
-	 */
-	protected function isValidVersion(string $version): bool
-	{
-		return preg_match('/^\d+\.\d+\.\d+$/', $version) === 1;
-	}
-
-	/**
-	 *	Increments version based on bump type.
-	 *
-	 *	@param string $currentVersion
-	 *	@param string $bumpType
-	 *
-	 *	@return string
-	 */
-	protected function bumpVersion(string $currentVersion, string $bumpType): string
-	{
-		$parts = $this->parseVersion($currentVersion);
-
-		switch ($bumpType)
-		{
-			case 'major':
-				$parts['major']++;
-				$parts['minor'] = 0;
-				$parts['patch'] = 0;
-				break;
-
-			case 'minor':
-				$parts['minor']++;
-				$parts['patch'] = 0;
-				break;
-
-			case 'patch':
-				$parts['patch']++;
-				break;
-		}
-
-		return $this->formatVersion($parts['major'], $parts['minor'], $parts['patch']);
-	}
-
-	/**
-	 *	Updates manifest.json with new version.
-	 *
-	 *	@param string $newVersion
-	 *
-	 *	@return bool
-	 */
-	protected function updateManifest(string $newVersion): bool
-	{
-		$manifestPath = resolvePath('manifest.json');
-
-		if (!file_exists($manifestPath))
-		{
-			$this->output->error('manifest.json not found');
-			return false;
-		}
-
-		$manifestContent = file_get_contents($manifestPath);
-		$manifest = json_decode($manifestContent, true);
-
-		if ($manifest === null)
-		{
-			$this->output->error('invalid manifest.json format');
-			return false;
-		}
-
-		$oldVersion = $manifest['version'] ?? '0.0.0';
-		$manifest['version'] = $newVersion;
-
-		// Pretty print with tabs (to match existing format)
-		$json = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-
-		// Convert spaces to tabs
-		$json = preg_replace_callback('/^(  +)/m', function($matches) {
-			return str_repeat("\t", strlen($matches[1]) / 2);
-		}, $json);
-
-		if (file_put_contents($manifestPath, $json . "\n") === false)
-		{
-			$this->output->error('failed to write manifest.json');
-			return false;
-		}
-
-		$this->output->success(sprintf('version updated: %s → %s', $oldVersion, $newVersion));
-
-		return true;
-	}
-
 	public function invoke(): bool
 	{
 		$pkg = manifest();
 		$currentVersion = $pkg->version ?? '0.0.0';
 
-		$hasBumpMajor = array_key_exists('bump-major', $this->arguments->arguments);
-		$hasBumpMinor = array_key_exists('bump-minor', $this->arguments->arguments);
-		$hasBumpPatch = array_key_exists('bump-patch', $this->arguments->arguments);
+		$willBumpMajor = array_key_exists('bump-major', $this->arguments->arguments);
+		$willBumpMinor = array_key_exists('bump-minor', $this->arguments->arguments);
+		$willBumpPatch = array_key_exists('bump-patch', $this->arguments->arguments);
+		$willSetVersion = array_key_exists('set', $this->arguments->arguments);
 
-		$hasSetVersion = array_key_exists('set', $this->arguments->arguments);
-
-		// Count how many bump flags are set
-		$bumpCount = ($hasBumpMajor ? 1 : 0) + ($hasBumpMinor ? 1 : 0) + ($hasBumpPatch ? 1 : 0) + ($hasSetVersion ? 1 : 0);
+		$bumpCount = ($willBumpMajor ? 1 : 0) + ($willBumpMinor ? 1 : 0) + ($willBumpPatch ? 1 : 0) + ($willSetVersion ? 1 : 0);
 
 		if ($bumpCount > 1)
 		{
 			$this->output->error('only one version flag can be used at a time');
+
 			return false;
 		}
 
 		// Handle manual version setting
-		if ($hasSetVersion)
+		if ($willSetVersion)
 		{
 			$newVersion = $this->arguments->arguments['set'];
 
-			if (!$this->isValidVersion($newVersion))
+			if (!Services\isValidVersion($newVersion))
 			{
 				$this->output->error('invalid version format, expected: X.Y.Z (e.g., 1.2.3)');
+
 				return false;
 			}
 
-			return $this->updateManifest($newVersion);
+			return Services\updateManifest($this->output, $newVersion);
 		}
 
 		// Handle version bumping
@@ -201,25 +70,24 @@ class Version extends Command
 		{
 			$bumpType = null;
 
-			if ($hasBumpMajor)
+			if ($willBumpMajor)
 			{
 				$bumpType = 'major';
 			}
-			elseif ($hasBumpMinor)
+			elseif ($willBumpMinor)
 			{
 				$bumpType = 'minor';
 			}
-			elseif ($hasBumpPatch)
+			elseif ($willBumpPatch)
 			{
 				$bumpType = 'patch';
 			}
 
-			$newVersion = $this->bumpVersion($currentVersion, $bumpType);
+			$newVersion = Services\bumpVersion($currentVersion, $bumpType);
 
-			return $this->updateManifest($newVersion);
+			return Services\updateManifest($this->output, $newVersion);
 		}
 
-		// No flags, just display current version
 		$this->output->output($currentVersion);
 
 		return true;

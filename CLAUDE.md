@@ -106,6 +106,7 @@ haku/
 - **Error Handling:** Throw `StatusException` for HTTP errors
 - **Code Style:** Use Allman style - opening curly brackets on new lines for functions, classes, conditionals, and loops
 - **Package Naming:** Framework packages/namespaces are pluralized (e.g., `Haku\Errors`, `Haku\Http\Messages`, `Haku\Database\Attributes`)
+- **Command Services:** Complex command logic should be extracted to `vendor/Haku/Console/Commands/Services/` as standalone functions (e.g., `Version.php` command uses `Services\Version.php` for helper functions)
 
 ## Common Tasks
 
