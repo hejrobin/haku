@@ -6,6 +6,9 @@ namespace Haku\Console;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+/**
+ *	Abstract class used to create Haku terminal commands.
+ */
 abstract class Command
 {
 

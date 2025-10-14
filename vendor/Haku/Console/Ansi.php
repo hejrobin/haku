@@ -6,6 +6,9 @@ namespace Haku\Console;
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
+/**
+ *	Enum used to help format terminal output.
+ */
 enum Ansi: int
 {
 	case Off = 0;

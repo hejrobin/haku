@@ -10,6 +10,9 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 defined('STDIN') || define('STDIN', fopen('php://stdin', 'r'));
 defined('STDOUT') || define('STDOUT', fopen('php://stdout', 'w'));
 
+/**
+ *	Handles output to the terminal
+ */
 class Output
 {
 

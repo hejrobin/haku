@@ -87,7 +87,7 @@ function resolveArguments(
 					{
 						$fieldValue = $next;
 
-						if (!is_null($triggerFieldName))
+						if ($triggerFieldName !== null)
 						{
 							$args[$triggerFieldName] = $field;
 						}
