@@ -17,16 +17,29 @@ class Authorization
 		]);
 	}
 
-	public static function verifyIdentifier(int $identifier): bool
+	public static function getCurrentPayload(): ?array
 	{
 		$token = currentToken();
 
 		if (!$token)
 		{
-			return false;
+			return null;
 		}
 
-		$payload = $token->getPayload();
+		return $token->getPayload();
+	}
+
+	public static function getCurrentContext(): ?array
+	{
+		$payload = self::getCurrentPayload();
+		$ctx = $payload['ctx'] ?? null;
+
+		return $ctx;
+	}
+
+	public static function verifyIdentifier(int $identifier): bool
+	{
+		$payload = self::getCurrentPayload();
 
 		if ($payload['identifier'] === $identifier)
 		{
@@ -38,15 +51,7 @@ class Authorization
 
 	public static function verifyScope(array $allowedScopes): bool
 	{
-		$token = currentToken();
-
-		if (!$token)
-		{
-			return false;
-		}
-
-		$payload = $token->getPayload();
-		$ctx = $payload['ctx'] ?? null;
+		$ctx = self::getCurrentContext();
 
 		if (
 			$ctx &&
