@@ -273,15 +273,15 @@ class Upgrade extends Command
 
 		$this->output->output('upgrade summary:');
 
-		$this->output->output($this->output->indent() . "new files:      {$summary['new_files']}");
-		$this->output->output($this->output->indent() . "modified files: {$summary['modified_files']}");
+		$this->output->output($this->output->indent() . "new files:       {$summary['new_files']}");
+		$this->output->output($this->output->indent() . "modified files:  {$summary['modified_files']}");
 		$this->output->output($this->output->indent() . "unchanged files: {$summary['unchanged_files']}");
-		$this->output->output($this->output->indent() . "total files:    {$summary['total_files']}");
+		$this->output->output($this->output->indent() . "total files:     {$summary['total_files']}");
 
 		if ($summary['size_change'] !== 0)
 		{
 			$direction = $summary['size_increasing'] ? 'increase' : 'decrease';
-			$this->output->output("size change:    {$summary['size_change_formatted']} {$direction}");
+			$this->output->output($this->output->indent() ."size change:      {$summary['size_change_formatted']} {$direction}");
 		}
 
 		$this->output->break();
@@ -289,12 +289,12 @@ class Upgrade extends Command
 		// Show new files
 		if (!empty($changes['new']))
 		{
-			$this->output->output('new files:', 'new', Ansi::Green);
+			$this->output->info('new files:');
 
 			foreach ($changes['new'] as $file)
 			{
 				$size = isset($file['size']) ? ' (' . formatFileSize($file['size']) . ')' : '';
-				$this->output->output("  + {$file['file']}{$size}");
+				$this->output->info("+ {$file['file']}{$size}");
 			}
 
 			$this->output->break();
@@ -303,7 +303,7 @@ class Upgrade extends Command
 		// Show modified files
 		if (!empty($changes['modified']))
 		{
-			$this->output->output('modified files:', 'modified', Ansi::Yellow);
+			$this->output->info('modified files:');
 
 			foreach ($changes['modified'] as $file)
 			{
@@ -313,10 +313,11 @@ class Upgrade extends Command
 				{
 					$oldSize = formatFileSize($file['size_old']);
 					$newSize = formatFileSize($file['size_new']);
+
 					$sizeInfo = " ({$oldSize} → {$newSize})";
 				}
 
-				$this->output->output("  ~ {$file['file']}{$sizeInfo}");
+				$this->output->info("~ {$file['file']}{$sizeInfo}");
 			}
 
 			$this->output->break();
