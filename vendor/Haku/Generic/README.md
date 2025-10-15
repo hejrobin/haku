@@ -6,147 +6,207 @@ Generic utility functions for common operations in Haku. This package provides h
 
 ## Overview
 
-The Generic package includes utility functions for:
-- **Arrays** (`Haku\Generic\Arrays`) — Array manipulation and filtering
-- **Strings** (`Haku\Generic\Strings`) — String operations, encoding, and random generation
-- **Passwords** (`Haku\Generic\Password`) — Password hashing and verification
-- **Queries** (`Haku\Generic\Query`) — URL query string parsing and building
-- **URLs** (`Haku\Generic\Url`) — URL parsing and manipulation
+The Generic package includes utility functions and classes for:
+- **Arrays** (`Haku\Generic\Arrays`) — Array filtering and searching utilities
+- **Strings** (`Haku\Generic\Strings`) — String case conversion, encoding, and random generation
+- **Password** (`Haku\Generic\Password`) — Password hashing and verification
+- **Query** (`Haku\Generic\Query`) — Query parameter and filter management classes
+- **Url** (`Haku\Generic\Url`) — URL resolution and path utilities
 
 ---
 
 ## Haku\Generic\Arrays
 
-Array manipulation utilities for filtering, grouping, and transforming data.
+Array utilities for filtering and finding elements.
 
-### Common Functions
+### Functions
 
 ```php
-use function Haku\Generic\Arrays\{
-    pluck,
-    groupBy,
-    flatten,
-    unique,
-    compact
-};
+use function Haku\Generic\Arrays\{any, find};
 
-// Extract values from array of objects/arrays
-$ids = pluck($users, 'id');
+// Check if any element matches condition (Ruby-style .any?)
+$hasAdmin = any($users, fn($user) => $user->role === 'admin');  // bool
 
-// Group array items by key
-$byRole = groupBy($users, 'role');
-
-// Flatten nested arrays
-$flat = flatten([[1, 2], [3, 4]]);  // [1, 2, 3, 4]
-
-// Remove duplicates
-$unique = unique([1, 2, 2, 3]);  // [1, 2, 3]
-
-// Remove null/empty values
-$compact = compact([1, null, '', 3]);  // [1, 3]
+// Find first element matching condition
+$admin = find($users, fn($user) => $user->role === 'admin');  // mixed or null
 ```
 
 ---
 
 ## Haku\Generic\Strings
 
-String manipulation, encoding, and generation utilities.
+String manipulation, encoding, case conversion, and random generation utilities.
 
-### Common Functions
+### Functions
 
 ```php
 use function Haku\Generic\Strings\{
-    random,
-    slug,
-    truncate,
-    startsWith,
-    endsWith,
-    contains,
+    hyphenate,
+    camelCaseFromSnakeCase,
+    snakeCaseFromCamelCase,
     encodeBase64Url,
-    decodeBase64Url
+    decodeBase64Url,
+    random
 };
 
-// Generate random string
-$token = random(32);  // 32-byte random string
+// Create hyphenated string (URL-friendly)
+$slug = hyphenate('Hello World!');  // 'hello-world'
+$slug = hyphenate('Hello World!', '_');  // 'hello_world'
 
-// Create URL-friendly slug
-$slug = slug('Hello World!');  // 'hello-world'
-
-// Truncate with ellipsis
-$short = truncate($longText, 100);  // Max 100 chars + '...'
-
-// String checks
-startsWith('hello', 'hel');   // true
-endsWith('world', 'ld');      // true
-contains('hello world', 'lo'); // true
+// Case conversions
+$camelCase = camelCaseFromSnakeCase('user_name');  // 'userName'
+$PascalCase = camelCaseFromSnakeCase('user_name', true);  // 'UserName'
+$snake_case = snakeCaseFromCamelCase('userName');  // 'user_name'
 
 // URL-safe base64 encoding (used by JWT)
-$encoded = encodeBase64Url($data);
-$decoded = decodeBase64Url($encoded);
+$encoded = encodeBase64Url($data);  // Base64 URL-safe encoded string
+$decoded = decodeBase64Url($encoded);  // Original string
+
+// Generate cryptographically secure random string
+$token = random(32);  // Base64 encoded 32-byte random string
 ```
 
 ---
 
 ## Haku\Generic\Password
 
-Password hashing and verification using PHP's native `password_hash` and `password_verify`.
+Password hashing and verification using PHP's native bcrypt (via `password_hash` and `password_verify`).
 
 ### Functions
 
 ```php
-use function Haku\Generic\Password\{hash, verify};
+use function Haku\Generic\Password\{create, verify};
 
-// Hash password
-$hashed = hash('my-password');
+// Hash password with bcrypt (cost: 10)
+$hashed = create('my-password');  // string
 
-// Verify password
-$valid = verify('my-password', $hashed);  // true
+// Verify password against hash
+$valid = verify('my-password', $hashed);  // bool
 ```
 
 ---
 
 ## Haku\Generic\Query
 
-URL query string parsing and building.
+Query parameter and filter management classes for working with URL query strings and structured filters.
 
-### Functions
+### Classes
+
+#### Params
+
+Parse and manipulate URL query parameters.
 
 ```php
-use function Haku\Generic\Query\{parse, build};
+use Haku\Generic\Query\Params;
 
-// Parse query string
-$params = parse('foo=bar&baz=qux');
-// ['foo' => 'bar', 'baz' => 'qux']
+// Parse query string (or automatically uses $_SERVER['QUERY_STRING'])
+$params = new Params('foo=bar&baz=qux');
 
-// Build query string
-$query = build(['foo' => 'bar', 'baz' => 'qux']);
-// 'foo=bar&baz=qux'
+// Check if parameter exists
+$params->has('foo');  // bool
+
+// Get parameter value
+$value = $params->get('foo');  // 'bar' or null
+
+// Set parameter (null removes it)
+$params->set('page', 2);
+$params->set('foo', null);  // Removes 'foo'
+
+// Convert back to query string
+$queryString = $params->toString();  // 'baz=qux&page=2'
+```
+
+#### Filter
+
+Manage structured filters with operators for complex queries.
+
+```php
+use Haku\Generic\Query\{Filter, FilterOperator};
+
+// Create filter from array
+$filter = Filter::from([
+    ['name' => 'age', 'operator' => 'greaterThan', 'values' => [18]],
+    ['name' => 'status', 'operator' => 'is', 'values' => ['active']]
+]);
+
+// Add filter
+$filter->add('role', FilterOperator::Is, ['admin']);
+
+// Check if filter exists
+$filter->has('age', FilterOperator::GreaterThan);  // bool
+
+// Get specific filter property
+$ageFilter = $filter->get('age', FilterOperator::GreaterThan);  // FilterProperty or null
+
+// Remove filter
+$filter->remove('status', FilterOperator::Is);
+
+// Get all filters
+$allFilters = $filter->getFilters();  // array of FilterProperty
+
+// Convert to JSON
+$json = $filter->toString();
+```
+
+#### FilterOperator (Enum)
+
+Available filter operators:
+
+```php
+use Haku\Generic\Query\FilterOperator;
+
+FilterOperator::Is                      // 'is'
+FilterOperator::IsNot                   // 'isNot'
+FilterOperator::GreaterThan             // 'greaterThan'
+FilterOperator::NotGreaterThan          // 'notGreaterThan'
+FilterOperator::GreaterThanOrEqualTo    // 'greaterThanOrEqualTo'
+FilterOperator::LessThan                // 'lessThan'
+FilterOperator::NotLessThan             // 'notLessThan'
+FilterOperator::LessThanOrEqualTo       // 'lessThanOrEqualTo'
+FilterOperator::Like                    // 'like'
+FilterOperator::NotLike                 // 'notLike'
+FilterOperator::Null                    // 'null'
+FilterOperator::NotNull                 // 'notNull'
+FilterOperator::Contains                // 'contains'
+FilterOperator::Custom                  // 'custom'
+```
+
+#### FilterProperty
+
+Readonly class representing a single filter condition:
+
+```php
+use Haku\Generic\Query\{FilterProperty, FilterOperator};
+
+$property = new FilterProperty(
+    name: 'age',
+    operator: FilterOperator::GreaterThan,
+    values: [18]
+);
+
+$property->name;      // 'age'
+$property->operator;  // FilterOperator::GreaterThan
+$property->values;    // [18]
 ```
 
 ---
 
 ## Haku\Generic\Url
 
-URL parsing and manipulation utilities.
+URL resolution and path manipulation utilities.
 
 ### Functions
 
 ```php
-use function Haku\Generic\Url\{parse, build, isValid};
+use function Haku\Generic\Url\{resolve, path};
 
-// Parse URL into components
-$parts = parse('https://example.com/path?query=1');
-// ['scheme' => 'https', 'host' => 'example.com', ...]
+// Resolve current request URL
+$currentUrl = resolve();  // 'https://example.com:8080/api/users'
+$baseUrl = resolve(omitRequestPath: true);  // 'https://example.com:8080'
 
-// Build URL from components
-$url = build([
-    'scheme' => 'https',
-    'host' => 'example.com',
-    'path' => '/api/users'
-]);
-
-// Validate URL
-$valid = isValid('https://example.com');  // true
+// Get or normalize URL path
+$requestPath = path();  // Gets current request path, e.g., 'api/users'
+$normalized = path('Hello World');  // 'hello-world' (hyphenated)
 ```
 
 ---
@@ -158,19 +218,20 @@ $valid = isValid('https://example.com');  // true
 ```php
 use function Haku\Generic\Strings\random;
 
-$token = random(64);  // Cryptographically secure random string
+// Generate 32-byte random token
+$token = random(32);
 ```
 
 ### Create User with Hashed Password
 
 ```php
-use function Haku\Generic\Password\{hash, verify};
+use function Haku\Generic\Password\{create, verify};
 
 // During registration
 $user = new User();
 $user->hydrate([
     'email' => $email,
-    'password' => hash($_POST['password'])
+    'password' => create($_POST['password'])
 ]);
 $user->save();
 
@@ -182,25 +243,24 @@ if ($user && verify($_POST['password'], $user->password)) {
 }
 ```
 
-### Build API URLs
+### Working with Query Parameters
 
 ```php
-use function Haku\Generic\{Query\build, Url\parse};
+use Haku\Generic\Query\Params;
 
-$baseUrl = 'https://api.example.com/users';
-$queryString = build([
-    'page' => 1,
-    'limit' => 50,
-    'sort' => 'name'
-]);
+$params = new Params();
+$params->set('page', 1);
+$params->set('limit', 50);
+$params->set('sort', 'name');
 
-$fullUrl = "{$baseUrl}?{$queryString}";
+$queryString = $params->toString();  // 'page=1&limit=50&sort=name'
+$fullUrl = "https://api.example.com/users?{$queryString}";
 ```
 
 ---
 
-## See also
+## See Also
 
-- [[Haku\Jwt]] — Uses String utilities for encoding/decoding
-- [[Haku\Database]] — Uses Array utilities for data manipulation
-- [[Haku\Http]] — Uses URL and Query utilities
+- [Haku\Jwt](../Jwt/README.md) — Uses String utilities for encoding/decoding
+- [Haku\Database](../Database/README.md) — Uses Array utilities for data manipulation
+- [Haku\Http](../Http/README.md) — Uses URL and Query utilities

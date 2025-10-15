@@ -96,6 +96,8 @@ haku/
 6. Write tests alongside features
 
 ## Important Notes for Claude
+
+### Code Standards
 - **No Composer:** Don't suggest Composer packages - use native PHP only
 - **PHP 8.3+ only:** Leverage modern PHP features (enums, attributes, readonly, etc.)
 - **JSON APIs:** All responses should be JSON formatted
@@ -107,6 +109,35 @@ haku/
 - **Code Style:** Use Allman style - opening curly brackets on new lines for functions, classes, conditionals, and loops
 - **Package Naming:** Framework packages/namespaces are pluralized (e.g., `Haku\Errors`, `Haku\Http\Messages`, `Haku\Database\Attributes`)
 - **Command Services:** Complex command logic should be extracted to `vendor/Haku/Console/Commands/Services/<CommandName>/` as standalone functions organized by responsibility (e.g., `Release.php` command uses `Services\Release\Version.php`, `Services\Release\Manifest.php`, `Services\Release\Git.php`, and `Services\Release\Changelog.php` for helper functions)
+
+### Critical: Code Verification Rules
+
+**NEVER make assumptions about code that doesn't exist. ALWAYS verify before documenting or using.**
+
+When writing documentation or using framework functions:
+1. **READ THE ACTUAL SOURCE FILES FIRST** - Never document or reference functions based on assumptions
+2. **Verify function signatures** - Check exact parameter names, types, order, and return types
+3. **Verify class methods** - Check all public methods, their signatures, and return types
+4. **Verify namespaces** - Ensure the namespace and imports are correct
+5. **Test your assumptions** - If you think a function exists, grep for it or read the file
+
+**Documentation Guidelines:**
+- Only document functions/classes/methods that ACTUALLY exist in the codebase
+- Use exact function signatures from the source code
+- Include correct parameter types, names, and default values
+- Show accurate return types
+- Provide working examples that reference real code
+
+**Common Mistakes to Avoid:**
+- ❌ Documenting functions that seem like they should exist
+- ❌ Guessing function names (e.g., `hash()` when it's actually `create()`)
+- ❌ Assuming functions exist based on similar codebases
+- ❌ Creating examples with non-existent functions
+- ❌ Documenting function signatures without checking the source
+- ✅ Reading the actual implementation before documenting
+- ✅ Grepping for function names to verify they exist
+- ✅ Checking parameter order and types from source
+- ✅ Verifying all examples work with actual code
 
 ## Common Tasks
 
