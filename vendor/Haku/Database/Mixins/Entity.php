@@ -288,7 +288,7 @@ trait Entity
 			{
 				$this->$setter($value);
 			}
-			else
+			else if (property_exists($this, $field))
 			{
 				$this->$field = $value;
 			}
