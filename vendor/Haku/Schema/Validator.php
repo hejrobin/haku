@@ -334,14 +334,12 @@ class Validator
 		$parsed = $this->parseRule($rule);
 		$validatorCallback = 'validate' . ucfirst($parsed['rule']);
 
-		if (!method_exists($this, $validatorCallback))
-		{
-			throw new ValidationException(sprintf('Invalid validator: %s', $validatorCallback));
-		}
-		else
+		if (method_exists($this, $validatorCallback))
 		{
 			return call_user_func_array([$this, $validatorCallback], [$field, $record, $parsed['argument']]);
 		}
+
+		return new ValidationResult(true, '');
 	}
 
 	/**

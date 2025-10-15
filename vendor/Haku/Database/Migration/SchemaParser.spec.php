@@ -52,8 +52,6 @@ spec('Database/Migration/SchemaParser', function()
 
 			$sql = $parser->toCreateSQL();
 
-			var_dump($sql);
-
 			return expectAll(
 				expect($sql)->toContain('`created_at` BIGINT UNSIGNED NOT NULL'),
 				expect($sql)->toContain('`updated_at` BIGINT UNSIGNED NULL')
