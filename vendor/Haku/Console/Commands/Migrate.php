@@ -13,7 +13,7 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 use Override;
 
 use Haku\Console\Command;
-use Haku\Database\Migration;
+use Haku\Database\Migration\Migration;
 
 use function Haku\haku;
 
