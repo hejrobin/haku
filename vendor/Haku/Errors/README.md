@@ -208,7 +208,7 @@ logError('Debug information', 'debug');
 
 **Components:**
 - Timestamp in `Y-m-d H:i:s` format
-- Environment (from `HAKU_ENV` constant)
+- Environment (from `HAKU_ENVIRONMENT` constant)
 - Log level (uppercase)
 - Message content
 
@@ -222,10 +222,10 @@ logError('Debug information', 'debug');
 // bootstrap.php
 use function Haku\Errors\initialize;
 
-define('HAKU_ENV', 'dev');
+define('HAKU_ENVIRONMENT', 'dev');
 
 // Initialize complete error handling
-initialize(HAKU_ENV);
+initialize(HAKU_ENVIRONMENT);
 ```
 
 ### Manual Error Logging
@@ -290,7 +290,7 @@ catch (\Throwable $e)
     logError($e->getMessage(), 'error');
 
     // In development, show detailed error
-    if (defined('HAKU_ENV') && HAKU_ENV === 'dev')
+    if (defined('HAKU_ENVIRONMENT') && HAKU_ENVIRONMENT === 'dev')
     {
         throw $e;
     }
@@ -356,7 +356,7 @@ Let the error handler manage error display:
 initialize('production');
 
 // ✗ Bad - manually displaying errors
-if (HAKU_ENV === 'production')
+if (HAKU_ENVIRONMENT === 'production')
 {
     error_reporting(0);  // Don't do this
 }

@@ -51,7 +51,7 @@ try
 	loadBootstrap();
 
 	// Initialize error handling based on environment
-	\Haku\Errors\initialize(HAKU_ENV);
+	\Haku\Errors\initialize(HAKU_ENVIRONMENT);
 
 	$__outputHeaders = new Headers([
 		'Content-Type' => 'application/json',
@@ -104,7 +104,7 @@ catch(Throwable $throwable)
 		'error' => $throwable->getMessage(),
 	];
 
-	if (HAKU_ENV === 'dev' || HAKU_ENV === 'test') {
+	if (HAKU_ENVIRONMENT === 'dev' || HAKU_ENVIRONMENT === 'test') {
 		$response['trace'] = $throwable->getTrace();
 	}
 

@@ -67,7 +67,7 @@ haku/
 - `upgrade` - Updates from main branch
 
 ## Environment Configuration
-- `HAKU_ENV` - Environment (dev/test/production)
+- `HAKU_ENVIRONMENT` - Environment (dev/test/production)
 - `HAKU_CORS_*` - CORS configuration constants
 - `HAKU_ROOT_PATH` - Project root directory
 - `HAKU_PHP_VERSION` - Required PHP version (8.3.0)
