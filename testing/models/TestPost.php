@@ -44,10 +44,10 @@ class TestPost extends Model
 	#[Relation(model: 'TestCategory', type: RelationType::BelongsTo)]
 	protected ?int $categoryId;
 
-	#[Timestamp(default: true)]
-	protected readonly string $createdAt;
+	#[Timestamp]
+	protected readonly int $createdAt;
 
 	#[Timestamp]
-	protected readonly string $updatedAt;
+	protected readonly ?int $updatedAt;
 
 }

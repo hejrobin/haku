@@ -33,7 +33,7 @@ class TestUser extends Model
 	#[Validates('len:..500')]
 	protected ?string $bio;
 
-	#[Timestamp(default: true)]
+	#[Timestamp]
 	protected readonly int $createdAt;
 
 	#[Timestamp]

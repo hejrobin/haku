@@ -157,8 +157,6 @@ Models can automatically generate CREATE TABLE migrations by analyzing attribute
 **Supported Attributes:**
 - `#[PrimaryKey]` - Generates INT UNSIGNED AUTO_INCREMENT primary key
 - `#[Timestamp]` - Generates TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP (auto-updates on row change)
-- `#[Timestamp(default: true)]` - Generates TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL (auto-populates on insert)
-- `#[Schema('CUSTOM SQL')]` - Override column definition with custom SQL
 - `#[Validates()]` - Tracked but doesn't affect schema
 - PHP type hints - Automatically mapped to SQL types (int→INT, string→VARCHAR(255), bool→TINYINT(1), etc.)
 
@@ -170,13 +168,10 @@ class User extends Model
     #[PrimaryKey]
     protected readonly int $id;
 
-    #[Schema('VARCHAR(100) UNIQUE NOT NULL')]
-    protected string $email;
-
     protected string $name;  // Becomes VARCHAR(255) NOT NULL
     protected ?int $age;      // Becomes INT DEFAULT NULL
 
-    #[Timestamp(default: true)]
+    #[Timestamp]
     protected readonly string $created_at;
 
     #[Timestamp]

@@ -156,11 +156,11 @@ class User extends Model
 
     protected ?string $bio;
 
-    #[Timestamp(default: true)]
-    protected readonly string $createdAt;
+    #[Timestamp]
+    protected readonly int $createdAt;
 
     #[Timestamp]
-    protected readonly string $updatedAt;
+    protected readonly ?int $updatedAt;
 }
 ```
 
@@ -482,13 +482,10 @@ class User extends Model
     #[PrimaryKey]
     protected readonly int $id;
 
-    #[Schema('VARCHAR(100) UNIQUE NOT NULL')]
-    protected string $email;
-
     protected string $name;  // VARCHAR(255) NOT NULL
 
-    #[Timestamp(default: true)]
-    protected readonly string $createdAt;
+    #[Timestamp]
+    protected readonly int $createdAt;
 }
 
 // Generates CREATE TABLE with all columns properly typed
@@ -522,7 +519,7 @@ Marks a property as a timestamp field with automatic SQL generation.
 
 ```php
 // Auto-populates on INSERT
-#[Timestamp(default: true)]
+#[Timestamp]
 protected readonly string $createdAt;
 
 // Auto-updates on UPDATE
