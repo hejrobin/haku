@@ -19,5 +19,5 @@ jobs:
         uses: nanasess/setup-php@v4
         with:
           php-version: ${{ matrix.php }}
-      - run: php haku init --test
+      - run: php haku-init
       - run: php haku test
