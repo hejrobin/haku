@@ -183,7 +183,7 @@ class SchemaParser
 
 				foreach ($rules as $rule)
 				{
-					$this->parseValidatesLength(
+					$this->parseValidatesRule(
 						$rule,
 						$columnName,
 						$property,
@@ -194,7 +194,7 @@ class SchemaParser
 		}
 	}
 
-	private function parseValidatesLength(
+	private function parseValidatesRule(
 		string $rule,
 		string $columnName,
 		ReflectionProperty $property,
@@ -217,6 +217,16 @@ class SchemaParser
 			}
 		}
 
+		if ($rule === 'text')
+		{
+			$definition = 'TEXT';
+			$definition .= $this->allowsNull($property) ? ' NULL' : ' NOT NULL';
+
+			$this->properties[$columnName] = $definition;
+
+			return;
+		}
+
 		switch ($rule)
 		{
 			case 'emailAddress':
@@ -228,7 +238,6 @@ class SchemaParser
 		if ($length > 0)
 		{
 			$definition = sprintf('VARCHAR(%d)', $length);
-
 
 			if (in_array('unique', $rules))
 			{
