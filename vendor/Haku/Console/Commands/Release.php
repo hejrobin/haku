@@ -36,6 +36,7 @@ class Release extends Command
 			'--patch|create patch release (0.0.x)|',
 			'--set|set version manually|',
 			'--from|git reference to start changelog from (tag/commit)|',
+			'--message|custom message to display in changelog|',
 			'--no-changelog|skip changelog generation|',
 		];
 	}
@@ -115,6 +116,7 @@ class Release extends Command
 		if (!$skipChangelog)
 		{
 			$fromRef = $this->arguments->arguments['from'] ?? null;
+			$customMessage = $this->arguments->arguments['message'] ?? null;
 			$changes = parseGitCommits($fromRef);
 
 			if (empty($changes))
@@ -123,7 +125,7 @@ class Release extends Command
 			}
 			else
 			{
-				if (!generateChangelog($this->output, $newVersion, null, $changes))
+				if (!generateChangelog($this->output, $newVersion, null, $changes, $customMessage))
 				{
 					$this->output->warn('changelog generation failed, but version was updated');
 				}

@@ -17,10 +17,11 @@ use function Haku\resolvePath;
  *	@param string $version
  *	@param string $date
  *	@param array $changes
+ *	@param string|null $message Optional custom message to display after version header
  *
  *	@return bool
  */
-function generateChangelog(Output $output, string $version, string $date = null, array $changes = []): bool
+function generateChangelog(Output $output, string $version, string $date = null, array $changes = [], ?string $message = null): bool
 {
 	$changelogPath = resolvePath('CHANGELOG.md');
 	$date ??= date('Y-m-d');
@@ -50,6 +51,12 @@ MARKDOWN;
 
 	// Build new version entry
 	$entry = "\n## [{$version}] - {$date}\n";
+
+	// Add custom message if provided
+	if ($message !== null && trim($message) !== '')
+	{
+		$entry .= "\n{$message}\n";
+	}
 
 	// Add change categories if provided
 	$categories = ['Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security'];
@@ -82,8 +89,9 @@ MARKDOWN;
 	if (preg_match('/^(# Changelog.*?)(\n## )/ms', $content, $matches))
 	{
 		// Insert before first version entry
-		$content = "{$matches[1]}{$entry}{$matches[2]}";
-		$content .= substr($content, strlen($matches[0]));
+		$before = $matches[1];
+		$after = substr($content, strlen($matches[1]));
+		$content = "{$before}{$entry}{$after}";
 	}
 	else
 	{
