@@ -16,6 +16,7 @@ use function Haku\resolvePath;
 function checkGitStatus(): array
 {
 	// Check if git is available
+	$output = [];
 	exec('git --version 2>/dev/null', $output, $returnCode);
 
 	if ($returnCode !== 0)
@@ -28,6 +29,7 @@ function checkGitStatus(): array
 	}
 
 	// Check if this is a git repository
+	$output = [];
 	exec('git rev-parse --git-dir 2>/dev/null', $output, $returnCode);
 
 	if ($returnCode !== 0)
@@ -40,6 +42,7 @@ function checkGitStatus(): array
 	}
 
 	// Check for uncommitted changes
+	$output = [];
 	exec('git status --porcelain 2>/dev/null', $output, $returnCode);
 
 	if ($returnCode !== 0)
