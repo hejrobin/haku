@@ -139,7 +139,7 @@ class Output
 		string $message,
 	): void
 	{
-		$this->output($message, 'info', Ansi::Cyan);
+		$this->output($message, 'info', Ansi::Blue);
 	}
 
 	/**

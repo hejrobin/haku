@@ -16,8 +16,8 @@ The `php haku` CLI tool provides the following commands:
 | `test` | Runs spec tests with optional filters | `--only`, `--omit`, `--tags`, `--exclude-tags` |
 | `migrate` | Runs or reverts database migrations | `--down`, `--seed` |
 | `routes` | Displays all defined application routes | `--inspect`, `--postman` |
-| `version` | Displays the current Haku version | — |
-| `upgrade` | Updates Haku framework from latest release | — |
+| `version` | Displays current version and checks for updates | `--no-check` |
+| `upgrade` | Updates Haku framework from latest release | `--dry-run`, `--backup`, `--force`, `--skip-validation` |
 
 > [!TIP]
 > Use `php haku <command> --help` to view detailed help for any command, including all available options and their default values.
@@ -407,6 +407,151 @@ describe('Version Command', function()
 
 > [!TIP]
 > Run command tests with: `php haku test --only Commands`
+
+---
+
+## Version Management Commands
+
+### `version` — Version Display and Update Check
+
+Displays the current Haku version and automatically checks for updates from the main branch.
+
+**Basic Usage:**
+```bash
+# Check current version and compare with remote
+php haku version
+
+# Skip remote version check
+php haku version --no-check
+```
+
+**Behavior:**
+- By default, fetches the latest version from GitHub and compares it with your local version
+- Shows helpful messages about available updates
+- Uses a 3-second timeout to avoid hanging on slow connections
+- Gracefully handles network failures
+
+**Example Output:**
+```bash
+[haku]: 0.4.0
+[info]: remote is at 0.5.0. Use 'haku upgrade' to download latest.
+```
+
+**Options:**
+- `--no-check` — Skip checking remote version (useful for offline development or CI/CD)
+
+---
+
+### `upgrade` — Framework Update System
+
+Safely updates the Haku framework from the latest GitHub release with built-in safety features.
+
+**Basic Usage:**
+```bash
+# Preview changes before applying (recommended)
+php haku upgrade --dry-run
+
+# Upgrade with automatic backup
+php haku upgrade --backup
+
+# Force upgrade even if versions match
+php haku upgrade --force
+
+# Full safe upgrade
+php haku upgrade --dry-run --force
+php haku upgrade --backup --force
+```
+
+**Safety Features:**
+
+1. **Pre-flight Validation** (automatic)
+   - Checks PHP version requirements
+   - Validates file permissions and disk space
+   - Detects uncommitted Git changes
+   - Warns about potential issues before proceeding
+   - Skip with `--skip-validation` if needed
+
+2. **Version Intelligence**
+   - Compares local vs remote versions
+   - Prevents accidental downgrades
+   - Prevents reinstalling same version
+   - Override with `--force` flag
+
+3. **Dry-Run Mode** (`--dry-run`)
+   - Preview all changes without applying them
+   - Shows detailed file diff (new, modified, unchanged)
+   - Displays size changes
+   - Perfect for reviewing updates before committing
+
+4. **Automatic Backups** (`--backup`)
+   - Creates timestamped backups before upgrading
+   - Stored as `private/backup-YYYYMMDD-HHMMSS.zip`
+   - Automatic rollback on failure
+   - Includes all core framework files
+
+5. **Error Handling**
+   - Wraps upgrade in try-catch block
+   - Automatic rollback from backup on failure
+   - Detailed error messages
+   - Safe cleanup of temporary files
+
+**Options:**
+- `--dry-run` — Preview changes without applying them
+- `--backup` — Create backup before upgrading (recommended)
+- `--force` — Force upgrade even if versions are same/newer
+- `--skip-validation` — Skip pre-flight validation checks
+
+**Example Workflow:**
+```bash
+# 1. Check what will change
+php haku upgrade --dry-run --force
+
+# 2. Review the output, then upgrade with backup
+php haku upgrade --backup --force
+
+# 3. If something goes wrong, restore from backup
+# (Backups are stored in private/backup-*.zip)
+```
+
+**Example Output:**
+```bash
+[info]: DRY RUN MODE - No changes will be applied
+
+[haku]: Running pre-flight checks...
+[warn]: Git working directory has uncommitted changes.
+[ok]: Pre-flight checks passed.
+
+[haku]: downloading latest haku files...
+[haku]: extracting source code...
+
+[haku]: Current version: 0.4.0
+[haku]: Remote version:  0.5.0
+
+[haku]: Analyzing changes...
+
+[haku]: === UPGRADE SUMMARY ===
+[haku]: New files:      3
+[haku]: Modified files: 12
+[haku]: Unchanged files: 178
+[haku]: Total files:    193
+[haku]: Size change:    2.5 KB increase
+
+[new]: New files:
+[haku]:   + vendor/Haku/Console/Commands/Services/Upgrade/Backup.php (3.21 KB)
+[haku]:   + vendor/Haku/Console/Commands/Services/Upgrade/Validation.php (4.87 KB)
+[haku]:   + vendor/Haku/Console/Commands/Services/Upgrade/Diff.php (5.15 KB)
+
+[modified]: Modified files:
+[haku]:   ~ manifest.json (175 B → 179 B)
+[haku]:   ~ vendor/Haku/Console/Commands/Upgrade.php (2.97 KB → 10.21 KB)
+[haku]:   ~ vendor/Haku/Console/Commands/Version.php (446 B → 1.85 KB)
+
+[info]: Dry run complete. No changes were applied.
+[haku]: Run without --dry-run to apply these changes.
+```
+
+**Windows Support:**
+Currently, the `upgrade` command is not supported on Windows systems. Unix-based systems (Linux, macOS) are fully supported.
 
 ---
 

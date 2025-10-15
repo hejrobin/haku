@@ -15,6 +15,49 @@ class Archiver extends ZipArchive
 {
 
 	/**
+	 *	Adds a directory and all its contents to the archive.
+	 *
+	 *	@param string $path Path to the directory to add
+	 *	@param string $localName Name in the archive (optional)
+	 *
+	 *	@return bool True on success, false on failure
+	 */
+	public function addDirectory(string $path, ?string $localName = null): bool
+	{
+		if (!is_dir($path))
+		{
+			return false;
+		}
+
+		$localName = $localName ?? basename($path);
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ($iterator as $item)
+		{
+			$itemPath = $item->getPathname();
+			$relativePath = $localName . DIRECTORY_SEPARATOR . substr($itemPath, strlen($path) + 1);
+
+			if ($item->isDir())
+			{
+				$this->addEmptyDir($relativePath);
+			}
+			else
+			{
+				if (!$this->addFile($itemPath, $relativePath))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 *	Extracts contents of a zip file to a target directory.
 	 */
 	public function extractDirectoryTo(string $target, string $source): array
