@@ -1,8 +1,8 @@
 {
 		"name": "haku",
-		"version": "0.5.0",
+		"version": "1.0.0",
 		"description": "A tiny web application framework with big ambitions.",
 		"author": "Robin Grass <hej@carbin.se>",
 		"license": "MIT",
-		"lastReleaseCommit": "729420e7d3c23ed5cb4e82c7955e93c79a85be83"
+		"lastReleaseCommit": "8a5c87ce89da4d8a91a06473193a689cabf7c92f"
 }
