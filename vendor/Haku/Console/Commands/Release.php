@@ -115,7 +115,15 @@ class Release extends Command
 		// Generate changelog if not skipped
 		if (!$skipChangelog)
 		{
+			// Use --from flag if provided, otherwise use lastReleaseCommit from manifest
 			$fromRef = $this->arguments->arguments['from'] ?? null;
+
+			if ($fromRef === null && isset($pkg->lastReleaseCommit))
+			{
+				$fromRef = $pkg->lastReleaseCommit;
+				$this->output->info(sprintf('generating changelog from last release commit: %s', substr($fromRef, 0, 7)));
+			}
+
 			$customMessage = $this->arguments->arguments['message'] ?? null;
 			$changes = parseGitCommits($fromRef);
 

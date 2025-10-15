@@ -11,7 +11,24 @@ use Haku\Console\Output;
 use function Haku\resolvePath;
 
 /**
- *	Reads and updates manifest.json with version.
+ *	Gets the current git commit hash.
+ *
+ *	@return string|null The current commit hash or null if not in a git repository
+ */
+function getCurrentGitHash(): ?string
+{
+	exec('git rev-parse HEAD 2>/dev/null', $output, $returnCode);
+
+	if ($returnCode !== 0 || empty($output))
+	{
+		return null;
+	}
+
+	return trim($output[0]);
+}
+
+/**
+ *	Reads and updates manifest.json with version and git hash.
  *
  *	@param \Haku\Console\Output $output
  *	@param string $nextVersion
@@ -39,6 +56,14 @@ function updateManifest(Output $output, string $nextVersion): bool
 
 	$prevVersion = $manifest['version'] ?? '0.0.0';
 	$manifest['version'] = $nextVersion;
+
+	// Store the current git hash for the next release
+	$gitHash = getCurrentGitHash();
+
+	if ($gitHash !== null)
+	{
+		$manifest['lastReleaseCommit'] = $gitHash;
+	}
 
 	$json = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
