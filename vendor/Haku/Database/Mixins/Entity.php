@@ -43,8 +43,9 @@ trait Entity
 	protected readonly array $omittedFields;
 	protected readonly array $includedFields;
 	protected readonly array $aggregatedFields;
-	protected array $transformFields;
 	protected readonly array $relationFields;
+
+	protected array $transformFields;
 
 	protected bool $isValid = false;
 	protected bool $hasChanges = false;
@@ -160,7 +161,8 @@ trait Entity
 			$attributes = array_filter($attributes, function (
 				ReflectionAttribute $attribute,
 			) use ($validAttributeNames) {
-				$attributeName = array_pop(explode('\\', $attribute->getName()));
+				$parts = explode('\\', $attribute->getName());
+				$attributeName = array_pop($parts);
 
 				// Allow for custom validates attributes
 				if (str_starts_with($attributeName, 'Validates')) {
@@ -180,7 +182,8 @@ trait Entity
 					$attr = $attribute->newInstance();
 					$attributeName = $attribute->getName();
 
-					$attributeNameWithoutNamespace = array_pop(explode('\\', $attributeName ));
+					$parts = explode('\\', $attributeName);
+					$attributeNameWithoutNamespace = array_pop($parts);
 
 					if (str_starts_with($attributeNameWithoutNamespace, 'Validates'))
 					{

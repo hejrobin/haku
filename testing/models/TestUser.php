@@ -34,9 +34,9 @@ class TestUser extends Model
 	protected ?string $bio;
 
 	#[Timestamp(default: true)]
-	protected readonly string $createdAt;
+	protected readonly int $createdAt;
 
 	#[Timestamp]
-	protected readonly string $updatedAt;
+	protected readonly ?int $updatedAt;
 
 }

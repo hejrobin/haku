@@ -157,13 +157,8 @@ class SchemaParser
 
 		if (!empty($attrs))
 		{
-			$timestamp = $attrs[0]->newInstance();
-			$definition = 'TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP';
-
-			if ($timestamp->default)
-			{
-				$definition = 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL';
-			}
+			$definition = 'BIGINT UNSIGNED';
+			$definition .= $this->allowsNull($property) ? ' NULL' : ' NOT NULL';
 
 			$this->properties[$columnName] = $definition;
 		}

@@ -12,8 +12,7 @@ use \Attribute;
 class Timestamp {
 
 	public function __construct(
-		public bool $unfiltered = false,
-		public bool $default = false
+		public bool $unfiltered = false
 	) {}
 
 }
