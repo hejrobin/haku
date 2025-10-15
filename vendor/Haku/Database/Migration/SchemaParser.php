@@ -212,6 +212,19 @@ class SchemaParser
 			}
 		}
 
+		if (str_starts_with($rule, 'enum:'))
+		{
+			$values = array_map('trim', explode(',', str_ireplace('enum:', '', $rule)));
+			$values = array_map(fn($value) => "'{$value}'", $values);
+
+			$definition = sprintf("ENUM(%s)", implode(', ', $values));
+			$definition .= $this->allowsNull($property) ? ' NULL' : ' NOT NULL';
+
+			$this->properties[$columnName] = $definition;
+
+			return;
+		}
+
 		if ($rule === 'text')
 		{
 			$definition = 'TEXT';
@@ -364,5 +377,3 @@ class SchemaParser
 	}
 
 }
-
-
