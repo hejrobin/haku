@@ -114,10 +114,10 @@ class Release extends Command
 			$newVersion = bumpVersion($currentVersion, $bumpType);
 		}
 
-		// Show what we're about to do
+		$customMessage = $this->arguments->arguments['message'] ?? null;
+
 		$this->output->info(sprintf('creating release: %s → %s', $currentVersion, $newVersion));
 
-		// Update manifest version
 		if (!updateManifest($this->output, $newVersion))
 		{
 			return false;
@@ -135,7 +135,7 @@ class Release extends Command
 				$this->output->info(sprintf('generating changelog from last release commit: %s', substr($fromRef, 0, 7)));
 			}
 
-			$customMessage = $this->arguments->arguments['message'] ?? null;
+
 			$changes = parseGitCommits($fromRef);
 
 			if (empty($changes))
@@ -152,7 +152,7 @@ class Release extends Command
 		}
 
 		// Auto-commit the release changes
-		if (!commitReleaseChanges($newVersion))
+		if (!commitReleaseChanges($newVersion, $customMessage))
 		{
 			$this->output->error('failed to commit release changes - you may need to commit manually');
 

@@ -25,7 +25,7 @@ function hasUncommittedChanges(): bool
  *
  *	@return bool True on success, false on failure
  */
-function commitReleaseChanges(string $version): bool
+function commitReleaseChanges(string $version, string $commitMessage = ''): bool
 {
 	// Stage all changes
 	exec('git add . 2>&1', $output, $returnCode);
@@ -37,7 +37,17 @@ function commitReleaseChanges(string $version): bool
 
 	// Commit with release message
 	$message = "chore(release): updated version to {$version}";
-	exec(sprintf('git commit -m %s 2>&1', escapeshellarg($message)), $output, $returnCode);
+
+	$command = sprintf('git commit -m %s ', escapeshellarg($message));
+
+	if ($commitMessage !== '')
+	{
+		$command .= sprintf(' -m %s ', escapeshellarg($commitMessage));
+	}
+
+	$command .= ' 2>&1';
+
+	exec($command, $output, $returnCode);
 
 	return $returnCode === 0;
 }
