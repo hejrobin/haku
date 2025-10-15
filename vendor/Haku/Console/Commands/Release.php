@@ -17,6 +17,8 @@ use function Haku\Console\Commands\Services\Release\{
 	updateManifest,
 	isValidVersion,
 	bumpVersion,
+	hasUncommittedChanges,
+	commitReleaseChanges,
 };
 
 class Release extends Command
@@ -43,6 +45,15 @@ class Release extends Command
 
 	public function invoke(): bool
 	{
+		// Check for uncommitted changes before starting
+		if (hasUncommittedChanges())
+		{
+			$this->output->error('uncommitted changes detected!');
+			$this->output->error('commit or stash your changes before creating a release');
+
+			return false;
+		}
+
 		$pkg = manifest();
 		$currentVersion = $pkg->version ?? '0.0.0';
 
@@ -140,7 +151,15 @@ class Release extends Command
 			}
 		}
 
-		$this->output->success(sprintf('release %s created successfully', $newVersion));
+		// Auto-commit the release changes
+		if (!commitReleaseChanges($newVersion))
+		{
+			$this->output->error('failed to commit release changes - you may need to commit manually');
+
+			return false;
+		}
+
+		$this->output->success(sprintf('release %s created and committed successfully', $newVersion));
 
 		return true;
 	}

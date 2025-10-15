@@ -155,7 +155,7 @@ class User extends Model
 
 **Generate Migration:**
 ```bash
-php haku make migration User --model
+php haku make migration create_user_table --from User
 ```
 
 This creates a migration with the complete CREATE TABLE statement based on model attributes.

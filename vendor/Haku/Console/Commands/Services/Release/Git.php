@@ -7,6 +7,42 @@ namespace Haku\Console\Commands\Services\Release;
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
 /**
+ *	Checks if there are any uncommitted changes in the working directory.
+ *
+ *	@return bool True if there are uncommitted changes, false otherwise
+ */
+function hasUncommittedChanges(): bool
+{
+	exec('git status --porcelain 2>/dev/null', $output, $returnCode);
+
+	return $returnCode === 0 && !empty($output);
+}
+
+/**
+ *	Commits all changes with a release message.
+ *
+ *	@param string $version The version being released
+ *
+ *	@return bool True on success, false on failure
+ */
+function commitReleaseChanges(string $version): bool
+{
+	// Stage all changes
+	exec('git add . 2>&1', $output, $returnCode);
+
+	if ($returnCode !== 0)
+	{
+		return false;
+	}
+
+	// Commit with release message
+	$message = "chore(release): updated version to {$version}";
+	exec(sprintf('git commit -m %s 2>&1', escapeshellarg($message)), $output, $returnCode);
+
+	return $returnCode === 0;
+}
+
+/**
  *	Parses git commits using conventional commit format into changelog categories.
  *
  *	@param string|null $fromRef Starting git reference (tag/commit), null for all commits since last tag
@@ -63,6 +99,12 @@ function parseGitCommits(?string $fromRef = null, string $toRef = 'HEAD'): array
 			$type = strtolower($matches[1]);
 			$scope = !empty($matches[2]) ? $matches[2] : null;
 			$message = $matches[3];
+
+			// Skip chore(release) commits
+			if ($type === 'chore' && $scope === 'release')
+			{
+				continue;
+			}
 
 			// Check for breaking changes
 			if (str_contains($commit, '!:') || str_contains(strtolower($message), 'breaking'))

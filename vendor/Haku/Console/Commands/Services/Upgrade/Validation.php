@@ -22,7 +22,7 @@ function checkGitStatus(): array
 	{
 		return [
 			'clean' => true,
-			'status' => 'Git not available',
+			'status' => 'git not available',
 			'has_git' => false,
 		];
 	}
@@ -34,7 +34,7 @@ function checkGitStatus(): array
 	{
 		return [
 			'clean' => true,
-			'status' => 'Not a git repository',
+			'status' => 'not a git repository',
 			'has_git' => false,
 		];
 	}
@@ -46,7 +46,7 @@ function checkGitStatus(): array
 	{
 		return [
 			'clean' => true,
-			'status' => 'Could not check git status',
+			'status' => 'could not check git status',
 			'has_git' => true,
 		];
 	}
@@ -55,7 +55,7 @@ function checkGitStatus(): array
 
 	return [
 		'clean' => $isClean,
-		'status' => $isClean ? 'No uncommitted changes' : 'Uncommitted changes detected',
+		'status' => $isClean ? 'no uncommitted changes' : 'nncommitted changes detected',
 		'has_git' => true,
 		'changes' => $output,
 	];
@@ -90,11 +90,11 @@ function validateEnvironment(): array
 
 		if (!is_dir($path))
 		{
-			$errors[] = "Required directory missing: {$dir}";
+			$errors[] = "required directory missing: {$dir}";
 		}
 		elseif (!is_writable($path))
 		{
-			$errors[] = "Directory not writable: {$dir}";
+			$errors[] = "directory not writable: {$dir}";
 		}
 	}
 
@@ -105,11 +105,11 @@ function validateEnvironment(): array
 
 		if (!file_exists($path))
 		{
-			$errors[] = "Required file missing: {$file}";
+			$errors[] = "required file missing: {$file}";
 		}
 		elseif (!is_writable($path))
 		{
-			$errors[] = "File not writable: {$file}";
+			$errors[] = "file not writable: {$file}";
 		}
 	}
 
@@ -133,7 +133,7 @@ function validateEnvironment(): array
 			// Simple heuristic: check for comments or additions that might indicate customization
 			if (preg_match('/@custom|@modified|@todo/i', $content))
 			{
-				$warnings[] = "File may have custom modifications: {$file}";
+				$warnings[] = "file may have custom modifications: {$file}";
 			}
 		}
 	}
@@ -142,7 +142,7 @@ function validateEnvironment(): array
 	$freeSpace = disk_free_space(resolvePath(''));
 	if ($freeSpace !== false && $freeSpace < 10485760)
 	{
-		$warnings[] = 'Low disk space (less than 10MB available)';
+		$warnings[] = 'low disk space (less than 10MB available)';
 	}
 
 	return [
