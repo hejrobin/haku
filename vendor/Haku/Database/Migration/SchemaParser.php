@@ -38,7 +38,7 @@ class SchemaParser
 
 	private array $foreignKeys = [];
 
-	public function parse(string $modelName)
+	protected function resolveModelReference(string $modelName): string
 	{
 		$paths = [
 			[
@@ -75,6 +75,13 @@ class SchemaParser
 		{
 			throw new FrameworkException(sprintf('Model class "%s" not found', $name));
 		}
+
+		return $name;
+	}
+
+	public function parse(string $modelName)
+	{
+		$name = $this->resolveModelReference($modelName);
 
 		$reflection = new ReflectionClass($name);
 		$attributes = $reflection->getAttributes(Entity::class);
@@ -293,48 +300,14 @@ class SchemaParser
 
 	private function getTableNameFromModel(string $modelName): string
 	{
-		$paths = [
-			[
-				'path' => resolvePath('app', 'models', "{$modelName}.php"),
-				'namespace' => "App\\Models\\{$modelName}"
-			],
-			[
-				'path' => resolvePath('testing', 'models', "{$modelName}.php"),
-				'namespace' => "Testing\\Models\\{$modelName}"
-			],
-		];
+		$name = $this->resolveModelReference($modelName);
 
-		$path = null;
-		$className = null;
-
-		foreach ($paths as $candidate)
-		{
-			if (file_exists($candidate['path']))
-			{
-				$path = $candidate['path'];
-				$className = $candidate['namespace'];
-				break;
-			}
-		}
-
-		if ($path === null)
-		{
-			throw new FrameworkException(sprintf('Related model "%s" not found in app/models or testing/models', $modelName));
-		}
-
-		require_once $path;
-
-		if (!class_exists($className))
-		{
-			throw new FrameworkException(sprintf('Related model class "%s" not found', $className));
-		}
-
-		$reflection = new ReflectionClass($className);
+		$reflection = new ReflectionClass($name);
 		$attributes = $reflection->getAttributes(Entity::class);
 
 		if (count($attributes) === 0)
 		{
-			throw new FrameworkException(sprintf('Related model "%s" is missing #[Entity] attribute', $className));
+			throw new FrameworkException(sprintf('Related model "%s" is missing #[Entity] attribute', $name));
 		}
 
 		$entity = $attributes[0]->newInstance();
