@@ -47,6 +47,11 @@ function decodeToken(string $authToken): Token
 	return Token::decode($authToken, Algorithm::HS256, HAKU_JWT_SIGNING_KEY);
 }
 
+/**
+ *	Parses Authorization header and returns Bearer if present.
+ *
+ *	@return ?string
+ */
 function getAuthorizationBearerToken(): ?string
 {
 	$headers = \getallheaders();
@@ -61,6 +66,11 @@ function getAuthorizationBearerToken(): ?string
 	return null;
 }
 
+/**
+ *	Returns current token from header if set.
+ *
+ *	@return Token|null
+ */
 function currentToken(): ?Token
 {
 	$token = getAuthorizationBearerToken();
@@ -73,9 +83,26 @@ function currentToken(): ?Token
 	return decodeToken($token);
 }
 
+/**
+ *	Validates whether token timestamp is valid.
+ *
+ *	@param int $timestamp
+ *
+ *	@return bool
+ */
 function validateTokenTimestamp(int $timestamp): bool
 {
 	return (int) (string) $timestamp === $timestamp &&
 		$timestamp <= PHP_INT_MAX &&
 		$timestamp >= ~PHP_INT_MAX;
+}
+
+/**
+ *	Generates a random hash, useful for hash tokens
+ *
+ *	@return string
+ */
+function generateRefreshToken(): string
+{
+	return bin2hex(random_bytes(64));
 }

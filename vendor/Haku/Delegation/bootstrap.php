@@ -304,8 +304,8 @@ function normalizeMiddlewarePathName(string $unresolved): string
 /**
  *	Attempts to find route definition based on URL path and processes the request.
  *
- *	@throws Haku\Exceptions\FrameworkException
- * 	@throws Haku\Http\Exceptions\StatusException
+ *	@throws \Haku\Exceptions\FrameworkException
+ * 	@throws \Haku\Http\Exceptions\StatusException
  *
  *	@return [Haku\Http\Request, Haku\Http\Message, Haku\Http\Headers]
  */

@@ -57,8 +57,9 @@ class Jwt extends Middleware
 	{
 		$headers->status($status);
 
-		$contentType = $headers->get('Content-Type');
-		$message = [ 'error' => $headers->getStatus()->getName() ];
+		$message = [
+			'error' => $headers->getStatus()->getName()
+		];
 
 		return $this->transformResponseMessage($headers, $message);
 	}
