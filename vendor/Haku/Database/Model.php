@@ -105,7 +105,7 @@ abstract class Model implements JsonSerializable
 	 *	@param bool $includeDeleted
 	 *	@param bool $distinct
 	 *
-	 *	@return Model|null
+	 *	@return ?static
 	 */
 	public static function findOne(
 		array $where = [],
@@ -291,7 +291,7 @@ abstract class Model implements JsonSerializable
 	/**
 	 *	Attempts to restore a soft deleted entity.
 	 *
-	 *	@return Model|null
+	 *	@return ?static
 	 */
 	public function restore(): ?static
 	{
