@@ -332,7 +332,7 @@ class Validator
 	public function validateOne(string $rule, string $field, array $record): ValidationResult
 	{
 		$parsed = $this->parseRule($rule);
-		$validatorCallback = 'validate' . ucfirst($parsed['rule']);
+		$validatorCallback = 'validate' . mb_ucfirst($parsed['rule']);
 
 		if (method_exists($this, $validatorCallback))
 		{

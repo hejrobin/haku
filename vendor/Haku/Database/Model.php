@@ -360,7 +360,7 @@ abstract class Model implements JsonSerializable
 	{
 		foreach ($record as $field => $value)
 		{
-			$marshaller = sprintf('marshal%s', ucfirst($field));
+			$marshaller = sprintf('marshal%s', mb_ucfirst($field));
 
 			if (method_exists($this, $marshaller))
 			{
@@ -378,7 +378,7 @@ abstract class Model implements JsonSerializable
 	{
 		foreach ($record as $field => $value)
 		{
-			$marshaller = sprintf('unmarshal%s', ucfirst($field));
+			$marshaller = sprintf('unmarshal%s', mb_ucfirst($field));
 
 			if (method_exists($this, $marshaller))
 			{
@@ -397,7 +397,7 @@ abstract class Model implements JsonSerializable
 	{
 		foreach ($record as $field => $value)
 		{
-			$mutator = sprintf('mutate%s', ucfirst($field));
+			$mutator = sprintf('mutate%s', mb_ucfirst($field));
 
 			if (method_exists($this, $mutator))
 			{

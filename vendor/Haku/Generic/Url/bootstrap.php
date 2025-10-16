@@ -47,8 +47,8 @@ function path(?string $unresolvedUri = null): string
 {
 	if ($unresolvedUri === null)
 	{
-		$requestUri = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
-		$scriptName = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
+		$requestUri = explode('/', mb_trim($_SERVER['REQUEST_URI'], '/'));
+		$scriptName = explode('/', mb_trim($_SERVER['SCRIPT_NAME'], '/'));
 
 		$segments = array_diff_assoc($requestUri, $scriptName);
 		$segments = array_filter($segments);
@@ -64,5 +64,5 @@ function path(?string $unresolvedUri = null): string
 		return $uriPath ?? '/';
 	}
 
-	return preg_replace('#/+#', '/', trim(hyphenate($unresolvedUri), '/'));
+	return preg_replace('#/+#', '/', mb_trim(hyphenate($unresolvedUri), '/'));
 }

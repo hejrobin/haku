@@ -59,7 +59,7 @@ MARKDOWN;
 	$entry = "\n## [{$version}] - {$date}\n";
 
 	// Add custom message if provided
-	if ($message !== null && trim($message) !== '')
+	if ($message !== null && mb_trim($message) !== '')
 	{
 		$entry .= "\n{$message}\n";
 	}

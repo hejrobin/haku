@@ -41,7 +41,7 @@ class Routes extends Command
 
 	protected function getMaxRoutePathIndent(array $routes): int
 	{
-		$paths = array_map(fn(array $route) => '/' . ltrim('/' . $route['path'], '/'), $routes);
+		$paths = array_map(fn(array $route) => '/' . mb_ltrim('/' . $route['path'], '/'), $routes);
 
 		if (count($paths) === 0)
 		{
@@ -84,7 +84,7 @@ class Routes extends Command
 	{
 		$spacing = '';
 
-		$routePath = '/' . ltrim('/' . $route['path'], '/');
+		$routePath = '/' . mb_ltrim('/' . $route['path'], '/');
 		$routeMethod = $route['method']->asString();
 		$routeHandler = implode('::', $route['callback']);
 
@@ -111,7 +111,7 @@ class Routes extends Command
 		$collection = generatePostmanCollection(routes: $routes);
 
 		$applicationName = defined('HAKU_APPLICATION_NAME') ? HAKU_APPLICATION_NAME : 'Haku';
-		$targetFileName = strtolower(trim(preg_replace('#\W+#', '_', $applicationName), '_'));
+		$targetFileName = strtolower(mb_trim(preg_replace('#\W+#', '_', $applicationName), '_'));
 
 		$targetFilePath = resolvePath(sprintf('private/postman_%s.json', $targetFileName));
 		$json = json_encode($collection, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

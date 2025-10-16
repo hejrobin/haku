@@ -49,7 +49,7 @@ class Token
 		$this->issuedAt(time());
 	}
 
-	public function issuedAt(int $issuedAt = null): int
+	public function issuedAt(?int $issuedAt = null): int
 	{
 		if ($issuedAt === null)
 		{
@@ -67,7 +67,7 @@ class Token
 		}
 	}
 
-	public function expiresAt(int $expiresAt = null): int
+	public function expiresAt(?int $expiresAt = null): int
 	{
 		if ($expiresAt === null)
 		{
@@ -95,7 +95,7 @@ class Token
 		return false;
 	}
 
-	public function claimableAt(int $claimableAt = null): int {
+	public function claimableAt(?int $claimableAt = null): int {
 		if ($claimableAt === null)
 		{
 			return $this->get('nbf');
@@ -212,11 +212,9 @@ class Token
 
 					return $signature;
 				}
-				break;
 
 			default:
 				throw new TokenException('Could not get signature, invalid algorithm provided.');
-				break;
 		}
 	}
 
@@ -263,7 +261,6 @@ class Token
 				break;
 			default:
 				throw new AlgorithmException('Unsupported algorithm provided.');
-				break;
 		}
 
 		$decodedHeader = json_decode(decodeBase64Url($encodedHeader), true);

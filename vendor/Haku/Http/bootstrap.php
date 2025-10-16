@@ -15,5 +15,7 @@ function getRawRequestPayload(): string
 		return getMockedJsonPayload();
 	}
 
-	return file_get_contents('php://input');
+	$raw = file_get_contents('php://input');
+
+	return $raw;
 }

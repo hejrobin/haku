@@ -27,7 +27,6 @@ use Haku\Spec\Expectations\{
 };
 
 use function Haku\cleanPath;
-use function Haku\Generic\Arrays\find;
 use function Haku\Delegation\generateApplicationRoutes;
 use function Haku\Database\isConfigured as isDatabaseConfigured;
 
@@ -183,7 +182,7 @@ function loadSpecTests(
 				$tmpIncludePaths,
 				array_filter($includePaths, function (string $path) use ($keyword)
 				{
-					return str_contains(strtolower($path), trim(strtolower($keyword)));
+					return str_contains(strtolower($path), mb_trim(strtolower($keyword)));
 				})
 			);
 		}
@@ -202,7 +201,7 @@ function loadSpecTests(
 				$tmpIncludePaths,
 				array_filter($includePaths, function (string $path) use ($keyword)
 				{
-					return !str_contains(strtolower($path), trim(strtolower($keyword)));
+					return !str_contains(strtolower($path), mb_trim(strtolower($keyword)));
 				})
 			);
 		}
@@ -234,7 +233,7 @@ class RouteExpectationResult
  *	Invokes a specific route and returns an object with request, response, headers and status data.
  *
  *	@param string $path
- *	@param Cider\Http\Method $requestMethod
+ *	@param \Haku\Http\Method $requestMethod
  *
  *	@return object
  */
@@ -252,7 +251,7 @@ function route(
 
 	$headers->append($additionalHeaders);
 
-	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
+	$foundRoute = array_find($routes, function ($route) use ($path, $requestMethod)
 	{
 		// @note Check with trailing slash to also match optional parameters properly
 		$hasPatternMatch =
@@ -293,7 +292,7 @@ function route(
 
 	if (array_key_exists('httpStatus', $foundRoute))
 	{
-		$headers->status(\Haku\Http\Status::from($foundRoute['httpStatus']));
+		$headers->status(Status::from($foundRoute['httpStatus']));
 	}
 
 	if (array_key_exists('httpHeaders', $foundRoute))

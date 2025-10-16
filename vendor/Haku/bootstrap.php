@@ -19,7 +19,7 @@ use \Haku\Exceptions\VendorException;
 function resolvePath(string ...$pathSegments): string
 {
 	return implode(DIRECTORY_SEPARATOR, [
-		rtrim(HAKU_ROOT_PATH, DIRECTORY_SEPARATOR),
+		mb_rtrim(HAKU_ROOT_PATH, DIRECTORY_SEPARATOR),
 		...$pathSegments
 	]);
 }
@@ -29,7 +29,7 @@ function resolvePath(string ...$pathSegments): string
  */
 function cleanPath(string $unresolvedPath): string
 {
-	return trim(preg_replace('/[\/]+/', '/', $unresolvedPath), '/');
+	return mb_trim(preg_replace('/[\/]+/', '/', $unresolvedPath), '/');
 }
 
 /**

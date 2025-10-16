@@ -35,7 +35,7 @@ function configureErrorReporting(string $environment = 'production'): void
 		case 'production':
 		default:
 			// Log errors but don't display them
-			error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+			error_reporting(E_ALL & ~E_DEPRECATED);
 			ini_set('display_errors', '0');
 			ini_set('log_errors', '1');
 			break;

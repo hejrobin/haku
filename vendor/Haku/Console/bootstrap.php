@@ -51,7 +51,7 @@ function resolveArguments(
 				$key = str_replace('--', '', $tmpKey);
 
 				$value = array_map(
-					fn($v) => trim($v, ' '),
+					fn($v) => mb_trim($v, ' '),
 					explode(',', $tmpValue)
 				);
 			}

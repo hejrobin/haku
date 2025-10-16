@@ -66,7 +66,7 @@ function parseGitCommits(?string $fromRef = null, string $toRef = 'HEAD'): array
 	if ($fromRef === null)
 	{
 		exec('git describe --tags --abbrev=0 2>/dev/null', $output, $returnCode);
-		$fromRef = ($returnCode === 0 && !empty($output)) ? trim($output[0]) : null;
+		$fromRef = ($returnCode === 0 && !empty($output)) ? mb_trim($output[0]) : null;
 	}
 
 	// Build git log command
@@ -134,14 +134,14 @@ function parseGitCommits(?string $fromRef = null, string $toRef = 'HEAD'): array
 			}
 
 			// Capitalize first letter
-			$message = ucfirst($message);
+			$message = mb_ucfirst($message);
 
 			$changes[$category][] = $message;
 		}
 		else
 		{
 			// Non-conventional commit, add to changed
-			$changes['changed'][] = ucfirst(trim($commit));
+			$changes['changed'][] = mb_ucfirst(mb_trim($commit));
 		}
 	}
 

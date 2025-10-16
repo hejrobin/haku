@@ -36,8 +36,6 @@ use function Haku\Generic\Strings\{
 	snakeCaseFromCamelCase,
 };
 
-use function Haku\Generic\Arrays\find;
-
 function loadApplicationRoutes(): array {
 	$routeClassNames = [];
 	$pathResolveRegExp = '/^.+[A-Z][a-z]+\.php$/';
@@ -61,7 +59,7 @@ function loadApplicationRoutes(): array {
 
 		$namespace = str_replace(['./', '.php'], '', $includePath);
 
-		$namespaceSegments = array_map(fn(string $segment) => ucfirst($segment), explode('/', $namespace));
+		$namespaceSegments = array_map(fn(string $segment) => mb_ucfirst($segment), explode('/', $namespace));
 		$resolvedNamespace = implode('\\', $namespaceSegments);
 
 		array_push($routeClassNames, $resolvedNamespace);
@@ -191,7 +189,7 @@ function pathToRegex(
 		}
 	}
 
-	$pattern = trim($pattern, '/');
+	$pattern = mb_trim($pattern, '/');
 	$pattern = preg_replace("#(^|[^:])//+#", "\\1/", $pattern);
 
 	return "~^{$pattern}$~ix";
@@ -218,7 +216,7 @@ function parseRouteAttribute(
 		if (empty($name) && isset($method))
 		{
 			$niceName = str_replace('App\\Routes\\', '', $method->class);
-			$niceName .= ucfirst($method->name);
+			$niceName .= mb_ucfirst($method->name);
 
 			$name = snakeCaseFromCamelCase($niceName);
 		}
@@ -298,7 +296,7 @@ function normalizeMiddlewarePathName(string $unresolved): string
 	}
 
 	$parts = explode('/', $unresolved);
-	$parts = array_map(fn($part) => ucfirst(camelCaseFromSnakeCase($part)), $parts);
+	$parts = array_map(fn($part) => mb_ucfirst(camelCaseFromSnakeCase($part)), $parts);
 
 	return implode('\\', [...$namespace, ...$parts]);
 }
@@ -322,7 +320,7 @@ function delegate(string $path, Headers $headers): array
 
 	$requestMethod = Method::resolve();
 
-	$foundRoute = find($routes, function ($route) use ($path, $requestMethod)
+	$foundRoute = array_find($routes, function ($route) use ($path, $requestMethod)
 	{
 		$hasPatternMatch = preg_match($route['pattern'], cleanPath($path));
 

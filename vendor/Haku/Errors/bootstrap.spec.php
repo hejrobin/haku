@@ -36,7 +36,7 @@ spec('Error Handling', function()
 			$reporting = error_reporting();
 
 			// Production should report all errors except deprecated and strict
-			$expected = E_ALL & ~E_DEPRECATED & ~E_STRICT;
+			$expected = E_ALL & ~E_DEPRECATED;
 
 			return expect($reporting)->toEqual($expected);
 		});

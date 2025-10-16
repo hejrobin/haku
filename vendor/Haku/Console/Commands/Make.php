@@ -61,7 +61,7 @@ class Make extends Command
 		$this->output->output(sprintf('invoking generator: %s', $generator));
 
 		$generatorInstance = getGeneratorInstance(
-			sprintf('\\Haku\\Console\\Commands\\Generators\\%s', ucfirst($generator)),
+			sprintf('\\Haku\\Console\\Commands\\Generators\\%s', mb_ucfirst($generator)),
 			$this->arguments,
 			$this->output
 		);

@@ -30,7 +30,7 @@ enum Method
 			$method = strtolower($_POST['_METHOD']);
 		}
 
-		$method = ucfirst($method);
+		$method = mb_ucfirst($method);
 
 		return match($method)
 		{

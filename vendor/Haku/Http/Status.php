@@ -114,7 +114,7 @@ enum Status: int
 			static::DesignersFinalDesignsWerent => "Designers' Final Designs Weren't",
 			static::ZombieApocalypse => 'Zombie Apocalypse 🧟‍♀️',
 
-			default => trim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', ' $0', $this->name)),
+			default => mb_trim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', ' $0', $this->name)),
 		};
 	}
 

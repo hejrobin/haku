@@ -238,7 +238,7 @@ trait Entity
 							if ($foreignKey === null) {
 								$modelParts = explode('\\', $attr->model);
 								$modelName = end($modelParts);
-								$foreignKey = lcfirst($modelName) . 'Id';
+								$foreignKey = mb_lcfirst($modelName) . 'Id';
 							}
 
 							$relationFields[$property->getName()] = [
@@ -267,7 +267,7 @@ trait Entity
 	 */
 	protected function getSetterFromProperty(string $property): string
 	{
-		return 'set' . ucfirst($property);
+		return 'set' . mb_ucfirst($property);
 	}
 
 	/**

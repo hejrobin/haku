@@ -11,8 +11,6 @@ use Haku\Generic\Query\{
 	FilterProperty,
 };
 
-use function Haku\Generic\Arrays\find;
-
 class Filter
 {
 
@@ -70,7 +68,7 @@ class Filter
 		string $name,
 		FilterOperator $operator,
 	): ?FilterProperty {
-		return find($this->filters, function(FilterProperty $property) use ($name, $operator) {
+		return array_find($this->filters, function(FilterProperty $property) use ($name, $operator) {
 			return $property->name === $name && $property->operator === $operator;
 		});
 	}

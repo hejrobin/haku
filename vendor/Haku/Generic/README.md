@@ -15,24 +15,6 @@ The Generic package includes utility functions and classes for:
 
 ---
 
-## Haku\Generic\Arrays
-
-Array utilities for filtering and finding elements.
-
-### Functions
-
-```php
-use function Haku\Generic\Arrays\{any, find};
-
-// Check if any element matches condition (Ruby-style .any?)
-$hasAdmin = any($users, fn($user) => $user->role === 'admin');  // bool
-
-// Find first element matching condition
-$admin = find($users, fn($user) => $user->role === 'admin');  // mixed or null
-```
-
----
-
 ## Haku\Generic\Strings
 
 String manipulation, encoding, case conversion, and random generation utilities.

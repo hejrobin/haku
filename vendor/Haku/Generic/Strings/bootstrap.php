@@ -34,14 +34,14 @@ function hyphenate(
 
 function camelCaseFromSnakeCase(string $unresolved, bool $uppercaseFirstLetter = false): string
 {
-	$resolved = trim(preg_replace('/[^a-z0-9]+/i', ' ', $unresolved));
+	$resolved = mb_trim(preg_replace('/[^a-z0-9]+/i', ' ', $unresolved));
 	$resolved = ucwords($resolved);
 	$resolved = str_replace(' ', '', $resolved);
-	$resolved = lcfirst($resolved);
+	$resolved = mb_lcfirst($resolved);
 
 	if ($uppercaseFirstLetter)
 	{
-		$resolved = ucfirst($resolved);
+		$resolved = mb_ucfirst($resolved);
 	}
 
 	return $resolved;
@@ -58,7 +58,7 @@ function snakeCaseFromCamelCase(string $unresolved): string
 
 function encodeBase64Url(string $value): string
 {
-	return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+	return mb_rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
 }
 
 function decodeBase64Url(string $value): string

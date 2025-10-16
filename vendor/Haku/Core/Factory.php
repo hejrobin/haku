@@ -69,7 +69,7 @@ trait Factory
 	{
 		if ($instanceName === null)
 		{
-			$instanceName = lcfirst(array_pop(explode('\\', $className)));
+			$instanceName = mb_lcfirst(array_pop(explode('\\', $className)));
 		}
 
 		if ($this->get($instanceName) !== null)

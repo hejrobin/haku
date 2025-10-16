@@ -13,8 +13,6 @@ use Haku\Http\{
 
 use Haku\Spec\RouteExpectationResult;
 
-use function Haku\Generic\Arrays\any;
-
 final class Expectations implements ExpectationsInterface
 {
 
@@ -202,7 +200,7 @@ final class Expectations implements ExpectationsInterface
 	{
 		$actual = $this->actual;
 
-		$equalsAny = any(
+		$equalsAny = array_any(
 			$expectations,
 			function(mixed $expectation) use ($actual)
 			{

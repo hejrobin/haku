@@ -42,7 +42,7 @@ $__throwable = null;
 try
 {
 	require_once implode(DIRECTORY_SEPARATOR, [
-		rtrim(HAKU_ROOT_PATH, DIRECTORY_SEPARATOR),
+		mb_rtrim(HAKU_ROOT_PATH, DIRECTORY_SEPARATOR),
 		'vendor', 'Haku', 'bootstrap.php'
 	]);
 

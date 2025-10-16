@@ -11,7 +11,7 @@ class Route extends Generator
 
 	public function run(): bool
 	{
-		$path = trim($this->arguments->route, '/');
+		$path = mb_trim($this->arguments->route, '/');
 		$route = $path;
 
 		if (preg_match('/^[0-9].*?/', $route))
@@ -44,7 +44,7 @@ class Route extends Generator
 			}
 			else
 			{
-				array_push($segments, ucfirst($segment));
+				array_push($segments, mb_ucfirst($segment));
 			}
 		}
 
@@ -103,7 +103,7 @@ class Route extends Generator
 		// Cleanup path, keep full namespace as path
 		$routePath = str_replace('\\', '/', $namespace);
 		$routePath = str_replace('_', '-', $routePath);
-		$routePath = trim(mb_strtolower($routePath), '/');
+		$routePath = mb_trim(mb_strtolower($routePath), '/');
 
 		// Remove last segment of namespace
 		$namespace = implode('\\', array_slice(explode('\\', $namespace), 0, -1));

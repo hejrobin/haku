@@ -24,7 +24,7 @@ function getCurrentGitHash(): ?string
 		return null;
 	}
 
-	return trim($output[0]);
+	return mb_trim($output[0]);
 }
 
 /**
