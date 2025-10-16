@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup PHP
-        uses: nanasess/setup-php@v4
+        uses: shivammathur/setup-php@2.35.5
         with:
           php-version: ${{ matrix.php }}
       - run: php haku-init
