@@ -4,14 +4,14 @@
 > [!IMPORTANT]
 > Haku is still in development, and is not meant for production use right now, but do feel free to test it out and discuss.
 
-Haku is a small, opinionated web application framework built for JSON APIs. It aims to have a small footprint without any external dependencies or extensions, relying on native PHP 8.3 features.
+Haku is a small, opinionated web application framework built for JSON APIs. It aims to have a small footprint without any external dependencies or extensions, relying on native PHP 8.4 features.
 
 -----
 
 ## Getting Started
 
 > [!NOTE]
-> Make sure you have [PHP 8.3 or newer](https://www.php.net/releases/8.3/en.php) installed with [mbstring](https://www.php.net/manual/en/ref.mbstring.php) and [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php).
+> Make sure you have [PHP 8.4 or newer](https://www.php.net/releases/8.4/en.php) installed with [mbstring](https://www.php.net/manual/en/ref.mbstring.php) and [PDO PHP Extension](https://www.php.net/manual/en/book.pdo.php).
 
 ### Installing Haku
 
@@ -34,7 +34,7 @@ php haku-init
 
 #### ✨ Native Features First
 
-Haku aims to have a small footprint, without any external dependencies and relies soley on the power of native [PHP 8.3 features](https://www.php.net/releases/8.3/en.php).
+Haku aims to have a small footprint, without any external dependencies and relies soley on the power of native [PHP 8.4 features](https://www.php.net/releases/8.4/en.php).
 
 #### ✨ Testing Is Built In
 

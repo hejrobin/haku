@@ -1,14 +1,14 @@
 # Haku - Project Guide for Claude
 
 ## Project Overview
-Haku is a lightweight, opinionated web application framework for building JSON APIs in PHP 8.3+. It follows a "batteries included" philosophy with zero external dependencies, relying solely on native PHP features.
+Haku is a lightweight, opinionated web application framework for building JSON APIs in PHP 8.4+. It follows a "batteries included" philosophy with zero external dependencies, relying solely on native PHP features.
 
 **Current Version:** 0.2.0
 **Status:** Development (not production-ready)
 **License:** MIT
 
 ## Core Philosophy
-- Native PHP 8.3 features only - no Composer dependencies
+- Native PHP 8.4 features only - no Composer dependencies
 - Small footprint and minimal external requirements
 - Built-in testing framework inspired by Jest
 - Follows PSR-1 coding standards
@@ -70,7 +70,7 @@ haku/
 - `HAKU_ENVIRONMENT` - Environment (dev/test/production)
 - `HAKU_CORS_*` - CORS configuration constants
 - `HAKU_ROOT_PATH` - Project root directory
-- `HAKU_PHP_VERSION` - Required PHP version (8.3.0)
+- `HAKU_PHP_VERSION` - Required PHP version (8.4.0)
 
 ## Database
 - Uses PDO PHP Extension
@@ -99,7 +99,7 @@ haku/
 
 ### Code Standards
 - **No Composer:** Don't suggest Composer packages - use native PHP only
-- **PHP 8.3+ only:** Leverage modern PHP features (enums, attributes, readonly, etc.)
+- **PHP 8.4+ only:** Leverage modern PHP features (enums, attributes, readonly, etc.)
 - **JSON APIs:** All responses should be JSON formatted
 - **Testing:** Encourage writing specs for new features
 - **PSR-1:** Follow PSR-1 coding standards
@@ -241,6 +241,6 @@ class CreateAccountTable implements Migration
 - Requires mbstring and PDO extensions
 
 ## External Resources
-- PHP 8.3: https://www.php.net/releases/8.3/en.php
+- PHP 8.4: https://www.php.net/releases/8.4/en.php
 - GitHub: https://github.com/hejrobin/haku
 - PSR-1: https://www.php-fig.org/psr/psr-1/

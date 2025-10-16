@@ -117,9 +117,9 @@ function validateEnvironment(): array
 	}
 
 	// Check PHP version
-	if (version_compare(PHP_VERSION, '8.3.0', '<'))
+	if (version_compare(PHP_VERSION, '8.4.0', '<'))
 	{
-		$errors[] = 'PHP 8.3.0 or higher is required';
+		$errors[] = 'PHP 8.4.0 or higher is required';
 	}
 
 	// Check for custom modifications
