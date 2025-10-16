@@ -27,17 +27,17 @@ use Haku\Database\Attributes\{Entity, Validates};
 #[Entity('users')]
 class User extends Model
 {
-    #[Validates(['required', 'email'])]
-    protected string $email;
+	#[Validates(['required', 'email'])]
+	protected string $email;
 
-    #[Validates(['required', 'len:3..50'])]
-    protected string $name;
+	#[Validates(['required', 'len:3..50'])]
+	protected string $name;
 
-    #[Validates(['optional', 'len:..500'])]
-    protected ?string $bio;
+	#[Validates(['optional', 'len:..500'])]
+	protected ?string $bio;
 
-    #[Validates(['required', 'strongPassword'])]
-    protected string $password;
+	#[Validates(['required', 'strongPassword'])]
+	protected string $password;
 }
 
 // Validate model
@@ -47,11 +47,11 @@ $user->hydrate($_POST);
 $errors = $user->validate();
 
 if (count($errors) > 0) {
-    // Handle validation errors
-    return Json::from(
-        ['errors' => $errors],
-        Status::BadRequest
-    );
+	// Handle validation errors
+	return Json::from(
+		['errors' => $errors],
+		Status::BadRequest
+	);
 }
 ```
 
@@ -215,38 +215,38 @@ protected string $status;
 #[Entity('users')]
 class User extends Model
 {
-    #[Validates(['required', 'emailAddress', 'len:..255'])]
-    protected string $email;
+	#[Validates(['required', 'emailAddress', 'len:..255'])]
+	protected string $email;
 
-    #[Validates(['required', 'len:3..50'])]
-    protected string $username;
+	#[Validates(['required', 'len:3..50'])]
+	protected string $username;
 
-    #[Validates(['required', 'strongPassword', 'len:8..'])]
-    protected string $password;
+	#[Validates(['required', 'strongPassword', 'len:8..'])]
+	protected string $password;
 
-    #[Validates(['optional', 'len:..500'])]
-    protected ?string $bio;
+	#[Validates(['optional', 'len:..500'])]
+	protected ?string $bio;
 
-    #[Validates(['optional', 'regex:^https?://'])]
-    protected ?string $website;
+	#[Validates(['optional', 'regex:^https?://'])]
+	protected ?string $website;
 }
 
 // Usage
 $user = new User();
 $user->hydrate([
-    'email' => 'john@example.com',
-    'username' => 'john_doe',
-    'password' => 'SecurePass123',
-    'bio' => 'Developer',
-    'website' => 'https://example.com'
+	'email' => 'john@example.com',
+	'username' => 'john_doe',
+	'password' => 'SecurePass123',
+	'bio' => 'Developer',
+	'website' => 'https://example.com'
 ]);
 
 $errors = $user->validate();
 
 if (count($errors) > 0) {
-    foreach ($errors as $field => $fieldErrors) {
-        echo "{$field}: " . implode(', ', $fieldErrors) . "\n";
-    }
+	foreach ($errors as $field => $fieldErrors) {
+		echo "{$field}: " . implode(', ', $fieldErrors) . "\n";
+	}
 }
 ```
 
@@ -256,23 +256,23 @@ if (count($errors) > 0) {
 #[Entity('products')]
 class Product extends Model
 {
-    #[Validates(['required', 'len:3..100'])]
-    protected string $name;
+	#[Validates(['required', 'len:3..100'])]
+	protected string $name;
 
-    #[Validates(['required', 'len:10..'])]
-    protected string $description;
+	#[Validates(['required', 'len:10..'])]
+	protected string $description;
 
-    #[Validates(['required', 'regex:^\d+\.\d{2}$'])]  // Decimal with 2 places
-    protected string $price;
+	#[Validates(['required', 'regex:^\d+\.\d{2}$'])]  // Decimal with 2 places
+	protected string $price;
 
-    #[Validates(['required', 'enum:draft,published,discontinued'])]
-    protected string $status;
+	#[Validates(['required', 'enum:draft,published,discontinued'])]
+	protected string $status;
 
-    #[Validates(['required', 'regex:^[A-Z]{3}-\d{6}$'])]  // Like "PRD-123456"
-    protected string $sku;
+	#[Validates(['required', 'regex:^[A-Z]{3}-\d{6}$'])]  // Like "PRD-123456"
+	protected string $sku;
 
-    #[Validates(['optional', 'len:..1000'])]
-    protected ?string $specifications;
+	#[Validates(['optional', 'len:..1000'])]
+	protected ?string $specifications;
 }
 ```
 
@@ -282,17 +282,17 @@ class Product extends Model
 #[Entity('settings')]
 class Setting extends Model
 {
-    #[Validates(['required', 'len:3..50'])]
-    protected string $key;
+	#[Validates(['required', 'len:3..50'])]
+	protected string $key;
 
-    #[Validates(['required'])]
-    protected string $value;
+	#[Validates(['required'])]
+	protected string $value;
 
-    #[Validates(['bool'])]
-    protected bool $isPublic;
+	#[Validates(['bool'])]
+	protected bool $isPublic;
 
-    #[Validates(['optional', 'enum:string,number,boolean,json'])]
-    protected ?string $type;
+	#[Validates(['optional', 'enum:string,number,boolean,json'])]
+	protected ?string $type;
 }
 ```
 
@@ -309,9 +309,9 @@ $errors = $user->validate();
 
 // Structure:
 // [
-//     'email' => ['\'email\': is required, but is not present in record'],
-//     'name' => ['\'name\': invalid length, expected between 3 and 50, got: 1'],
-//     'password' => ['\'password\': is not a strong password']
+//	 'email' => ['\'email\': is required, but is not present in record'],
+//	 'name' => ['\'name\': invalid length, expected between 3 and 50, got: 1'],
+//	 'password' => ['\'password\': is not a strong password']
 // ]
 ```
 
@@ -321,11 +321,11 @@ $errors = $user->validate();
 $errors = $user->validate();
 
 if (count($errors) > 0) {
-    // Has validation errors
-    $hasEmailError = isset($errors['email']);
+	// Has validation errors
+	$hasEmailError = isset($errors['email']);
 
-    // Get specific field errors
-    $emailErrors = $errors['email'] ?? [];
+	// Get specific field errors
+	$emailErrors = $errors['email'] ?? [];
 }
 ```
 
@@ -340,10 +340,10 @@ $user->hydrate($_POST);
 $errors = $user->validate();
 
 if (count($errors) > 0) {
-    return Json::from(
-        ['errors' => $errors],
-        Status::BadRequest
-    );
+	return Json::from(
+		['errors' => $errors],
+		Status::BadRequest
+	);
 }
 ```
 
@@ -358,27 +358,27 @@ Add custom validation logic in your model:
 ```php
 class User extends Model
 {
-    #[Validates(['required', 'emailAddress'])]
-    protected string $email;
+	#[Validates(['required', 'emailAddress'])]
+	protected string $email;
 
-    public function validate(): array
-    {
-        // Run standard validation
-        $errors = parent::validate();
+	public function validate(): array
+	{
+		// Run standard validation
+		$errors = parent::validate();
 
-        // Add custom validation
-        if ($this->age < 13) {
-            $errors['age'] = ['Must be at least 13 years old'];
-        }
+		// Add custom validation
+		if ($this->age < 13) {
+			$errors['age'] = ['Must be at least 13 years old'];
+		}
 
-        // Check uniqueness
-        $existing = User::findOne([Where::is('email', $this->email)]);
-        if ($existing && $existing->id !== $this->id) {
-            $errors['email'] = ['Email already in use'];
-        }
+		// Check uniqueness
+		$existing = User::findOne([Where::is('email', $this->email)]);
+		if ($existing && $existing->id !== $this->id) {
+			$errors['email'] = ['Email already in use'];
+		}
 
-        return $errors;
-    }
+		return $errors;
+	}
 }
 ```
 
@@ -387,23 +387,23 @@ class User extends Model
 ```php
 class Order extends Model
 {
-    #[Validates(['required', 'enum:card,paypal,bank'])]
-    protected string $paymentMethod;
+	#[Validates(['required', 'enum:card,paypal,bank'])]
+	protected string $paymentMethod;
 
-    #[Validates(['optional', 'len:16'])]
-    protected ?string $cardNumber;
+	#[Validates(['optional', 'len:16'])]
+	protected ?string $cardNumber;
 
-    public function validate(): array
-    {
-        $errors = parent::validate();
+	public function validate(): array
+	{
+		$errors = parent::validate();
 
-        // Require card number if payment method is card
-        if ($this->paymentMethod === 'card' && empty($this->cardNumber)) {
-            $errors['cardNumber'] = ['Card number required for card payments'];
-        }
+		// Require card number if payment method is card
+		if ($this->paymentMethod === 'card' && empty($this->cardNumber)) {
+			$errors['cardNumber'] = ['Card number required for card payments'];
+		}
 
-        return $errors;
-    }
+		return $errors;
+	}
 }
 ```
 
@@ -439,7 +439,7 @@ class Order extends Model
 $errors = $model->validate();
 
 if (count($errors) > 0) {
-    return Json::from(['errors' => $errors], Status::BadRequest);
+	return Json::from(['errors' => $errors], Status::BadRequest);
 }
 
 $model->save();
@@ -471,16 +471,16 @@ protected ?string $bio;
 ```php
 public function validate(): array
 {
-    $errors = parent::validate();
+	$errors = parent::validate();
 
-    // Transform technical errors into user-friendly messages
-    if (isset($errors['password'])) {
-        $errors['password'] = [
-            'Password must be at least 8 characters with uppercase, lowercase, and numbers'
-        ];
-    }
+	// Transform technical errors into user-friendly messages
+	if (isset($errors['password'])) {
+		$errors['password'] = [
+			'Password must be at least 8 characters with uppercase, lowercase, and numbers'
+		];
+	}
 
-    return $errors;
+	return $errors;
 }
 ```
 

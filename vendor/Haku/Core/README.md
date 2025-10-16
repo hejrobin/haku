@@ -14,22 +14,22 @@ Trait that implements the Singleton pattern, ensuring only one instance of a cla
 namespace App\Services;
 
 use Haku\Core\Singleton;
-
+	
 class Cache
 {
-    use Singleton;
+	use Singleton;
 
-    private array $data = [];
+	private array $data = [];
 
-    public function set(string $key, mixed $value): void
-    {
-        $this->data[$key] = $value;
-    }
+	public function set(string $key, mixed $value): void
+	{
+		$this->data[$key] = $value;
+	}
 
-    public function get(string $key): mixed
-    {
-        return $this->data[$key] ?? null;
-    }
+	public function get(string $key): mixed
+	{
+		return $this->data[$key] ?? null;
+	}
 }
 
 // Get the singleton instance
@@ -65,8 +65,8 @@ The Singleton trait prevents multiple instantiation by:
 
 ```php
 // ✗ All of these will fail:
-$instance = new Cache();           // Error: constructor is private
-$copy = clone $instance;           // Error: __clone() is final
+$instance = new Cache();		   // Error: constructor is private
+$copy = clone $instance;		   // Error: __clone() is final
 $unserialized = unserialize($s);  // Error: __wakeup() is final
 
 // ✓ Only this works:
@@ -93,19 +93,19 @@ use Haku\Core\Singleton;
 
 class Config
 {
-    use Singleton;
+	use Singleton;
 
-    private array $config = [];
+	private array $config = [];
 
-    public function load(string $path): void
-    {
-        $this->config = require $path;
-    }
+	public function load(string $path): void
+	{
+		$this->config = require $path;
+	}
 
-    public function get(string $key, mixed $default = null): mixed
-    {
-        return $this->config[$key] ?? $default;
-    }
+	public function get(string $key, mixed $default = null): mixed
+	{
+		return $this->config[$key] ?? $default;
+	}
 }
 
 // Anywhere in your application
@@ -132,23 +132,23 @@ use Haku\Core\{Singleton, Factory};
 
 class Container
 {
-    use Singleton;
-    use Factory;
+	use Singleton;
+	use Factory;
 }
 
 // Initialize and register services
 $container = Container::getInstance();
 
 $container->initialize(
-    className: 'App\Services\Logger',
-    instanceName: 'logger'
+	className: 'App\Services\Logger',
+	instanceName: 'logger'
 );
 
 $container->initialize(
-    className: 'App\Services\Mailer',
-    instanceName: 'mailer',
-    classMethodName: 'create',
-    classMethodArguments: ['smtp.example.com', 587]
+	className: 'App\Services\Mailer',
+	instanceName: 'mailer',
+	classMethodName: 'create',
+	classMethodArguments: ['smtp.example.com', 587]
 );
 
 // Retrieve services
@@ -165,7 +165,7 @@ Checks if an instance with the given name exists in the factory.
 ```php
 if ($container->has('database'))
 {
-    $db = $container->get('database');
+	$db = $container->get('database');
 }
 ```
 
@@ -178,7 +178,7 @@ $logger = $container->get('logger');
 
 if ($logger === null)
 {
-    // Handle missing service
+	// Handle missing service
 }
 ```
 
@@ -189,8 +189,8 @@ Registers an instance with a name. Protected method, typically used internally.
 ```php
 protected function registerLogger(): void
 {
-    $logger = new Logger();
-    $this->set('logger', $logger);
+	$logger = new Logger();
+	$this->set('logger', $logger);
 }
 ```
 
@@ -202,10 +202,10 @@ Creates and registers a new instance using reflection.
 
 ```php
 $db = $container->initialize(
-    className: 'App\Database\Connection',
-    instanceName: 'db',
-    classMethodName: 'connect',
-    classMethodArguments: ['localhost', 'mydb', 'user', 'pass']
+	className: 'App\Database\Connection',
+	instanceName: 'db',
+	classMethodName: 'connect',
+	classMethodArguments: ['localhost', 'mydb', 'user', 'pass']
 );
 ```
 
@@ -248,16 +248,16 @@ use Haku\Core\{Singleton, Factory};
 
 class Services
 {
-    use Singleton;
-    use Factory;
+	use Singleton;
+	use Factory;
 
-    public function boot(): void
-    {
-        // Register core services
-        $this->initialize('App\Services\Logger', 'logger');
-        $this->initialize('App\Services\Cache', 'cache');
-        $this->initialize('App\Services\Router', 'router');
-    }
+	public function boot(): void
+	{
+		// Register core services
+		$this->initialize('App\Services\Logger', 'logger');
+		$this->initialize('App\Services\Cache', 'cache');
+		$this->initialize('App\Services\Router', 'router');
+	}
 }
 
 // Bootstrap
@@ -267,7 +267,7 @@ $services->boot();
 // Use anywhere
 function getService(string $name): ?object
 {
-    return Services::getInstance()->get($name);
+	return Services::getInstance()->get($name);
 }
 
 $logger = getService('logger');
@@ -283,21 +283,21 @@ use Haku\Core\Factory;
 
 class ConnectionPool
 {
-    use Factory;
+	use Factory;
 
-    public function addConnection(
-        string $name,
-        string $host,
-        string $database
-    ): void
-    {
-        $connection = $this->initialize(
-            className: 'App\Database\Connection',
-            instanceName: $name,
-            classMethodName: 'newInstance',
-            classMethodArguments: [$host, $database]
-        );
-    }
+	public function addConnection(
+		string $name,
+		string $host,
+		string $database
+	): void
+	{
+		$connection = $this->initialize(
+			className: 'App\Database\Connection',
+			instanceName: $name,
+			classMethodName: 'newInstance',
+			classMethodArguments: [$host, $database]
+		);
+	}
 }
 
 $pool = new ConnectionPool();
@@ -322,35 +322,35 @@ use Haku\Exceptions\FrameworkException;
 
 class App
 {
-    use Singleton;
-    use Factory;
+	use Singleton;
+	use Factory;
 
-    public function register(string $name, callable $factory): void
-    {
-        if ($this->has($name))
-        {
-            throw new FrameworkException(
-                "Service '{$name}' is already registered"
-            );
-        }
+	public function register(string $name, callable $factory): void
+	{
+		if ($this->has($name))
+		{
+			throw new FrameworkException(
+				"Service '{$name}' is already registered"
+			);
+		}
 
-        $instance = $factory();
-        $this->set($name, $instance);
-    }
+		$instance = $factory();
+		$this->set($name, $instance);
+	}
 
-    public function service(string $name): object
-    {
-        $service = $this->get($name);
+	public function service(string $name): object
+	{
+		$service = $this->get($name);
 
-        if ($service === null)
-        {
-            throw new FrameworkException(
-                "Service '{$name}' not found"
-            );
-        }
+		if ($service === null)
+		{
+			throw new FrameworkException(
+				"Service '{$name}' not found"
+			);
+		}
 
-        return $service;
-    }
+		return $service;
+	}
 }
 
 // Register services
@@ -376,24 +376,24 @@ Prefer passing dependencies explicitly rather than using singletons:
 // ✗ Avoid: Hidden dependency
 class UserService
 {
-    public function create(array $data)
-    {
-        $logger = Logger::getInstance();  // Hidden dependency
-        $logger->info('Creating user');
-    }
+	public function create(array $data)
+	{
+		$logger = Logger::getInstance();  // Hidden dependency
+		$logger->info('Creating user');
+	}
 }
 
 // ✓ Better: Explicit dependency
 class UserService
 {
-    public function __construct(
-        private Logger $logger
-    ) {}
+	public function __construct(
+		private Logger $logger
+	) {}
 
-    public function create(array $data)
-    {
-        $this->logger->info('Creating user');
-    }
+	public function create(array $data)
+	{
+		$this->logger->info('Creating user');
+	}
 }
 ```
 
@@ -405,13 +405,13 @@ Don't expose the internal `$__instances` array:
 // ✗ Bad
 public function getAllInstances(): array
 {
-    return $this->__instances;
+	return $this->__instances;
 }
 
 // ✓ Good
 public function has(string $name): bool
 {
-    return $this->has($name);
+	return $this->has($name);
 }
 ```
 
@@ -422,17 +422,17 @@ Create typed getters for better IDE support:
 ```php
 class Services
 {
-    use Factory;
+	use Factory;
 
-    public function logger(): Logger
-    {
-        return $this->get('logger');
-    }
+	public function logger(): Logger
+	{
+		return $this->get('logger');
+	}
 
-    public function cache(): Cache
-    {
-        return $this->get('cache');
-    }
+	public function cache(): Cache
+	{
+		return $this->get('cache');
+	}
 }
 
 // Now with autocomplete!

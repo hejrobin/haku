@@ -32,7 +32,7 @@ $token = new Token(Algorithm::HS256);
 // Set standard claims
 $token->issuedAt(time());
 $token->expiresAt(time() + 3600);  // Expires in 1 hour
-$token->claimableAt(time());        // Can be used immediately
+$token->claimableAt(time());		// Can be used immediately
 
 // Add custom data
 $token->set('user_id', 123);
@@ -50,9 +50,9 @@ use Haku\Jwt\Token;
 $jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 
 $token = Token::decode(
-    token: $jwt,
-    algorithm: Algorithm::HS256,
-    signingKey: 'your-secret-key'
+	token: $jwt,
+	algorithm: Algorithm::HS256,
+	signingKey: 'your-secret-key'
 );
 
 // Access payload
@@ -78,7 +78,7 @@ $token->claimableAt(time() + 300);  // Valid after 5 minutes
 $claimableAt = $token->claimableAt();
 
 // Check validity
-$expired = $token->hasExpired();      // bool
+$expired = $token->hasExpired();	  // bool
 $claimable = $token->isClaimable();   // bool
 ```
 
@@ -89,16 +89,16 @@ $claimable = $token->isClaimable();   // bool
 $token->set('key', 'value');
 
 // Get claim
-$value = $token->get('key');        // mixed|null
+$value = $token->get('key');		// mixed|null
 
 // Check if claim exists
-$exists = $token->has('key');       // bool
+$exists = $token->has('key');	   // bool
 
 // Remove claim
 $token->remove('key');
 
 // Get entire payload
-$payload = $token->getPayload();    // array
+$payload = $token->getPayload();	// array
 
 // Set entire payload
 $token->setPayload(['key' => 'value']);
@@ -140,7 +140,7 @@ Algorithm::HS512  // HMAC with SHA-512
 ```php
 // Get algorithm configuration
 $alg = Algorithm::get(Algorithm::HS256);
-echo $alg->crypt;     // 'SHA256'
+echo $alg->crypt;	 // 'SHA256'
 echo $alg->protocol;  // 'hash_hmac'
 
 // Check if algorithm is supported
@@ -163,8 +163,8 @@ Static helper class for creating and verifying authorization tokens.
 use Haku\Jwt\Authorization;
 
 $jwt = Authorization::make(
-    identifier: 123,      // User ID or similar
-    scope: 'admin'        // User role/scope
+	identifier: 123,	  // User ID or similar
+	scope: 'admin'		// User role/scope
 );
 
 // Returns encoded JWT string
@@ -203,11 +203,11 @@ Convenience function for encoding tokens with context data.
 use function Haku\Jwt\encodeToken;
 
 $jwt = encodeToken(
-    context: [
-        'user_id' => 123,
-        'role' => 'admin'
-    ],
-    maxAge: 3600  // Optional, defaults to HAKU_JWT_TOKEN_TTL
+	context: [
+		'user_id' => 123,
+		'role' => 'admin'
+	],
+	maxAge: 3600  // Optional, defaults to HAKU_JWT_TOKEN_TTL
 );
 ```
 
@@ -264,7 +264,7 @@ $token = currentToken();  // Token|null
 
 if ($token)
 {
-    $userId = $token->get('user_id');
+	$userId = $token->get('user_id');
 }
 ```
 
@@ -293,38 +293,38 @@ use Haku\Http\Exceptions\StatusException;
 // Login endpoint - create token
 function login(string $username, string $password): array
 {
-    $user = authenticateUser($username, $password);
+	$user = authenticateUser($username, $password);
 
-    if (!$user)
-    {
-        throw new StatusException('Invalid credentials', 401);
-    }
+	if (!$user)
+	{
+		throw new StatusException('Invalid credentials', 401);
+	}
 
-    $token = encodeToken([
-        'user_id' => $user->id,
-        'username' => $user->username,
-        'role' => $user->role
-    ], maxAge: 86400);  // 24 hours
+	$token = encodeToken([
+		'user_id' => $user->id,
+		'username' => $user->username,
+		'role' => $user->role
+	], maxAge: 86400);  // 24 hours
 
-    return [
-        'token' => $token,
-        'expires_in' => 86400
-    ];
+	return [
+		'token' => $token,
+		'expires_in' => 86400
+	];
 }
 
 // Protected endpoint - verify token
 function getProfile(): array
 {
-    $token = currentToken();
+	$token = currentToken();
 
-    if (!$token || $token->hasExpired())
-    {
-        throw new StatusException('Unauthorized', 401);
-    }
+	if (!$token || $token->hasExpired())
+	{
+		throw new StatusException('Unauthorized', 401);
+	}
 
-    $userId = $token->get('user_id');
+	$userId = $token->get('user_id');
 
-    return getUserProfile($userId);
+	return getUserProfile($userId);
 }
 ```
 
@@ -336,33 +336,33 @@ use Haku\Http\Exceptions\StatusException;
 
 function requireRole(string ...$allowedRoles): void
 {
-    $token = currentToken();
+	$token = currentToken();
 
-    if (!$token)
-    {
-        throw new StatusException('Unauthorized', 401);
-    }
+	if (!$token)
+	{
+		throw new StatusException('Unauthorized', 401);
+	}
 
-    if ($token->hasExpired())
-    {
-        throw new StatusException('Token expired', 401);
-    }
+	if ($token->hasExpired())
+	{
+		throw new StatusException('Token expired', 401);
+	}
 
-    $userRole = $token->get('role');
+	$userRole = $token->get('role');
 
-    if (!in_array($userRole, $allowedRoles))
-    {
-        throw new StatusException('Forbidden', 403);
-    }
+	if (!in_array($userRole, $allowedRoles))
+	{
+		throw new StatusException('Forbidden', 403);
+	}
 }
 
 // Use in routes
 function deleteUser(int $id): void
 {
-    requireRole('admin', 'moderator');
+	requireRole('admin', 'moderator');
 
-    // Admin-only logic
-    performDelete($id);
+	// Admin-only logic
+	performDelete($id);
 }
 ```
 
@@ -398,28 +398,28 @@ use Haku\Http\Exceptions\StatusException;
 
 function refreshToken(): array
 {
-    $oldToken = currentToken();
+	$oldToken = currentToken();
 
-    if (!$oldToken)
-    {
-        throw new StatusException('No token provided', 401);
-    }
+	if (!$oldToken)
+	{
+		throw new StatusException('No token provided', 401);
+	}
 
-    if ($oldToken->hasExpired())
-    {
-        throw new StatusException('Token expired, please login again', 401);
-    }
+	if ($oldToken->hasExpired())
+	{
+		throw new StatusException('Token expired, please login again', 401);
+	}
 
-    // Create new token with same payload
-    $payload = $oldToken->getPayload();
-    unset($payload['iat'], $payload['exp'], $payload['nbf']);
+	// Create new token with same payload
+	$payload = $oldToken->getPayload();
+	unset($payload['iat'], $payload['exp'], $payload['nbf']);
 
-    $newToken = encodeToken($payload, maxAge: 86400);
+	$newToken = encodeToken($payload, maxAge: 86400);
 
-    return [
-        'token' => $newToken,
-        'expires_in' => 86400
-    ];
+	return [
+		'token' => $newToken,
+		'expires_in' => 86400
+	];
 }
 ```
 
@@ -432,7 +432,7 @@ function refreshToken(): array
 ```php
 // config.php
 define('HAKU_JWT_SIGNING_KEY', 'your-secret-key-here');  // Required
-define('HAKU_JWT_TOKEN_TTL', 3600);                      // Optional, default: 60
+define('HAKU_JWT_TOKEN_TTL', 3600);					  // Optional, default: 60
 ```
 
 > [!CAUTION]
@@ -476,18 +476,18 @@ use function Haku\Jwt\decodeToken;
 
 try
 {
-    $token = decodeToken($jwtString);
+	$token = decodeToken($jwtString);
 }
 catch (IntegrityException $e)
 {
-    // Token was tampered with
-    logSecurityEvent('Invalid token signature', $jwtString);
-    throw new StatusException('Invalid token', 401);
+	// Token was tampered with
+	logSecurityEvent('Invalid token signature', $jwtString);
+	throw new StatusException('Invalid token', 401);
 }
 catch (TokenException $e)
 {
-    // Invalid token format or expired
-    throw new StatusException('Invalid or expired token', 401);
+	// Invalid token format or expired
+	throw new StatusException('Invalid or expired token', 401);
 }
 ```
 
@@ -512,7 +512,7 @@ $token = currentToken();
 
 if (!$token || $token->hasExpired() || !$token->isClaimable())
 {
-    throw new StatusException('Unauthorized', 401);
+	throw new StatusException('Unauthorized', 401);
 }
 ```
 

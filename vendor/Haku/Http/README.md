@@ -27,39 +27,39 @@ Enum providing all standard HTTP status codes with helper methods.
 ```php
 use Haku\Http\Status;
 
-Status::OK                               // 200
-Status::Created                          // 201
-Status::Accepted                         // 202
-Status::NoContent                        // 204
+Status::OK							   // 200
+Status::Created						  // 201
+Status::Accepted						 // 202
+Status::NoContent						// 204
 ```
 
 **Redirect (3xx)**
 ```php
-Status::MovedPermanently                 // 301
-Status::Found                            // 302
-Status::SeeOther                         // 303
-Status::NotModified                      // 304
-Status::TemporaryRedirect                // 307
+Status::MovedPermanently				 // 301
+Status::Found							// 302
+Status::SeeOther						 // 303
+Status::NotModified					  // 304
+Status::TemporaryRedirect				// 307
 ```
 
 **Client Error (4xx)**
 ```php
-Status::BadRequest                       // 400
-Status::Unauthorized                     // 401
-Status::Forbidden                        // 403
-Status::NotFound                         // 404
-Status::MethodNotAllowed                 // 405
-Status::Conflict                         // 409
-Status::TooManyRequests                  // 429
+Status::BadRequest					   // 400
+Status::Unauthorized					 // 401
+Status::Forbidden						// 403
+Status::NotFound						 // 404
+Status::MethodNotAllowed				 // 405
+Status::Conflict						 // 409
+Status::TooManyRequests				  // 429
 ```
 
 **Server Error (5xx)**
 ```php
-Status::InternalServerError              // 500
-Status::NotImplemented                   // 501
-Status::BadGateway                       // 502
-Status::ServiceUnavailable               // 503
-Status::GatewayTimeout                   // 504
+Status::InternalServerError			  // 500
+Status::NotImplemented				   // 501
+Status::BadGateway					   // 502
+Status::ServiceUnavailable			   // 503
+Status::GatewayTimeout				   // 504
 ```
 
 > [!NOTE]
@@ -151,10 +151,10 @@ echo $method->asString();  // 'POST'
 Checks if the method typically carries a request body.
 
 ```php
-Method::Post->allowsPayload();    // true
-Method::Put->allowsPayload();     // true
+Method::Post->allowsPayload();	// true
+Method::Put->allowsPayload();	 // true
 Method::Patch->allowsPayload();   // true
-Method::Get->allowsPayload();     // false
+Method::Get->allowsPayload();	 // false
 Method::Delete->allowsPayload();  // false
 ```
 
@@ -170,11 +170,11 @@ Manages HTTP headers with automatic normalization and validation.
 use Haku\Http\{Headers, Status};
 
 $headers = new Headers(
-    initialHeaders: [
-        'Content-Type' => 'application/json',
-        'X-Custom' => 'value'
-    ],
-    status: Status::OK
+	initialHeaders: [
+		'Content-Type' => 'application/json',
+		'X-Custom' => 'value'
+	],
+	status: Status::OK
 );
 ```
 
@@ -186,8 +186,8 @@ $headers->set('Content-Type', 'application/json');
 
 // Append multiple headers
 $headers->append([
-    'Cache-Control' => 'no-cache',
-    'X-Rate-Limit' => '1000'
+	'Cache-Control' => 'no-cache',
+	'X-Rate-Limit' => '1000'
 ]);
 
 // Headers are automatically normalized
@@ -204,7 +204,7 @@ $headers->set('my header', 'value');
 ```php
 // Check if header exists
 if ($headers->has('Content-Type')) {
-    // ...
+	// ...
 }
 
 // Get header value
@@ -212,7 +212,7 @@ $contentType = $headers->get('Content-Type');
 
 // Check header value
 if ($headers->is('Content-Type', 'application/json')) {
-    // ...
+	// ...
 }
 
 // Get all headers
@@ -265,25 +265,25 @@ use Haku\Http\{Message, Status};
 
 class Xml extends Message
 {
-    protected function render(array $data): string
-    {
-        // Convert data to XML
-        return $this->arrayToXml($data);
-    }
+	protected function render(array $data): string
+	{
+		// Convert data to XML
+		return $this->arrayToXml($data);
+	}
 
-    public static function from(
-        mixed $data,
-        Status $status = Status::OK,
-        array $headers = []
-    ): self {
-        return new self((array) $data, $status, $headers);
-    }
+	public static function from(
+		mixed $data,
+		Status $status = Status::OK,
+		array $headers = []
+	): self {
+		return new self((array) $data, $status, $headers);
+	}
 
-    public function valid(): bool
-    {
-        // Validate XML
-        return true;
-    }
+	public function valid(): bool
+	{
+		// Validate XML
+		return true;
+	}
 }
 ```
 
@@ -332,22 +332,22 @@ $response = Json::from(['message' => 'Success']);
 
 // With status code
 $response = Json::from(
-    data: ['user' => $user],
-    status: Status::Created
+	data: ['user' => $user],
+	status: Status::Created
 );
 
 // With custom headers
 $response = Json::from(
-    data: ['items' => $items],
-    status: Status::OK,
-    headers: ['X-Total-Count' => '100']
+	data: ['items' => $items],
+	status: Status::OK,
+	headers: ['X-Total-Count' => '100']
 );
 
 // Formatting options
 $response = Json::from(
-    data: $data,
-    formatNumbers: true,     // Convert numeric strings to numbers
-    prettyPrint: true        // Pretty-print JSON (default in dev)
+	data: $data,
+	formatNumbers: true,	 // Convert numeric strings to numbers
+	prettyPrint: true		// Pretty-print JSON (default in dev)
 );
 ```
 
@@ -366,7 +366,7 @@ $response = Json::error('Not found', Status::NotFound);
 $response = Json::from($data);
 
 if ($response->valid()) {
-    // JSON is valid
+	// JSON is valid
 }
 ```
 
@@ -379,48 +379,48 @@ use Haku\Http\{Messages\Json, Status};
 
 class Users
 {
-    public function index(): Json
-    {
-        $users = User::findAll(limit: 50);
+	public function index(): Json
+	{
+		$users = User::findAll(limit: 50);
 
-        return Json::from([
-            'users' => $users,
-            'total' => count($users)
-        ]);
-    }
+		return Json::from([
+			'users' => $users,
+			'total' => count($users)
+		]);
+	}
 
-    public function show(int $id): Json
-    {
-        $user = User::find($id);
+	public function show(int $id): Json
+	{
+		$user = User::find($id);
 
-        if (!$user) {
-            return Json::error('User not found', Status::NotFound);
-        }
+		if (!$user) {
+			return Json::error('User not found', Status::NotFound);
+		}
 
-        return Json::from(['user' => $user->json()]);
-    }
+		return Json::from(['user' => $user->json()]);
+	}
 
-    public function create(): Json
-    {
-        $user = new User();
-        $user->hydrate($_POST);
+	public function create(): Json
+	{
+		$user = new User();
+		$user->hydrate($_POST);
 
-        $errors = $user->validate();
+		$errors = $user->validate();
 
-        if (count($errors) > 0) {
-            return Json::from(
-                ['errors' => $errors],
-                Status::BadRequest
-            );
-        }
+		if (count($errors) > 0) {
+			return Json::from(
+				['errors' => $errors],
+				Status::BadRequest
+			);
+		}
 
-        $saved = $user->save();
+		$saved = $user->save();
 
-        return Json::from(
-            ['user' => $saved->json()],
-            Status::Created
-        );
-    }
+		return Json::from(
+			['user' => $saved->json()],
+			Status::Created
+		);
+	}
 }
 ```
 
@@ -436,9 +436,9 @@ Plain text response message formatter.
 use Haku\Http\{Messages\Plain, Status};
 
 $response = Plain::from(
-    data: 'Hello, World!',
-    status: Status::OK,
-    headers: ['Content-Type' => 'text/plain']
+	data: 'Hello, World!',
+	status: Status::OK,
+	headers: ['Content-Type' => 'text/plain']
 );
 ```
 
@@ -455,16 +455,16 @@ use Haku\Http\{Request, Headers, Method};
 
 // Create from route definition
 $request = Request::from(
-    route: [
-        'name' => 'users.show',
-        'path' => '/users/{id}',
-        'pattern' => '/users/(\d+)',
-        'method' => Method::Get,
-        'callback' => [Users::class, 'show'],
-        'middlewares' => [AuthMiddleware::class],
-        'parameters' => [123]
-    ],
-    headers: new Headers()
+	route: [
+		'name' => 'users.show',
+		'path' => '/users/{id}',
+		'pattern' => '/users/(\d+)',
+		'method' => Method::Get,
+		'callback' => [Users::class, 'show'],
+		'middlewares' => [AuthMiddleware::class],
+		'parameters' => [123]
+	],
+	headers: new Headers()
 );
 
 // Process request through middlewares and handler
@@ -509,34 +509,34 @@ use Haku\Http\Exceptions\StatusException;
 
 class Users
 {
-    public function show(int $id): Json
-    {
-        $user = User::find($id);
+	public function show(int $id): Json
+	{
+		$user = User::find($id);
 
-        if (!$user) {
-            throw new StatusException(404);
-        }
+		if (!$user) {
+			throw new StatusException(404);
+		}
 
-        return Json::from(['user' => $user->json()]);
-    }
+		return Json::from(['user' => $user->json()]);
+	}
 
-    public function delete(int $id): Json
-    {
-        $user = User::find($id);
+	public function delete(int $id): Json
+	{
+		$user = User::find($id);
 
-        if (!$user) {
-            throw new StatusException(404);
-        }
+		if (!$user) {
+			throw new StatusException(404);
+		}
 
-        // Check permissions
-        if (!currentUser()->canDelete($user)) {
-            throw new StatusException(403);
-        }
+		// Check permissions
+		if (!currentUser()->canDelete($user)) {
+			throw new StatusException(403);
+		}
 
-        User::delete($id);
+		User::delete($id);
 
-        return Json::from(['message' => 'Deleted'], Status::OK);
-    }
+		return Json::from(['message' => 'Deleted'], Status::OK);
+	}
 }
 ```
 
@@ -547,14 +547,14 @@ class Users
 use Haku\Http\Exceptions\StatusException;
 
 try {
-    // Application code
+	// Application code
 } catch (StatusException $e) {
-    http_response_code($e->getCode());
+	http_response_code($e->getCode());
 
-    echo json_encode([
-        'error' => $e->getMessage(),
-        'status' => $e->getCode()
-    ]);
+	echo json_encode([
+		'error' => $e->getMessage(),
+		'status' => $e->getCode()
+	]);
 }
 ```
 
@@ -572,51 +572,51 @@ use App\Models\Post;
 
 class Posts
 {
-    public function create(): Json
-    {
-        $post = new Post();
-        $post->hydrate($_POST);
+	public function create(): Json
+	{
+		$post = new Post();
+		$post->hydrate($_POST);
 
-        $errors = $post->validate();
+		$errors = $post->validate();
 
-        if (count($errors) > 0) {
-            return Json::from(
-                ['errors' => $errors],
-                Status::BadRequest
-            );
-        }
+		if (count($errors) > 0) {
+			return Json::from(
+				['errors' => $errors],
+				Status::BadRequest
+			);
+		}
 
-        $saved = $post->save();
+		$saved = $post->save();
 
-        return Json::from(
-            ['post' => $saved->json()],
-            Status::Created,
-            ['Location' => "/posts/{$saved->id}"]
-        );
-    }
+		return Json::from(
+			['post' => $saved->json()],
+			Status::Created,
+			['Location' => "/posts/{$saved->id}"]
+		);
+	}
 
-    public function update(int $id): Json
-    {
-        $post = Post::find($id);
+	public function update(int $id): Json
+	{
+		$post = Post::find($id);
 
-        if (!$post) {
-            throw new StatusException(404);
-        }
+		if (!$post) {
+			throw new StatusException(404);
+		}
 
-        $post->hydrate($_POST);
-        $errors = $post->validate();
+		$post->hydrate($_POST);
+		$errors = $post->validate();
 
-        if (count($errors) > 0) {
-            return Json::from(
-                ['errors' => $errors],
-                Status::BadRequest
-            );
-        }
+		if (count($errors) > 0) {
+			return Json::from(
+				['errors' => $errors],
+				Status::BadRequest
+			);
+		}
 
-        $updated = $post->save();
+		$updated = $post->save();
 
-        return Json::from(['post' => $updated->json()]);
-    }
+		return Json::from(['post' => $updated->json()]);
+	}
 }
 ```
 
@@ -627,20 +627,20 @@ use Haku\Http\{Messages\Json, Status, Headers};
 
 class Api
 {
-    public function index(): Json
-    {
-        $items = Item::paginate(page: 1, limit: 25);
+	public function index(): Json
+	{
+		$items = Item::paginate(page: 1, limit: 25);
 
-        return Json::from(
-            $items,
-            Status::OK,
-            [
-                'X-Total-Count' => $items['meta']['numRecordsTotal'],
-                'X-Page-Count' => $items['pagination']['pageCount'],
-                'Cache-Control' => 'public, max-age=300'
-            ]
-        );
-    }
+		return Json::from(
+			$items,
+			Status::OK,
+			[
+				'X-Total-Count' => $items['meta']['numRecordsTotal'],
+				'X-Page-Count' => $items['pagination']['pageCount'],
+				'Cache-Control' => 'public, max-age=300'
+			]
+		);
+	}
 }
 ```
 
@@ -654,25 +654,25 @@ use Haku\Http\Exceptions\StatusException;
 
 class ErrorHandler
 {
-    public function invoke(
-        Request $request,
-        Message $response,
-        Headers $headers
-    ): array {
-        try {
-            return [$request, $response, $headers];
-        } catch (StatusException $e) {
-            $errorResponse = Json::from(
-                [
-                    'error' => $e->getMessage(),
-                    'status' => $e->getCode()
-                ],
-                Status::from($e->getCode())
-            );
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array {
+		try {
+			return [$request, $response, $headers];
+		} catch (StatusException $e) {
+			$errorResponse = Json::from(
+				[
+					'error' => $e->getMessage(),
+					'status' => $e->getCode()
+				],
+				Status::from($e->getCode())
+			);
 
-            return [$request, $errorResponse, $headers];
-        }
-    }
+			return [$request, $errorResponse, $headers];
+		}
+	}
 }
 ```
 
@@ -694,21 +694,21 @@ return Json::from($data);
 ```php
 // ✓ Good
 if (!$resource) {
-    throw new StatusException(404);
+	throw new StatusException(404);
 }
 
 // ✗ Avoid
 if (!$resource) {
-    return Json::error('Not found', Status::NotFound);
+	return Json::error('Not found', Status::NotFound);
 }
 ```
 
 **Set Appropriate Headers**
 ```php
 return Json::from(
-    $data,
-    Status::Created,
-    ['Location' => "/resources/{$id}"]
+	$data,
+	Status::Created,
+	['Location' => "/resources/{$id}"]
 );
 ```
 
@@ -717,7 +717,7 @@ return Json::from(
 $method = Method::resolve();
 
 if (!$method->allowsPayload() && !empty($_POST)) {
-    throw new StatusException(405);
+	throw new StatusException(405);
 }
 ```
 

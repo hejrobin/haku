@@ -28,13 +28,13 @@ use Haku\Http\{Method, Messages\Json, Status};
 
 class Users
 {
-    #[Route('/users', Method::Get)]
-    public function index(): Json
-    {
-        $users = User::findAll();
+	#[Route('/users', Method::Get)]
+	public function index(): Json
+	{
+		$users = User::findAll();
 
-        return Json::from(['users' => $users]);
-    }
+		return Json::from(['users' => $users]);
+	}
 }
 ```
 
@@ -44,13 +44,13 @@ class Users
 #[Route('/users/{id}', Method::Get)]
 public function show(int $id): Json
 {
-    $user = User::find($id);
+	$user = User::find($id);
 
-    if (!$user) {
-        return Json::error('User not found', Status::NotFound);
-    }
+	if (!$user) {
+		return Json::error('User not found', Status::NotFound);
+	}
 
-    return Json::from(['user' => $user->json()]);
+	return Json::from(['user' => $user->json()]);
 }
 ```
 
@@ -60,19 +60,19 @@ public function show(int $id): Json
 #[Route('/users', Method::Post)]
 public function create(): Json
 {
-    // Handle POST /users
+	// Handle POST /users
 }
 
 #[Route('/users/{id}', Method::Put)]
 public function update(int $id): Json
 {
-    // Handle PUT /users/123
+	// Handle PUT /users/123
 }
 
 #[Route('/users/{id}', Method::Delete)]
 public function destroy(int $id): Json
 {
-    // Handle DELETE /users/123
+	// Handle DELETE /users/123
 }
 ```
 
@@ -88,13 +88,13 @@ Parameters are defined in curly braces and automatically passed to handler metho
 #[Route('/posts/{id}', Method::Get)]
 public function show(int $id): Json
 {
-    // $id is extracted from URL and passed as argument
+	// $id is extracted from URL and passed as argument
 }
 
 #[Route('/users/{userId}/posts/{postId}', Method::Get)]
 public function userPost(int $userId, int $postId): Json
 {
-    // Multiple parameters in order
+	// Multiple parameters in order
 }
 ```
 
@@ -127,11 +127,11 @@ Use `?` after parameter to make it optional:
 #[Route('/search/{query}?', Method::Get)]
 public function search(?string $query = null): Json
 {
-    if ($query) {
-        return Json::from(searchFor($query));
-    }
+	if ($query) {
+		return Json::from(searchFor($query));
+	}
 
-    return Json::from(getAll());
+	return Json::from(getAll());
 }
 ```
 
@@ -150,11 +150,11 @@ use Haku\Http\{Method, Messages\Json};
 #[Route('/api/v1')]
 class Api
 {
-    #[Route('/users', Method::Get)]  // Maps to /api/v1/users
-    public function users(): Json { }
+	#[Route('/users', Method::Get)]  // Maps to /api/v1/users
+	public function users(): Json { }
 
-    #[Route('/posts', Method::Get)]  // Maps to /api/v1/posts
-    public function posts(): Json { }
+	#[Route('/posts', Method::Get)]  // Maps to /api/v1/posts
+	public function posts(): Json { }
 }
 ```
 
@@ -174,20 +174,20 @@ use Haku\Http\{Request, Message, Headers, Status, Messages\Json};
 
 class AuthMiddleware extends Middleware
 {
-    public function invoke(
-        Request $request,
-        Message $response,
-        Headers $headers
-    ): array
-    {
-        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array
+	{
+		$token = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
 
-        if (!$token) {
-            $response = Json::error('Unauthorized', Status::Unauthorized);
-        }
+		if (!$token) {
+			$response = Json::error('Unauthorized', Status::Unauthorized);
+		}
 
-        return [$request, $response, $headers];
-    }
+		return [$request, $response, $headers];
+	}
 }
 ```
 
@@ -211,14 +211,14 @@ public function profile(): Json { }
 #[Uses(['auth', 'rate_limit'])]
 class ProtectedApi
 {
-    // All methods inherit these middlewares
+	// All methods inherit these middlewares
 
-    #[Route('/profile', Method::Get)]
-    public function profile(): Json { }
+	#[Route('/profile', Method::Get)]
+	public function profile(): Json { }
 
-    #[Route('/settings', Method::Get)]
-    #[Uses(['admin'])]  // Additional middleware for this route
-    public function settings(): Json { }
+	#[Route('/settings', Method::Get)]
+	#[Uses(['admin'])]  // Additional middleware for this route
+	public function settings(): Json { }
 }
 ```
 
@@ -243,7 +243,7 @@ use Haku\Http\Method;
 #[WithStatus(503)]
 public function maintenance(): Json
 {
-    return Json::from(['message' => 'Under maintenance']);
+	return Json::from(['message' => 'Under maintenance']);
 }
 ```
 
@@ -257,8 +257,8 @@ use Haku\Http\Method;
 
 #[Route('/download/{file}', Method::Get)]
 #[WithHeaders([
-    'Content-Type' => 'application/octet-stream',
-    'Content-Disposition' => 'attachment'
+	'Content-Type' => 'application/octet-stream',
+	'Content-Disposition' => 'attachment'
 ])]
 public function download(string $file): Json { }
 ```
@@ -276,13 +276,13 @@ namespace App\Routes;
 
 class Users
 {
-    #[Route('/users', Method::Get)]
-    public function index(): Json { }
-    // Auto-named: "users_index"
+	#[Route('/users', Method::Get)]
+	public function index(): Json { }
+	// Auto-named: "users_index"
 
-    #[Route('/users/{id}', Method::Get)]
-    public function show(int $id): Json { }
-    // Auto-named: "users_show"
+	#[Route('/users/{id}', Method::Get)]
+	public function show(int $id): Json { }
+	// Auto-named: "users_show"
 }
 ```
 
@@ -311,12 +311,12 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $headers = new Headers();
 
 try {
-    [$request, $response, $headers] = delegate($path, $headers);
+	[$request, $response, $headers] = delegate($path, $headers);
 
-    $headers->send();
-    echo $response;
+	$headers->send();
+	echo $response;
 } catch (StatusException $e) {
-    // Handle HTTP errors
+	// Handle HTTP errors
 }
 ```
 
@@ -346,89 +346,95 @@ use App\Models\Post;
 #[Uses(['auth'])]
 class Posts
 {
-    #[Route('/', Method::Get)]
-    public function index(): Json
-    {
-        $posts = Post::paginate(page: 1, limit: 25);
+	#[Route('/', Method::Get)]
+	public function index(): Json
+	{
+		$posts = Post::paginate(page: 1, limit: 25);
 
-        return Json::from($posts);
-    }
+		return Json::from($posts);
+	}
 
-    #[Route('/{id}', Method::Get)]
-    public function show(int $id): Json
-    {
-        $post = Post::find($id);
+	#[Route('/{id}', Method::Get)]
+	public function show(int $id): Json
+	{
+		$post = Post::find($id);
 
-        if (!$post) {
-            throw new StatusException(404);
-        }
+		if (!$post) {
+			throw new StatusException(404);
+		}
 
-        return Json::from(['post' => $post->json()]);
-    }
+		return Json::from(['post' => $post->json()]);
+	}
 
-    #[Route('/', Method::Post)]
-    public function create(): Json
-    {
-        $post = new Post();
-        $post->hydrate($_POST);
+	#[Route('/', Method::Post)]
+	public function create(): Json
+	{
+		$post = new Post();
+		$post->hydrate($_POST);
 
-        $errors = $post->validate();
+		$errors = $post->validate();
 
-        if (count($errors) > 0) {
-            return Json::from(
-                ['errors' => $errors],
-                Status::BadRequest
-            );
-        }
+		if (count($errors) > 0) {
+			return Json::from(
+				['errors' => $errors],
+				Status::BadRequest
+			);
+		}
 
-        $saved = $post->save();
+		$saved = $post->save();
 
-        return Json::from(
-            ['post' => $saved->json()],
-            Status::Created
-        );
-    }
+		return Json::from(
+			['post' => $saved->json()],
+			Status::Created
+		);
+	}
 
-    #[Route('/{id}', Method::Put)]
-    public function update(int $id): Json
-    {
-        $post = Post::find($id);
+	#[Route('/{id}', Method::Put)]
+	public function update(int $id): Json
+	{
+		$post = Post::find($id);
 
-        if (!$post) {
-            throw new StatusException(404);
-        }
+		if (!$post) {
+			throw new StatusException(404);
+		}
 
-        $post->hydrate($_POST);
-        $errors = $post->validate();
+		// Payload captures $_POST and validates it with Validators.
+		$payload = new Payload([
+			'firstName' => ['len:2..64']
+		]);
 
-        if (count($errors) > 0) {
-            return Json::from(
-                ['errors' => $errors],
-                Status::BadRequest
-            );
-        }
+		$post->hydrate($payload->json());
 
-        $updated = $post->save();
+		$errors = $post->validate();
 
-        return Json::from(['post' => $updated->json()]);
-    }
+		if (count($errors) > 0) {
+			return Json::from(
+				['errors' => $errors],
+				Status::BadRequest
+			);
+		}
 
-    #[Route('/{id}', Method::Delete)]
-    public function destroy(int $id): Json
-    {
-        $post = Post::find($id);
+		$updated = $post->save();
 
-        if (!$post) {
-            throw new StatusException(404);
-        }
+		return Json::from(['post' => $updated->json()]);
+	}
 
-        Post::delete($id);
+	#[Route('/{id}', Method::Delete)]
+	public function destroy(int $id): Json
+	{
+		$post = Post::find($id);
 
-        return Json::from(
-            ['message' => 'Post deleted'],
-            Status::OK
-        );
-    }
+		if (!$post) {
+			throw new StatusException(404);
+		}
+
+		Post::delete($id);
+
+		return Json::from(
+			['message' => 'Post deleted'],
+			Status::OK
+		);
+	}
 }
 ```
 
@@ -440,22 +446,22 @@ namespace App\Routes;
 #[Route('/users/{userId}')]
 class UserResources
 {
-    #[Route('/posts', Method::Get)]
-    public function posts(int $userId): Json
-    {
-        // GET /users/123/posts
-        $posts = Post::findAll([
-            Where::is('user_id', $userId)
-        ]);
+	#[Route('/posts', Method::Get)]
+	public function posts(int $userId): Json
+	{
+		// GET /users/123/posts
+		$posts = Post::findAll([
+			Where::is('user_id', $userId)
+		]);
 
-        return Json::from(['posts' => $posts]);
-    }
+		return Json::from(['posts' => $posts]);
+	}
 
-    #[Route('/comments', Method::Get)]
-    public function comments(int $userId): Json
-    {
-        // GET /users/123/comments
-    }
+	#[Route('/comments', Method::Get)]
+	public function comments(int $userId): Json
+	{
+		// GET /users/123/comments
+	}
 }
 ```
 
@@ -469,34 +475,34 @@ use Haku\Http\{Request, Message, Headers};
 
 class LogRequest extends Middleware
 {
-    public function invoke(
-        Request $request,
-        Message $response,
-        Headers $headers
-    ): array
-    {
-        // Log before handler
-        error_log("Request: {$_SERVER['REQUEST_URI']}");
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array
+	{
+		// Log before handler
+		error_log("Request: {$_SERVER['REQUEST_URI']}");
 
-        return [$request, $response, $headers];
-    }
+		return [$request, $response, $headers];
+	}
 }
 
 class RateLimit extends Middleware
 {
-    public function invoke(
-        Request $request,
-        Message $response,
-        Headers $headers
-    ): array
-    {
-        // Check rate limit
-        if (exceedsRateLimit()) {
-            $response = Json::error('Too many requests', Status::TooManyRequests);
-        }
+	public function invoke(
+		Request $request,
+		Message $response,
+		Headers $headers
+	): array
+	{
+		// Check rate limit
+		if (exceedsRateLimit()) {
+			$response = Json::error('Too many requests', Status::TooManyRequests);
+		}
 
-        return [$request, $response, $headers];
-    }
+		return [$request, $response, $headers];
+	}
 }
 
 // Apply to route
@@ -533,8 +539,8 @@ app/routes/
 ├── Posts.php
 ├── Comments.php
 └── Api/
-    ├── Auth.php
-    └── Admin.php
+	├── Auth.php
+	└── Admin.php
 ```
 
 **Use Nested Controllers for Related Resources**
@@ -542,11 +548,11 @@ app/routes/
 #[Route('/api')]
 class Api
 {
-    #[Route('/users', Method::Get)]
-    public function users(): Json { }
+	#[Route('/users', Method::Get)]
+	public function users(): Json { }
 
-    #[Route('/posts', Method::Get)]
-    public function posts(): Json { }
+	#[Route('/posts', Method::Get)]
+	public function posts(): Json { }
 }
 ```
 
@@ -556,7 +562,7 @@ class Api
 #[Uses(['auth', 'admin'])]
 class Admin
 {
-    // All methods require auth + admin middleware
+	// All methods require auth + admin middleware
 }
 ```
 

@@ -40,7 +40,7 @@ define('HAKU_DATABASE_PASS', 'your_password');
 ```php
 use Haku\Database\ConnectionType;
 
-ConnectionType::MySQL    // MySQL/MariaDB
+ConnectionType::MySQL	// MySQL/MariaDB
 ConnectionType::SQLite   // SQLite
 ```
 
@@ -56,10 +56,10 @@ PDO-based database connection class with query execution helpers.
 use Haku\Database\{Connection, ConnectionType};
 
 $db = new Connection(
-    type: ConnectionType::MySQL,
-    database: 'myapp',
-    host: 'localhost',
-    port: 3306
+	type: ConnectionType::MySQL,
+	database: 'myapp',
+	host: 'localhost',
+	port: 3306
 );
 
 $db->login('username', 'password');
@@ -72,8 +72,8 @@ Fetches a single row as an associative array.
 
 ```php
 $user = $db->fetch(
-    'SELECT * FROM users WHERE id = :id',
-    ['id' => 123]
+	'SELECT * FROM users WHERE id = :id',
+	['id' => 123]
 );
 ```
 
@@ -82,8 +82,8 @@ Fetches all rows as an array of associative arrays.
 
 ```php
 $users = $db->fetchAll(
-    'SELECT * FROM users WHERE active = :active',
-    ['active' => 1]
+	'SELECT * FROM users WHERE active = :active',
+	['active' => 1]
 );
 ```
 
@@ -92,8 +92,8 @@ Fetches a single column value.
 
 ```php
 $count = $db->fetchColumn(
-    'SELECT COUNT(*) FROM users',
-    []
+	'SELECT COUNT(*) FROM users',
+	[]
 );
 ```
 
@@ -102,8 +102,8 @@ Executes a query (INSERT, UPDATE, DELETE) and returns success status.
 
 ```php
 $success = $db->execute(
-    'UPDATE users SET name = :name WHERE id = :id',
-    ['name' => 'John', 'id' => 123]
+	'UPDATE users SET name = :name WHERE id = :id',
+	['name' => 'John', 'id' => 123]
 );
 ```
 
@@ -124,7 +124,7 @@ $db->rollBack();
 
 // Check if in transaction
 if ($db->inTransaction()) {
-    // ...
+	// ...
 }
 ```
 
@@ -145,22 +145,22 @@ use Haku\Database\Attributes\{Entity, PrimaryKey, Timestamp, Validates};
 #[Entity('users')]
 class User extends Model
 {
-    #[PrimaryKey]
-    protected readonly int $id;
+	#[PrimaryKey]
+	protected readonly int $id;
 
-    #[Validates(['required', 'email'])]
-    protected string $email;
+	#[Validates(['required', 'email'])]
+	protected string $email;
 
-    #[Validates(['required', 'min:3'])]
-    protected string $name;
+	#[Validates(['required', 'min:3'])]
+	protected string $name;
 
-    protected ?string $bio;
+	protected ?string $bio;
 
-    #[Timestamp]
-    protected readonly int $createdAt;
+	#[Timestamp]
+	protected readonly int $createdAt;
 
-    #[Timestamp]
-    protected readonly ?int $updatedAt;
+	#[Timestamp]
+	protected readonly ?int $updatedAt;
 }
 ```
 
@@ -172,7 +172,7 @@ class User extends Model
 $user = User::find(123);
 
 if ($user) {
-    echo $user->name;
+	echo $user->name;
 }
 ```
 
@@ -182,7 +182,7 @@ if ($user) {
 use Haku\Database\Query\Where;
 
 $user = User::findOne([
-    Where::is('email', 'john@example.com')
+	Where::is('email', 'john@example.com')
 ]);
 ```
 
@@ -192,12 +192,12 @@ $user = User::findOne([
 use Haku\Database\Query\Where;
 
 $users = User::findAll(
-    where: [
-        Where::is('active', 1)
-    ],
-    orderBy: ['name' => 'ASC'],
-    limit: 50,
-    offset: 0
+	where: [
+		Where::is('active', 1)
+	],
+	orderBy: ['name' => 'ASC'],
+	limit: 50,
+	offset: 0
 );
 ```
 
@@ -205,17 +205,17 @@ $users = User::findAll(
 
 ```php
 $result = User::paginate(
-    where: [Where::is('active', 1)],
-    orderBy: ['created_at' => 'DESC'],
-    page: 1,
-    limit: 25
+	where: [Where::is('active', 1)],
+	orderBy: ['created_at' => 'DESC'],
+	page: 1,
+	limit: 25
 );
 
 // Returns:
 // [
-//     'pagination' => [...],
-//     'meta' => [...],
-//     'records' => [...]
+//	 'pagination' => [...],
+//	 'meta' => [...],
+//	 'records' => [...]
 // ]
 ```
 
@@ -226,16 +226,16 @@ $result = User::paginate(
 ```php
 $user = new User();
 $user->hydrate([
-    'email' => 'jane@example.com',
-    'name' => 'Jane Doe',
-    'bio' => 'Software developer'
+	'email' => 'jane@example.com',
+	'name' => 'Jane Doe',
+	'bio' => 'Software developer'
 ]);
 
 // Validate
 $errors = $user->validate();
 
 if (count($errors) === 0) {
-    $savedUser = $user->save();
+	$savedUser = $user->save();
 }
 ```
 
@@ -245,12 +245,12 @@ if (count($errors) === 0) {
 $user = User::find(123);
 
 if ($user) {
-    $user->hydrate(['name' => 'John Updated']);
-    $errors = $user->validate();
+	$user->hydrate(['name' => 'John Updated']);
+	$errors = $user->validate();
 
-    if (count($errors) === 0) {
-        $user->save();
-    }
+	if (count($errors) === 0) {
+		$user->save();
+	}
 }
 ```
 
@@ -276,7 +276,7 @@ User::delete(123, forceDelete: true);
 $user = User::find(123, includeDeleted: true);
 
 if ($user) {
-    $restoredUser = $user->restore();
+	$restoredUser = $user->restore();
 }
 ```
 
@@ -302,13 +302,13 @@ $data = $user->json(skipValidation: true);
 ```php
 class User extends Model
 {
-    protected string $distance;
+	protected string $distance;
 
-    // Convert meters to kilometers for JSON output
-    protected function marshalDistance(float $value): float
-    {
-        return $value / 1000;
-    }
+	// Convert meters to kilometers for JSON output
+	protected function marshalDistance(): float
+	{
+		return $this->distance / 1000;
+	}
 }
 ```
 
@@ -317,13 +317,13 @@ class User extends Model
 ```php
 class User extends Model
 {
-    protected string $password;
+	protected string $password;
 
-    // Hash password before saving
-    protected function mutatePassword(string $value): string
-    {
-        return password_hash($value, PASSWORD_DEFAULT);
-    }
+	// Hash password before saving
+	protected function mutatePassword(string $value): string
+	{
+		return password_hash($value, PASSWORD_DEFAULT);
+	}
 }
 ```
 
@@ -337,11 +337,11 @@ use Haku\Database\RelationType;
 
 class User extends Model
 {
-    #[Relation(model: Role::class, type: RelationType::BelongsTo, foreignKey: 'role_id')]
-    protected ?Role $role;
+	#[Relation(model: Role::class, type: RelationType::BelongsTo, foreignKey: 'role_id')]
+	protected ?Role $role;
 
-    #[Relation(model: Post::class, type: RelationType::HasMany, foreignKey: 'user_id')]
-    protected array $posts;
+	#[Relation(model: Post::class, type: RelationType::HasMany, foreignKey: 'user_id')]
+	protected array $posts;
 }
 
 // Load relations
@@ -370,26 +370,26 @@ Type-safe WHERE clause builder for queries.
 use Haku\Database\Query\Where;
 
 // Equality
-Where::is('status', 'active')           // status = 'active'
-Where::not('status', 'deleted')         // status != 'deleted'
+Where::is('status', 'active')		   // status = 'active'
+Where::not('status', 'deleted')		 // status != 'deleted'
 
 // Comparison
-Where::greaterThan('age', 18)           // age > 18
-Where::greaterThanOrEqual('age', 18)    // age >= 18
-Where::lessThan('price', 100)           // price < 100
-Where::lessThanOrEqual('price', 100)    // price <= 100
+Where::greaterThan('age', 18)		   // age > 18
+Where::greaterThanOrEqual('age', 18)	// age >= 18
+Where::lessThan('price', 100)		   // price < 100
+Where::lessThanOrEqual('price', 100)	// price <= 100
 
 // NULL checks
-Where::null('deleted_at')               // deleted_at IS NULL
-Where::notNull('verified_at')           // verified_at IS NOT NULL
+Where::null('deleted_at')			   // deleted_at IS NULL
+Where::notNull('verified_at')		   // verified_at IS NOT NULL
 
 // IN clause
 Where::in('status', ['active', 'pending'])  // status IN (...)
-Where::notIn('id', [1, 2, 3])               // status NOT IN (...)
+Where::notIn('id', [1, 2, 3])			   // status NOT IN (...)
 
 // LIKE patterns
-Where::like('name', '%john%')           // name LIKE '%john%'
-Where::notLike('email', '%spam%')       // name NOT LIKE '%spam%'
+Where::like('name', '%john%')		   // name LIKE '%john%'
+Where::notLike('email', '%spam%')	   // name NOT LIKE '%spam%'
 
 // BETWEEN
 Where::between('created_at', $start, $end)  // created_at BETWEEN ... AND ...
@@ -399,10 +399,10 @@ Where::between('created_at', $start, $end)  // created_at BETWEEN ... AND ...
 
 ```php
 $users = User::findAll([
-    Where::is('active', 1),
-    Where::greaterThan('age', 18),
-    Where::notNull('verified_at'),
-    Where::like('name', '%john%')
+	Where::is('active', 1),
+	Where::greaterThan('age', 18),
+	Where::notNull('verified_at'),
+	Where::like('name', '%john%')
 ]);
 ```
 
@@ -422,34 +422,34 @@ use Haku\Database\Connection;
 
 class CreateUsersTable implements Migration
 {
-    public function up(Connection $db): void
-    {
-        $db->exec("
-            CREATE TABLE IF NOT EXISTS `users` (
-                `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                `email` VARCHAR(255) UNIQUE NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-        ");
-    }
+	public function up(Connection $db): void
+	{
+		$db->exec("
+			CREATE TABLE IF NOT EXISTS `users` (
+				`id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+				`email` VARCHAR(255) UNIQUE NOT NULL,
+				`name` VARCHAR(255) NOT NULL,
+				`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+				`updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+		");
+	}
 
-    public function down(Connection $db): void
-    {
-        $db->exec("DROP TABLE IF EXISTS `users`;");
-    }
+	public function down(Connection $db): void
+	{
+		$db->exec("DROP TABLE IF EXISTS `users`;");
+	}
 
-    // Optional: Seed data
-    public function seed(Connection $db): void
-    {
-        $db->exec("
-            INSERT INTO `users` (`email`, `name`)
-            VALUES
-                ('admin@example.com', 'Admin'),
-                ('user@example.com', 'Test User');
-        ");
-    }
+	// Optional: Seed data
+	public function seed(Connection $db): void
+	{
+		$db->exec("
+			INSERT INTO `users` (`email`, `name`)
+			VALUES
+				('admin@example.com', 'Admin'),
+				('user@example.com', 'Test User');
+		");
+	}
 }
 ```
 
@@ -479,13 +479,13 @@ This reads the model's attributes and generates appropriate SQL:
 #[Entity('users')]
 class User extends Model
 {
-    #[PrimaryKey]
-    protected readonly int $id;
+	#[PrimaryKey]
+	protected readonly int $id;
 
-    protected string $name;  // VARCHAR(255) NOT NULL
+	protected string $name;  // VARCHAR(255) NOT NULL
 
-    #[Timestamp]
-    protected readonly int $createdAt;
+	#[Timestamp]
+	protected readonly int $createdAt;
 }
 
 // Generates CREATE TABLE with all columns properly typed
@@ -593,7 +593,7 @@ Checks if database configuration constants are defined.
 use function Haku\Database\isConfigured;
 
 if (isConfigured()) {
-    // Initialize database connection
+	// Initialize database connection
 }
 ```
 
@@ -606,7 +606,7 @@ use function Haku\Database\databaseType;
 use Haku\Database\ConnectionType;
 
 if (databaseType(ConnectionType::MySQL)) {
-    // MySQL-specific code
+	// MySQL-specific code
 }
 ```
 
@@ -617,10 +617,10 @@ Converts PHP values to SQL-safe strings.
 ```php
 use function Haku\Database\sqlValueFrom;
 
-$value = sqlValueFrom(true);      // 'TRUE'
-$value = sqlValueFrom(123);       // 123
-$value = sqlValueFrom('text');    // '"text"'
-$value = sqlValueFrom(null);      // null
+$value = sqlValueFrom(true);	  // 'TRUE'
+$value = sqlValueFrom(123);	   // 123
+$value = sqlValueFrom('text');	// '"text"'
+$value = sqlValueFrom(null);	  // null
 ```
 
 ---
@@ -636,27 +636,27 @@ use Haku\Database\Query\Where;
 // CREATE
 $user = new User();
 $user->hydrate([
-    'email' => 'john@example.com',
-    'name' => 'John Doe'
+	'email' => 'john@example.com',
+	'name' => 'John Doe'
 ]);
 
 $errors = $user->validate();
 
 if (count($errors) === 0) {
-    $savedUser = $user->save();
-    echo "Created user with ID: {$savedUser->id}";
+	$savedUser = $user->save();
+	echo "Created user with ID: {$savedUser->id}";
 }
 
 // READ
 $user = User::find(123);
 if ($user) {
-    echo "Found: {$user->name}";
+	echo "Found: {$user->name}";
 }
 
 // UPDATE
 $user->hydrate(['name' => 'John Updated']);
 if (count($user->validate()) === 0) {
-    $user->save();
+	$user->save();
 }
 
 // DELETE
@@ -668,11 +668,11 @@ User::delete(123);
 ```php
 class Post extends Model
 {
-    #[Relation(model: User::class, type: RelationType::BelongsTo, foreignKey: 'user_id')]
-    protected ?User $author;
+	#[Relation(model: User::class, type: RelationType::BelongsTo, foreignKey: 'user_id')]
+	protected ?User $author;
 
-    #[Relation(model: Comment::class, type: RelationType::HasMany, foreignKey: 'post_id')]
-    protected array $comments;
+	#[Relation(model: Comment::class, type: RelationType::HasMany, foreignKey: 'post_id')]
+	protected array $comments;
 }
 
 // Load and access relations
@@ -682,7 +682,7 @@ $post->loadRelation('comments', limit: 10);
 
 echo $post->author->name;
 foreach ($post->comments as $comment) {
-    echo $comment->content;
+	echo $comment->content;
 }
 ```
 
@@ -694,20 +694,20 @@ use function Haku\haku;
 $db = haku('db');
 
 try {
-    $db->beginTransaction();
+	$db->beginTransaction();
 
-    $user = new User();
-    $user->hydrate(['email' => 'test@example.com', 'name' => 'Test']);
-    $user->save();
+	$user = new User();
+	$user->hydrate(['email' => 'test@example.com', 'name' => 'Test']);
+	$user->save();
 
-    $profile = new Profile();
-    $profile->hydrate(['user_id' => $user->id, 'bio' => 'Test bio']);
-    $profile->save();
+	$profile = new Profile();
+	$profile->hydrate(['user_id' => $user->id, 'bio' => 'Test bio']);
+	$profile->save();
 
-    $db->commit();
+	$db->commit();
 } catch (\Exception $e) {
-    $db->rollBack();
-    throw $e;
+	$db->rollBack();
+	throw $e;
 }
 ```
 
@@ -721,8 +721,8 @@ Always validate before saving:
 ```php
 $errors = $user->validate();
 if (count($errors) > 0) {
-    // Handle validation errors
-    return ['errors' => $errors];
+	// Handle validation errors
+	return ['errors' => $errors];
 }
 ```
 
@@ -732,10 +732,10 @@ Wrap related operations in transactions:
 ```php
 $db->beginTransaction();
 try {
-    // Multiple operations
-    $db->commit();
+	// Multiple operations
+	$db->commit();
 } catch (\Exception $e) {
-    $db->rollBack();
+	$db->rollBack();
 }
 ```
 

@@ -17,7 +17,7 @@ use function Haku\Console\{
 	calculateIndentLength,
 };
 
-spec('Console/bootstrap', function()
+spec('Console', function()
 {
 
 	describe('resolveArguments()', function()

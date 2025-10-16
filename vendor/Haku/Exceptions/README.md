@@ -17,7 +17,7 @@ use Haku\Exceptions\FrameworkException;
 
 if (!file_exists($configPath))
 {
-    throw new FrameworkException('Configuration file not found');
+	throw new FrameworkException('Configuration file not found');
 }
 ```
 
@@ -48,16 +48,16 @@ use Haku\Exceptions\VendorException;
 
 try
 {
-    // Third-party library operation
-    $result = $externalLibrary->doSomething();
+	// Third-party library operation
+	$result = $externalLibrary->doSomething();
 }
 catch (\Exception $e)
 {
-    throw new VendorException(
-        sprintf('External library error: %s', $e->getMessage()),
-        0,
-        $e
-    );
+	throw new VendorException(
+		sprintf('External library error: %s', $e->getMessage()),
+		0,
+		$e
+	);
 }
 ```
 
@@ -91,22 +91,22 @@ use Haku\Exceptions\{FrameworkException, VendorException};
 
 try
 {
-    // Application code
+	// Application code
 }
 catch (FrameworkException $e)
 {
-    // Handle framework errors
-    logError('Framework error: ' . $e->getMessage());
+	// Handle framework errors
+	logError('Framework error: ' . $e->getMessage());
 }
 catch (VendorException $e)
 {
-    // Handle vendor errors
-    logError('Vendor error: ' . $e->getMessage());
+	// Handle vendor errors
+	logError('Vendor error: ' . $e->getMessage());
 }
 catch (\Exception $e)
 {
-    // Handle all other errors
-    logError('Unexpected error: ' . $e->getMessage());
+	// Handle all other errors
+	logError('Unexpected error: ' . $e->getMessage());
 }
 ```
 
@@ -131,11 +131,11 @@ Always provide descriptive error messages with context:
 
 ```php
 throw new FrameworkException(
-    sprintf(
-        'Failed to initialize %s: %s',
-        $componentName,
-        $reason
-    )
+	sprintf(
+		'Failed to initialize %s: %s',
+		$componentName,
+		$reason
+	)
 );
 ```
 
@@ -145,11 +145,11 @@ Preserve the original exception when wrapping errors:
 ```php
 catch (\Exception $original)
 {
-    throw new VendorException(
-        'External service failed',
-        0,
-        $original  // Previous exception
-    );
+	throw new VendorException(
+		'External service failed',
+		0,
+		$original  // Previous exception
+	);
 }
 ```
 

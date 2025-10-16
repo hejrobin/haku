@@ -112,12 +112,12 @@ handleError(E_WARNING, 'Division by zero', '/path/to/file.php', 42);
 ```php
 try
 {
-    // This would normally be a warning
-    $result = 10 / 0;
+	// This would normally be a warning
+	$result = 10 / 0;
 }
 catch (ErrorException $e)
 {
-    echo "Caught error: " . $e->getMessage();
+	echo "Caught error: " . $e->getMessage();
 }
 ```
 
@@ -235,17 +235,17 @@ use function Haku\Errors\logError;
 
 try
 {
-    $db->connect();
+	$db->connect();
 }
 catch (\Exception $e)
 {
-    logError(
-        sprintf('Database connection failed: %s', $e->getMessage()),
-        'error'
-    );
+	logError(
+		sprintf('Database connection failed: %s', $e->getMessage()),
+		'error'
+	);
 
-    // Re-throw or handle gracefully
-    throw $e;
+	// Re-throw or handle gracefully
+	throw $e;
 }
 ```
 
@@ -253,8 +253,8 @@ catch (\Exception $e)
 
 ```php
 use function Haku\Errors\{
-    registerErrorHandler,
-    registerExceptionHandler
+	registerErrorHandler,
+	registerExceptionHandler
 };
 
 // Register handlers individually
@@ -264,12 +264,12 @@ registerExceptionHandler();
 // Now all errors become exceptions
 try
 {
-    // This warning becomes an ErrorException
-    strlen(null);
+	// This warning becomes an ErrorException
+	strlen(null);
 }
 catch (ErrorException $e)
 {
-    echo "Caught: " . $e->getMessage();
+	echo "Caught: " . $e->getMessage();
 }
 ```
 
@@ -282,23 +282,23 @@ initialize($_ENV['APP_ENV'] ?? 'production');
 
 try
 {
-    performRiskyOperation();
+	performRiskyOperation();
 }
 catch (\Throwable $e)
 {
-    // Log the error
-    logError($e->getMessage(), 'error');
+	// Log the error
+	logError($e->getMessage(), 'error');
 
-    // In development, show detailed error
-    if (defined('HAKU_ENVIRONMENT') && HAKU_ENVIRONMENT === 'dev')
-    {
-        throw $e;
-    }
+	// In development, show detailed error
+	if (defined('HAKU_ENVIRONMENT') && HAKU_ENVIRONMENT === 'dev')
+	{
+		throw $e;
+	}
 
-    // In production, show friendly message
-    echo json_encode([
-        'error' => 'An error occurred. Please try again later.'
-    ]);
+	// In production, show friendly message
+	echo json_encode([
+		'error' => 'An error occurred. Please try again later.'
+	]);
 }
 ```
 
@@ -358,7 +358,7 @@ initialize('production');
 // ✗ Bad - manually displaying errors
 if (HAKU_ENVIRONMENT === 'production')
 {
-    error_reporting(0);  // Don't do this
+	error_reporting(0);  // Don't do this
 }
 ```
 

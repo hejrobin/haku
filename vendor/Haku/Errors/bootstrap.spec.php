@@ -16,7 +16,7 @@ use function Haku\Errors\{
 	logError
 };
 
-spec('Errors/ErrorHandling', function()
+spec('Error Handling', function()
 {
 
 	describe('Error configuration', function()

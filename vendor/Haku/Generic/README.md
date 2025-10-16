@@ -41,12 +41,12 @@ String manipulation, encoding, case conversion, and random generation utilities.
 
 ```php
 use function Haku\Generic\Strings\{
-    hyphenate,
-    camelCaseFromSnakeCase,
-    snakeCaseFromCamelCase,
-    encodeBase64Url,
-    decodeBase64Url,
-    random
+	hyphenate,
+	camelCaseFromSnakeCase,
+	snakeCaseFromCamelCase,
+	encodeBase64Url,
+	decodeBase64Url,
+	random
 };
 
 // Create hyphenated string (URL-friendly)
@@ -125,8 +125,8 @@ use Haku\Generic\Query\{Filter, FilterOperator};
 
 // Create filter from array
 $filter = Filter::from([
-    ['name' => 'age', 'operator' => 'greaterThan', 'values' => [18]],
-    ['name' => 'status', 'operator' => 'is', 'values' => ['active']]
+	['name' => 'age', 'operator' => 'greaterThan', 'values' => [18]],
+	['name' => 'status', 'operator' => 'is', 'values' => ['active']]
 ]);
 
 // Add filter
@@ -155,20 +155,20 @@ Available filter operators:
 ```php
 use Haku\Generic\Query\FilterOperator;
 
-FilterOperator::Is                      // 'is'
-FilterOperator::IsNot                   // 'isNot'
-FilterOperator::GreaterThan             // 'greaterThan'
-FilterOperator::NotGreaterThan          // 'notGreaterThan'
-FilterOperator::GreaterThanOrEqualTo    // 'greaterThanOrEqualTo'
-FilterOperator::LessThan                // 'lessThan'
-FilterOperator::NotLessThan             // 'notLessThan'
-FilterOperator::LessThanOrEqualTo       // 'lessThanOrEqualTo'
-FilterOperator::Like                    // 'like'
-FilterOperator::NotLike                 // 'notLike'
-FilterOperator::Null                    // 'null'
-FilterOperator::NotNull                 // 'notNull'
-FilterOperator::Contains                // 'contains'
-FilterOperator::Custom                  // 'custom'
+FilterOperator::Is					  // 'is'
+FilterOperator::IsNot				   // 'isNot'
+FilterOperator::GreaterThan			 // 'greaterThan'
+FilterOperator::NotGreaterThan		  // 'notGreaterThan'
+FilterOperator::GreaterThanOrEqualTo	// 'greaterThanOrEqualTo'
+FilterOperator::LessThan				// 'lessThan'
+FilterOperator::NotLessThan			 // 'notLessThan'
+FilterOperator::LessThanOrEqualTo	   // 'lessThanOrEqualTo'
+FilterOperator::Like					// 'like'
+FilterOperator::NotLike				 // 'notLike'
+FilterOperator::Null					// 'null'
+FilterOperator::NotNull				 // 'notNull'
+FilterOperator::Contains				// 'contains'
+FilterOperator::Custom				  // 'custom'
 ```
 
 #### FilterProperty
@@ -179,14 +179,14 @@ Readonly class representing a single filter condition:
 use Haku\Generic\Query\{FilterProperty, FilterOperator};
 
 $property = new FilterProperty(
-    name: 'age',
-    operator: FilterOperator::GreaterThan,
-    values: [18]
+	name: 'age',
+	operator: FilterOperator::GreaterThan,
+	values: [18]
 );
 
-$property->name;      // 'age'
+$property->name;	  // 'age'
 $property->operator;  // FilterOperator::GreaterThan
-$property->values;    // [18]
+$property->values;	// [18]
 ```
 
 ---
@@ -230,8 +230,8 @@ use function Haku\Generic\Password\{create, verify};
 // During registration
 $user = new User();
 $user->hydrate([
-    'email' => $email,
-    'password' => create($_POST['password'])
+	'email' => $email,
+	'password' => create($_POST['password'])
 ]);
 $user->save();
 
@@ -239,7 +239,7 @@ $user->save();
 $user = User::findOne([Where::is('email', $email)]);
 
 if ($user && verify($_POST['password'], $user->password)) {
-    // Login successful
+	// Login successful
 }
 ```
 

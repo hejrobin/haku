@@ -78,7 +78,7 @@ $content = $storage->get('file.txt');
 
 // Check if file exists
 if ($storage->exists('file.txt')) {
-    // ...
+	// ...
 }
 
 // Delete file
@@ -93,9 +93,9 @@ $storage->delete('file.txt');
 
 ```php
 use function Haku\Filesystem\{
-    createDirectory,
-    deleteDirectory,
-    copyDirectory
+	createDirectory,
+	deleteDirectory,
+	copyDirectory
 };
 
 // Create directory recursively
@@ -112,10 +112,10 @@ copyDirectory('/source', '/destination');
 
 ```php
 use function Haku\Filesystem\{
-    readFile,
-    writeFile,
-    appendFile,
-    deleteFile
+	readFile,
+	writeFile,
+	appendFile,
+	deleteFile
 };
 
 // Read file contents
@@ -157,10 +157,10 @@ use Haku\Filesystem\Archiver;
 use function Haku\resolvePath;
 
 if ($_FILES['upload']['type'] === 'application/zip') {
-    $zip = new Archiver();
-    $zip->open($_FILES['upload']['tmp_name']);
-    $zip->extractTo(resolvePath('private/uploads'));
-    $zip->close();
+	$zip = new Archiver();
+	$zip->open($_FILES['upload']['tmp_name']);
+	$zip->extractTo(resolvePath('private/uploads'));
+	$zip->close();
 }
 ```
 

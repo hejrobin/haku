@@ -123,7 +123,12 @@ function calculateIndentLength(array $items): int
  */
 function loadConsoleServices(): void
 {
-	$servicesPath = HAKU_ROOT_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'Haku' . DIRECTORY_SEPARATOR . 'Console' . DIRECTORY_SEPARATOR . 'Commands' . DIRECTORY_SEPARATOR . 'Services';
+	$servicesPath =
+		HAKU_ROOT_PATH . 'vendor' .
+		DIRECTORY_SEPARATOR . 'Haku' .
+		DIRECTORY_SEPARATOR . 'Console' .
+		DIRECTORY_SEPARATOR . 'Commands' .
+		DIRECTORY_SEPARATOR . 'Services';
 
 	if (!is_dir($servicesPath))
 	{

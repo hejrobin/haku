@@ -30,18 +30,18 @@ use function Haku\Spec\{spec, describe, it, expect};
 
 spec('Feature Name', function()
 {
-    describe('Component', function()
-    {
-        it('should do something', function()
-        {
-            expect(true)->toBeTrue();
-        });
+	describe('Component', function()
+	{
+		it('should do something', function()
+		{
+			expect(true)->toBeTrue();
+		});
 
-        it('should do something else', function()
-        {
-            expect(2 + 2)->toBe(4);
-        });
-    });
+		it('should do something else', function()
+		{
+			expect(2 + 2)->toBe(4);
+		});
+	});
 });
 ```
 
@@ -77,7 +77,7 @@ use function Haku\Spec\spec;
 
 spec('User Authentication', function()
 {
-    // Test groups go here
+	// Test groups go here
 }, tags: ['auth', 'unit']);
 ```
 
@@ -95,7 +95,7 @@ use function Haku\Spec\describe;
 
 describe('User Model', function()
 {
-    // Individual tests go here
+	// Individual tests go here
 });
 ```
 
@@ -108,8 +108,8 @@ use function Haku\Spec\it;
 
 it('should create a user', function()
 {
-    $user = new User();
-    expect($user)->toBeInstanceOf(User::class);
+	$user = new User();
+	expect($user)->toBeInstanceOf(User::class);
 });
 ```
 
@@ -123,8 +123,8 @@ it('should create a user', function()
 use function Haku\Spec\expect;
 
 // Equality
-expect($value)->toBe(42);           // Strict equality (===)
-expect($value)->toEqual(42);        // Loose equality (==)
+expect($value)->toBe(42);		   // Strict equality (===)
+expect($value)->toEqual(42);		// Loose equality (==)
 
 // Boolean
 expect($value)->toBeTrue();
@@ -189,9 +189,9 @@ Use `expectAll()` to validate multiple expectations at once:
 use function Haku\Spec\{expect, expectAll};
 
 $result = expectAll(
-    expect($user->name)->toBe('John'),
-    expect($user->age)->toBeGreaterThan(18),
-    expect($user->email)->toInclude('@')
+	expect($user->name)->toBe('John'),
+	expect($user->age)->toBeGreaterThan(18),
+	expect($user->email)->toInclude('@')
 );
 
 expect($result)->toBeTrue();
@@ -210,13 +210,13 @@ use function Haku\Spec\{spec, beforeAll};
 
 spec('Database Tests', function()
 {
-    beforeAll(function()
-    {
-        // Setup database connection
-        setupDatabase();
-    });
+	beforeAll(function()
+	{
+		// Setup database connection
+		setupDatabase();
+	});
 
-    // Tests...
+	// Tests...
 }, tags: ['database']);
 ```
 
@@ -227,13 +227,13 @@ use function Haku\Spec\{spec, afterAll};
 
 spec('Database Tests', function()
 {
-    afterAll(function()
-    {
-        // Cleanup database
-        teardownDatabase();
-    });
+	afterAll(function()
+	{
+		// Cleanup database
+		teardownDatabase();
+	});
 
-    // Tests...
+	// Tests...
 });
 ```
 
@@ -246,13 +246,13 @@ use function Haku\Spec\{describe, before};
 
 describe('User CRUD', function()
 {
-    before(function()
-    {
-        // Setup test data
-        createTestUsers();
-    });
+	before(function()
+	{
+		// Setup test data
+		createTestUsers();
+	});
 
-    // Tests...
+	// Tests...
 });
 ```
 
@@ -263,13 +263,13 @@ use function Haku\Spec\{describe, after};
 
 describe('User CRUD', function()
 {
-    after(function()
-    {
-        // Cleanup test data
-        deleteTestUsers();
-    });
+	after(function()
+	{
+		// Cleanup test data
+		deleteTestUsers();
+	});
 
-    // Tests...
+	// Tests...
 });
 ```
 
@@ -282,18 +282,18 @@ use function Haku\Spec\{describe, beforeEach, it};
 
 describe('User Model', function()
 {
-    beforeEach(function()
-    {
-        // Create fresh user for each test
-        global $user;
-        $user = new User();
-    });
+	beforeEach(function()
+	{
+		// Create fresh user for each test
+		global $user;
+		$user = new User();
+	});
 
-    it('should have a name', function()
-    {
-        global $user;
-        expect($user)->toHaveProperty('name');
-    });
+	it('should have a name', function()
+	{
+		global $user;
+		expect($user)->toHaveProperty('name');
+	});
 });
 ```
 
@@ -304,13 +304,13 @@ use function Haku\Spec\{describe, afterEach, it};
 
 describe('File Operations', function()
 {
-    afterEach(function()
-    {
-        // Cleanup after each test
-        cleanupTestFiles();
-    });
+	afterEach(function()
+	{
+		// Cleanup after each test
+		cleanupTestFiles();
+	});
 
-    // Tests...
+	// Tests...
 });
 ```
 
@@ -326,41 +326,41 @@ use Haku\Http\{Method, Status};
 
 spec('API Routes', function()
 {
-    describe('GET /users', function()
-    {
-        it('should return users list', function()
-        {
-            $result = route('/users', Method::Get);
+	describe('GET /users', function()
+	{
+		it('should return users list', function()
+		{
+			$result = route('/users', Method::Get);
 
-            expect($result->status)->toBe(Status::OK);
-            expect($result->response)->toBeInstanceOf(Json::class);
-        });
-    });
+			expect($result->status)->toBe(Status::OK);
+			expect($result->response)->toBeInstanceOf(Json::class);
+		});
+	});
 
-    describe('POST /users', function()
-    {
-        it('should create a user', function()
-        {
-            $_POST = [
-                'name' => 'John Doe',
-                'email' => 'john@example.com'
-            ];
+	describe('POST /users', function()
+	{
+		it('should create a user', function()
+		{
+			$_POST = [
+				'name' => 'John Doe',
+				'email' => 'john@example.com'
+			];
 
-            $result = route('/users', Method::Post);
+			$result = route('/users', Method::Post);
 
-            expect($result->status)->toBe(Status::Created);
-        });
-    });
+			expect($result->status)->toBe(Status::Created);
+		});
+	});
 
-    describe('GET /users/:id', function()
-    {
-        it('should return 404 for nonexistent user', function()
-        {
-            $result = route('/users/99999', Method::Get);
+	describe('GET /users/:id', function()
+	{
+		it('should return 404 for nonexistent user', function()
+		{
+			$result = route('/users/99999', Method::Get);
 
-            expect($result->status)->toBe(Status::NotFound);
-        });
-    });
+			expect($result->status)->toBe(Status::NotFound);
+		});
+	});
 });
 ```
 
@@ -379,17 +379,17 @@ Use tags to organize and filter tests:
 ```php
 spec('User Tests', function()
 {
-    // Tests...
+	// Tests...
 }, tags: ['unit', 'models']);
 
 spec('Database Integration', function()
 {
-    // Tests...
+	// Tests...
 }, tags: ['integration', 'database']);
 
 spec('Slow E2E Tests', function()
 {
-    // Tests...
+	// Tests...
 }, tags: ['e2e', 'slow']);
 ```
 
@@ -426,43 +426,43 @@ use App\Models\User;
 
 spec('User Model', function()
 {
-    describe('User Creation', function()
-    {
-        beforeEach(function()
-        {
-            global $user;
-            $user = new User();
-        });
+	describe('User Creation', function()
+	{
+		beforeEach(function()
+		{
+			global $user;
+			$user = new User();
+		});
 
-        it('should create a valid user', function()
-        {
-            global $user;
+		it('should create a valid user', function()
+		{
+			global $user;
 
-            $user->hydrate([
-                'name' => 'John Doe',
-                'email' => 'john@example.com'
-            ]);
+			$user->hydrate([
+				'name' => 'John Doe',
+				'email' => 'john@example.com'
+			]);
 
-            $errors = $user->validate();
+			$errors = $user->validate();
 
-            expect(count($errors))->toBe(0);
-            expect($user->name)->toBe('John Doe');
-        });
+			expect(count($errors))->toBe(0);
+			expect($user->name)->toBe('John Doe');
+		});
 
-        it('should fail validation with invalid email', function()
-        {
-            global $user;
+		it('should fail validation with invalid email', function()
+		{
+			global $user;
 
-            $user->hydrate([
-                'name' => 'John',
-                'email' => 'invalid-email'
-            ]);
+			$user->hydrate([
+				'name' => 'John',
+				'email' => 'invalid-email'
+			]);
 
-            $errors = $user->validate();
+			$errors = $user->validate();
 
-            expect(count($errors))->toBeGreaterThan(0);
-        });
-    });
+			expect(count($errors))->toBeGreaterThan(0);
+		});
+	});
 }, tags: ['unit', 'models']);
 ```
 
@@ -477,26 +477,26 @@ use Haku\Http\{Method, Status};
 
 spec('Protected API Routes', function()
 {
-    describe('GET /api/profile', function()
-    {
-        it('should return 401 without token', function()
-        {
-            $result = route('/api/profile', Method::Get);
+	describe('GET /api/profile', function()
+	{
+		it('should return 401 without token', function()
+		{
+			$result = route('/api/profile', Method::Get);
 
-            expect($result->status)->toBe(Status::Unauthorized);
-        });
+			expect($result->status)->toBe(Status::Unauthorized);
+		});
 
-        it('should return user profile with valid token', function()
-        {
-            $token = encodeToken(['user_id' => 123]);
+		it('should return user profile with valid token', function()
+		{
+			$token = encodeToken(['user_id' => 123]);
 
-            $result = route('/api/profile', Method::Get, [
-                'Authorization' => "Bearer {$token}"
-            ]);
+			$result = route('/api/profile', Method::Get, [
+				'Authorization' => "Bearer {$token}"
+			]);
 
-            expect($result->status)->toBe(Status::OK);
-        });
-    });
+			expect($result->status)->toBe(Status::OK);
+		});
+	});
 }, tags: ['integration', 'auth']);
 ```
 
@@ -510,40 +510,40 @@ use App\Models\Post;
 
 spec('Post Model Database Operations', function()
 {
-    beforeAll(function()
-    {
-        // Setup test database
-        global $db;
-        $db = setupTestDatabase();
-    });
+	beforeAll(function()
+	{
+		// Setup test database
+		global $db;
+		$db = setupTestDatabase();
+	});
 
-    afterAll(function()
-    {
-        // Cleanup
-        global $db;
-        teardownTestDatabase($db);
-    });
+	afterAll(function()
+	{
+		// Cleanup
+		global $db;
+		teardownTestDatabase($db);
+	});
 
-    describe('Post CRUD', function()
-    {
-        it('should create and retrieve a post', function()
-        {
-            $post = new Post();
-            $post->hydrate([
-                'title' => 'Test Post',
-                'content' => 'Test content'
-            ]);
+	describe('Post CRUD', function()
+	{
+		it('should create and retrieve a post', function()
+		{
+			$post = new Post();
+			$post->hydrate([
+				'title' => 'Test Post',
+				'content' => 'Test content'
+			]);
 
-            $saved = $post->save();
+			$saved = $post->save();
 
-            expect($saved)->not()->toBeNull();
-            expect($saved->id)->toBeGreaterThan(0);
+			expect($saved)->not()->toBeNull();
+			expect($saved->id)->toBeGreaterThan(0);
 
-            $retrieved = Post::find($saved->id);
+			$retrieved = Post::find($saved->id);
 
-            expect($retrieved->title)->toBe('Test Post');
-        });
-    });
+			expect($retrieved->title)->toBe('Test Post');
+		});
+	});
 }, tags: ['database', 'integration']);
 ```
 
@@ -555,16 +555,16 @@ spec('Post Model Database Operations', function()
 ```php
 spec('Feature Name', function()
 {
-    describe('Component A', function()
-    {
-        it('should do X', function() { /* ... */ });
-        it('should do Y', function() { /* ... */ });
-    });
+	describe('Component A', function()
+	{
+		it('should do X', function() { /* ... */ });
+		it('should do Y', function() { /* ... */ });
+	});
 
-    describe('Component B', function()
-    {
-        it('should do Z', function() { /* ... */ });
-    });
+	describe('Component B', function()
+	{
+		it('should do Z', function() { /* ... */ });
+	});
 });
 ```
 
@@ -583,8 +583,8 @@ Use hooks to ensure each test starts with a clean state:
 ```php
 beforeEach(function()
 {
-    global $user;
-    $user = new User();  // Fresh instance for each test
+	global $user;
+	$user = new User();  // Fresh instance for each test
 });
 ```
 
@@ -604,9 +604,9 @@ spec('User Journey', function() { /* ... */ }, tags: ['e2e']);
 ```php
 describe('Division', function()
 {
-    it('should divide positive numbers', function() { /* ... */ });
-    it('should handle division by zero', function() { /* ... */ });
-    it('should handle negative numbers', function() { /* ... */ });
+	it('should divide positive numbers', function() { /* ... */ });
+	it('should handle division by zero', function() { /* ... */ });
+	it('should handle negative numbers', function() { /* ... */ });
 });
 ```
 
