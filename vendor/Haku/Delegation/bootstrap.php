@@ -204,7 +204,7 @@ function pathToRegex(
  */
 function parseRouteAttribute(
 	ReflectionAttribute $attribute,
-	ReflectionMethod $method = null
+	?ReflectionMethod $method = null
 ): array
 {
 	$ref = $attribute->newInstance();
@@ -271,7 +271,7 @@ function parseRouteAttribute(
  */
 function parseRouteAttributes(
 	array $attributes,
-	ReflectionMethod $method = null
+	?ReflectionMethod $method = null
 ): array
 {
 	$parsed = [];

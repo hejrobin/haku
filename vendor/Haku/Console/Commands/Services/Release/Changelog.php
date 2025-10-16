@@ -21,7 +21,13 @@ use function Haku\resolvePath;
  *
  *	@return bool
  */
-function generateChangelog(Output $output, string $version, string $date = null, array $changes = [], ?string $message = null): bool
+function generateChangelog(
+	Output $output,
+	string $version,
+	?string $date = null,
+	array $changes = [],
+	?string $message = null
+): bool
 {
 	$changelogPath = resolvePath('CHANGELOG.md');
 	$date ??= date('Y-m-d');

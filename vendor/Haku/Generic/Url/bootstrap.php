@@ -43,7 +43,7 @@ function resolve(bool $omitRequestPath = false): string
 	return $resolvedUrl;
 }
 
-function path(string $unresolvedUri = null): string
+function path(?string $unresolvedUri = null): string
 {
 	if ($unresolvedUri === null)
 	{

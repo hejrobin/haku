@@ -62,8 +62,8 @@ trait Factory
 	 */
 	public function initialize(
 		string $className,
-		string $instanceName = null,
-		string $classMethodName = null,
+		?string $instanceName = null,
+		?string $classMethodName = null,
 		array $classMethodArguments = [],
 	): object
 	{
