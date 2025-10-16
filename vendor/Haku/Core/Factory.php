@@ -69,7 +69,8 @@ trait Factory
 	{
 		if ($instanceName === null)
 		{
-			$instanceName = mb_lcfirst(array_pop(explode('\\', $className)));
+			$namespaceSegments = explode('\\', $className);
+			$instanceName = mb_lcfirst(array_pop($namespaceSegments));
 		}
 
 		if ($this->get($instanceName) !== null)
