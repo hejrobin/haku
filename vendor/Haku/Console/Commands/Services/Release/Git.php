@@ -25,7 +25,7 @@ function hasUncommittedChanges(): bool
  *
  *	@return bool True on success, false on failure
  */
-function commitReleaseChanges(string $version, string $commitMessage = ''): bool
+function commitReleaseChanges(string $version, ?string $commitMessage = null): bool
 {
 	// Stage all changes
 	exec('git add . 2>&1', $output, $returnCode);
@@ -40,7 +40,7 @@ function commitReleaseChanges(string $version, string $commitMessage = ''): bool
 
 	$command = sprintf('git commit -m %s ', escapeshellarg($message));
 
-	if ($commitMessage !== '')
+	if ($commitMessage !== null)
 	{
 		$command .= sprintf(' -m %s ', escapeshellarg($commitMessage));
 	}
