@@ -27,7 +27,7 @@ class Request
 
 	public static function from(
 		array $route,
-		Headers $headers = null,
+		?Headers $headers = null,
 	): self
 	{
 		return new self(
