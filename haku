@@ -38,16 +38,19 @@ try
 
 	$engine = new Console\Engine();
 
+	// Framework Commands
 	$engine->registerCommand(new Console\Commands\Env());
 	$engine->registerCommand(new Console\Commands\Version());
-	$engine->registerCommand(new Console\Commands\Release());
 	$engine->registerCommand(new Console\Commands\Upgrade());
+	$engine->registerCommand(new Console\Commands\Release());
+	$engine->registerCommand(new Console\Commands\Okidoki());
+
+	// Development Commands
 	$engine->registerCommand(new Console\Commands\Serve());
 	$engine->registerCommand(new Console\Commands\Routes());
 	$engine->registerCommand(new Console\Commands\Test());
-	$engine->registerCommand(new Console\Commands\Make());
-	$engine->registerCommand(new Console\Commands\Rand());
 	$engine->registerCommand(new Console\Commands\Migrate());
+	$engine->registerCommand(new Console\Commands\Make());
 
 	$engine->run();
 

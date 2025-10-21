@@ -7,24 +7,21 @@ namespace Haku\Console\Commands;
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
 use Haku\Console\Command;
-use function Haku\Generic\Strings\random;
 
 /**
- *	Simple random string generator command.
- *
- *	@todo Add --size parameter
+ *	Runs through available Haku packages and attempts to write documentation for it.
  */
-class Rand extends Command
+class Okidoki extends Command
 {
 
 	public function description(): string
 	{
-		return 'generates a random string';
+		return 'generates documentation for each package in Haku';
 	}
 
 	public function invoke(): bool
 	{
-		$this->output->success(random(32));
+		$this->output->info('not implemented :(');
 
 		return true;
 	}
