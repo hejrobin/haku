@@ -64,13 +64,22 @@ class Upgrade extends Command
 
 	private function coreFiles(): array
 	{
-		return [
-			"{$this->identifier}/bootstrap.php",
-			"{$this->identifier}/index.php",
-			"{$this->identifier}/manifest.json",
-			"{$this->identifier}/LICENSE.md",
-			"{$this->identifier}/README.md",
+		$files = [
+			"bootstrap.php",
+			"index.php",
+			"manifest.json",
+			"COMMANDS.md",
+			"CHANGELOG.md",
+			"LICENCE.md",
+			"README.md",
+			"haku",
+			"haku-init"
 		];
+
+		return array_map(
+			fn($file) => "{$this->identifier}/{$file}",
+			$files
+		);
 	}
 
 	protected function runPreflightChecks(): bool
