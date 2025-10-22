@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+/**
+ *	@package Haku\Client
+ *
+ *	Client package has simple functionality to detect non-identifiable client platform information based on user agent.
+ *
+ *	> [!NOTE]
+ *	> While convenient, none of these methods should be concidered as factual, since clients can send _any_ user agent.
+ */
 namespace Haku\Client;
 
 /* @note Deny direct file access */

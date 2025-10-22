@@ -43,7 +43,6 @@ try
 	$engine->registerCommand(new Console\Commands\Version());
 	$engine->registerCommand(new Console\Commands\Upgrade());
 	$engine->registerCommand(new Console\Commands\Release());
-	$engine->registerCommand(new Console\Commands\Okidoki());
 
 	// Development Commands
 	$engine->registerCommand(new Console\Commands\Serve());

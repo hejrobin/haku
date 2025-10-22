@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace Haku\Console;
 
+use function Haku\resolvePath;
+use function Haku\resolveVendorNamespacePath;
+
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
 
 /**
  *	Parses arguments list from command line.
+ *
+ *	@example
+ *	$args = resolveArguments();
+ *	echo $args['command']; // Outputs the command name
  */
 function resolveArguments(
 	?string $triggerNextAsArgument = null,
@@ -123,12 +130,7 @@ function calculateIndentLength(array $items): int
  */
 function loadConsoleServices(): void
 {
-	$servicesPath =
-		HAKU_ROOT_PATH . 'vendor' .
-		DIRECTORY_SEPARATOR . 'Haku' .
-		DIRECTORY_SEPARATOR . 'Console' .
-		DIRECTORY_SEPARATOR . 'Commands' .
-		DIRECTORY_SEPARATOR . 'Services';
+	$servicesPath = resolvePath('vendor', 'Haku', 'Console', 'Commands', 'Services');
 
 	if (!is_dir($servicesPath))
 	{
@@ -136,7 +138,10 @@ function loadConsoleServices(): void
 	}
 
 	$iterator = new \RecursiveIteratorIterator(
-		new \RecursiveDirectoryIterator($servicesPath, \RecursiveDirectoryIterator::SKIP_DOTS),
+		new \RecursiveDirectoryIterator(
+			$servicesPath,
+			 \RecursiveDirectoryIterator::SKIP_DOTS)
+			,
 		\RecursiveIteratorIterator::SELF_FIRST
 	);
 
