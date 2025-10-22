@@ -28,22 +28,24 @@ class Engine extends Output
 	 */
 	protected function outputNilCommand(): void
 	{
-		$this->output('available commands:');
+		$this->output('usage: haku [--help] <command> [<args>]');
+		$this->break();
+
+		$this->send('available commands:');
 		$this->break();
 
 		foreach ($this->commands as $trigger => $command)
 		{
-			$indentLength = calculateIndentLength([...array_keys($this->commands), $trigger]) + 2;
+			$indentLength = calculateIndentLength([...array_keys($this->commands), $trigger]) + 4;
 
 			$commandName = str_pad($command->name(), $indentLength);
 
 			$this->send(sprintf(
-				'%s — %s',
-				$this->format($commandName, Ansi::Cyan),
+				'  %s %s',
+				$this->format($commandName, Ansi::Yellow),
 				$command->description(),
 			));
 		}
-
 	}
 
 	/**
@@ -53,7 +55,7 @@ class Engine extends Output
 	{
 		$this->output(
 			sprintf(
-				'no such command: %s',
+				"'%s' is not a haku command. see 'haku --help'.",
 				$arguments->command
 			),
 			'haku',
@@ -68,21 +70,52 @@ class Engine extends Output
 	{
 		$command = $this->commands[$arguments->command];
 
+		if (
+			$arguments->showHelp &&
+			is_callable([$command, 'help'])
+		) {
+			$command->help();
+
+			return;
+		}
+
 		if ($arguments->showHelp)
 		{
 			$options = $command->options();
 			$hasOptions = count($options) > 0;
 
-			$this->send(sprintf(
-				'%s — %s',
-				$this->format($command->name(), Ansi::Cyan),
-				$command->description(),
-			));
+			$output = sprintf("usage: haku %s", $this->format($command->name(), Ansi::Yellow));
 
-			$this->send(sprintf(
-				$hasOptions ? 'usage: %s <args>' : 'usage: %s',
-				$this->format("haku {$command->name()}", Ansi::Cyan)
-			));
+			if ($command->requiresContext())
+			{
+				$output .= " <context>";
+			}
+
+			if ($hasOptions)
+			{
+				$parsed = [];
+
+				foreach ($options as $option)
+				{
+					[$option, , $default] = explode('|', $option);
+
+					if ($default)
+					{
+						$parsed[] = sprintf("[%s=%s]", $option, $default);
+					}
+					else
+					{
+						$parsed[] = sprintf("[%s]", $option);
+					}
+				}
+
+				$output .= ' ' . implode(' ', $parsed);
+			}
+
+			$this->send($output);
+
+			$this->break();
+			$this->send($command->description());
 
 			if ($hasOptions)
 			{
@@ -93,7 +126,7 @@ class Engine extends Output
 					[$option] = explode('|', $option);
 
 					return strlen($option);
-				}, $options)) + 2;
+				}, $options)) + 4;
 
 				foreach($options as $option)
 				{
@@ -102,7 +135,7 @@ class Engine extends Output
 					if ($default)
 					{
 						$this->send(sprintf(
-							'  %s — %s (%s)',
+							'  %s %s (%s)',
 							str_pad($option, $indent),
 							$description,
 							$default
@@ -110,13 +143,15 @@ class Engine extends Output
 					}
 					else {
 						$this->send(sprintf(
-							'  %s — %s',
+							'  %s %s',
 							str_pad($option, $indent),
 							$description
 						));
 					}
 				}
 			}
+
+			$this->break();
 		}
 		else
 		{
@@ -125,7 +160,8 @@ class Engine extends Output
 			if (!$didInvoke)
 			{
 				$this->error(sprintf(
-					'command failed: %s',
+					'command failed: %s. see \'haku %s --help\'',
+					$arguments->command,
 					$arguments->command
 				));
 			}

@@ -30,6 +30,35 @@ enum AvailableGenerators: string
 		return array_map('mb_strtolower', array_column(static::cases(), 'name'));
 	}
 
+	public static function help(): array
+	{
+		$help = [];
+		$list = self::list();
+
+		foreach ($list as $item)
+		{
+			switch ($item)
+			{
+				case 'spec':
+					$help[$item] = 'creates a spec test file | [--target]';
+					break;
+				case 'model':
+				case 'middleware':
+					$help[$item] = sprintf('creates a new %s in app/%s | [name]', $item, $item);
+					break;
+				case 'route':
+					$help[$item] = 'creates a new route in app/routes | [--path] [--class]';
+					break;
+				case 'migration':
+					$help[$item] = 'creates a new migration in app/migrations | [name] [--from]';
+					break;
+				default:
+					$help[$item] = null;
+			}
+		}
+
+		return $help;
+	}
 }
 
 /**

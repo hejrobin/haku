@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Haku\Console;
 
 use function Haku\resolvePath;
-use function Haku\resolveVendorNamespacePath;
 
 /* @note Deny direct file access */
 if (defined('HAKU_ROOT_PATH') === false) exit;
@@ -12,20 +11,40 @@ if (defined('HAKU_ROOT_PATH') === false) exit;
 /**
  *	Parses arguments list from command line.
  *
- *	@example
- *	$args = resolveArguments();
- *	echo $args['command']; // Outputs the command name
+ *	Supports the following patterns:
+ *	- php haku command
+ *	- php haku command context
+ *	- php haku command context name
+ *	- php haku command --flag value
+ *	- php haku command context --flag value
+ *	- php haku command context name --flag value
+ *	- php haku command --flag="value"
+ *	- php haku command -f
+ *
+ *	@example Basic command with context
+ *	$args = resolveArguments(); // php haku env dev
+ *	echo $args['command']; // 'env'
+ *	echo $args['context']; // 'dev'
+ *
+ *	@example Command with context and name
+ *	$args = resolveArguments(); // php haku make migration create_users
+ *	echo $args['command']; // 'make'
+ *	echo $args['context']; // 'migration'
+ *	echo $args['migration']; // 'create_users'
+ *
+ *	@example Command with flags
+ *	$args = resolveArguments(); // php haku make migration --from=User
+ *	echo $args['arguments']['from']; // 'User'
+ *
+ *	@return array{command: ?string, context: ?string, arguments: array<string, mixed>, flags: array<string, bool>, showHelp: bool}
  */
-function resolveArguments(
-	?string $triggerNextAsArgument = null,
-	?array $nextAsArgumentTriggers = [],
-	?string $triggerFieldName = null,
-): array
+function resolveArguments(): array
 {
 	global $argv;
 
 	$args = [
 		'command' => null,
+		'context' => null,
 		'arguments' => [],
 		'flags' => [],
 		'showHelp' => in_array('--help', $argv),
@@ -34,9 +53,9 @@ function resolveArguments(
 	for ($n = 1; $n < count($argv); $n++)
 	{
 		$field = $argv[$n];
-		$value = !empty($argv[$n + 1]) ? $argv[$n + 1] : null;
+		$value = $argv[$n + 1] ?? null;
 
-		// First argument is always initial command
+		// First argument is always the command
 		if ($n === 1)
 		{
 			if ($field !== '--help')
@@ -46,72 +65,78 @@ function resolveArguments(
 
 			continue;
 		}
-		// Parse long flags --hello, --hello world and --hello="hello world"
-		else if (str_starts_with($field, '--'))
+
+		// Second argument (if not a flag) is the context
+		if ($n === 2 && !str_starts_with($field, '-'))
+		{
+			$args['context'] = $field;
+
+			continue;
+		}
+
+		// Third argument (if not a flag) is stored as a named parameter using context as key
+		// e.g., php haku make migration create_users -> $args['migration'] = 'create_users'
+		if ($n === 3 && !str_starts_with($field, '-') && is_string($args['context']))
+		{
+			$contextKey = (string) $args['context'];
+			$args[ $contextKey] = $field;
+
+			continue;
+		}
+
+		// Parse long flags: --flag, --flag value, --flag="value"
+		if (str_starts_with($field, '--'))
 		{
 			$key = str_replace('--', '', $field);
 
-			if (\str_contains($field, '='))
+			// Handle --flag="value" or --flag="val1,val2,val3"
+			if (str_contains($field, '='))
 			{
-				[$tmpKey, $tmpValue] = explode('=', $field);
-
+				[$tmpKey, $tmpValue] = explode('=', $field, 2);
 				$key = str_replace('--', '', $tmpKey);
 
-				$value = array_map(
-					fn($v) => mb_trim($v, ' '),
-					explode(',', $tmpValue)
-				);
+				// Remove quotes if present
+				$tmpValue = trim($tmpValue, '"\'');
+
+				// Split comma-separated values
+				$value = str_contains($tmpValue, ',')
+					? array_map(fn($v) => trim($v), explode(',', $tmpValue))
+					: $tmpValue;
+
+				$args['arguments'][$key] = $value;
 			}
-			// Check if the next value is another flag (starts with --)
-			// If so, this is a boolean flag without a value
-			else if ($value !== null && str_starts_with($value, '--'))
+			// Handle --flag value (check if next arg is a value or another flag)
+			else if ($value !== null && !str_starts_with($value, '-'))
 			{
-				$value = null;
-				$n--; // Don't skip the next arg since it's another flag
+				$args['arguments'][$key] = $value;
+				$n++; // Skip next arg since we consumed it
+			}
+			// Handle boolean flags: --flag (no value)
+			else
+			{
+				$args['arguments'][$key] = true;
 			}
 
-			$args['arguments'][$key] = $value;
-			$n++; // Skip next arg
+			continue;
 		}
-		// Parse short flags such as -o, -f
-		else if (\str_starts_with($field, '-'))
+
+		// Parse short flags: -f, -f value
+		if (str_starts_with($field, '-'))
 		{
-			$args['flags'][str_replace('-', '', $field)] = true;
-		}
-		else
-		{
-			$fieldValue = null;
+			$key = str_replace('-', '', $field);
 
-			// Handle cases where we want to capture the argument after a specfic command.
-			// For example: php haku make <generator> to capture whatever "generator" is.
-			if (
-				$triggerNextAsArgument !== null &&
-				$args['command'] === $triggerNextAsArgument
-			) {
-				if (in_array($field, $nextAsArgumentTriggers))
-				{
-					if (!array_key_exists($n + 1, $argv))
-					{
-						continue;
-					}
-
-					$next = $argv[$n + 1];
-
-					if (!\str_starts_with($next, '-'))
-					{
-						$fieldValue = $next;
-
-						if ($triggerFieldName !== null)
-						{
-							$args[$triggerFieldName] = $field;
-						}
-
-						$n++; // Skip next arg
-					}
-				}
+			// Check if next arg is a value (not a flag)
+			if ($value !== null && !str_starts_with($value, '-'))
+			{
+				$args['flags'][$key] = $value;
+				$n++; // Skip next arg since we consumed it
+			}
+			else
+			{
+				$args['flags'][$key] = true;
 			}
 
-			$args[$field] = $fieldValue;
+			continue;
 		}
 	}
 

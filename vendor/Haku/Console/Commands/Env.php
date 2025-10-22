@@ -23,7 +23,6 @@ class Env extends Command
 	public function options(): array
 	{
 		return [
-			'--name|environment name (dev, test, prod)|required',
 			'--regenerate|regenerate existing environment config|',
 		];
 	}
@@ -33,40 +32,32 @@ class Env extends Command
 		return 'creates or regenerates environment config files';
 	}
 
+	#[Override]
+	public function requiresContext(): bool
+	{
+		return true;
+	}
+
 	public function invoke(): bool
 	{
-		$args = $this->arguments->arguments;
+		// Support both context (new) and --name (legacy) syntax
+		$environment = $this->arguments->context ?? $this->arguments->arguments['name'] ?? null;
 
-		if (!isset($args['name']))
+		if ($environment === null)
 		{
-			$this->output->error('no environment name specified, use --name dev|test|prod');
+			$this->output->error('no environment name specified');
 
 			return false;
 		}
 
-		$environment = $args['name'];
-		$regenerate = isset($args['regenerate']);
-
-		// Validate environment name
-		$validEnvironments = ['dev', 'test', 'prod'];
-		if (!in_array($environment, $validEnvironments))
-		{
-			$this->output->error(sprintf(
-				'invalid environment "%s", must be one of: %s',
-				$environment,
-				implode(', ', $validEnvironments)
-			));
-
-			return false;
-		}
+		$regenerate = isset($this->arguments->arguments['regenerate']);
 
 		$inputPath = resolvePath('private', 'generator-templates', 'env.tmpl');
 		$outputPath = resolvePath(sprintf('config.%s.php', $environment));
 
-		// Check if file exists and regenerate flag is not set
 		if (file_exists($outputPath) && !$regenerate)
 		{
-			$this->output->error(sprintf(
+			$this->output->warn(sprintf(
 				'%s environment already configured, use --regenerate to overwrite',
 				$environment
 			));
@@ -74,7 +65,6 @@ class Env extends Command
 			return false;
 		}
 
-		// Check if template exists
 		if (!file_exists($inputPath))
 		{
 			$this->output->error('environment template not found');

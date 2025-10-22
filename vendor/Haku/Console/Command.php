@@ -58,6 +58,16 @@ abstract class Command
 	}
 
 	/**
+	 *	@overridable
+	 *
+	 *	Returns whether or not command has a context, for example "haku make <context>".
+	 */
+	public function requiresContext(): bool
+	{
+		return false;
+	}
+
+	/**
 	 *	Attempt to execute command, return true on success and false on failure.
 	 */
 	abstract public function invoke(): bool;

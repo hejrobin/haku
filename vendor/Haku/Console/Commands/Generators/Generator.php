@@ -45,7 +45,7 @@ abstract class Generator
 
 		if ($nameArgument === null || empty($nameArgument))
 		{
-			$nameArgument = mb_ucfirst($args->{$args->generator});
+			$nameArgument = mb_ucfirst($args->{$args->context});
 		}
 
 		$fileName = sprintf("{$targetRootPath}/{$outputFilePattern}", $nameArgument);

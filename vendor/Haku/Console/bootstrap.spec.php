@@ -75,7 +75,7 @@ spec('Console', function()
 
 			$argv = $originalArgv;
 
-			return expect($result['arguments']['only'][0])->toEqual('mytest');
+			return expect($result['arguments']['only'])->toEqual('mytest');
 		});
 
 		it('parses long flag with comma-separated values', function()
@@ -168,6 +168,138 @@ spec('Console', function()
 				expect($result['command'])->toEqual('test'),
 				expect($result['arguments']['only'])->toEqual('mytest'),
 				expect($result['flags']['f'])->toBe(true),
+			);
+		});
+
+		it('parses command with context', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'env', 'dev'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('env'),
+				expect($result['context'])->toEqual('dev'),
+			);
+		});
+
+		it('parses command with context and flags', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'env', 'dev', '--regenerate'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('env'),
+				expect($result['context'])->toEqual('dev'),
+				expect($result['arguments']['regenerate'])->toBe(true),
+			);
+		});
+
+		it('parses make command with generator and name', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'make', 'migration', 'create_users_table', '--from', 'User'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('make'),
+				expect($result['context'])->toEqual('migration'),
+				expect($result['migration'])->toEqual('create_users_table'),
+				expect($result['arguments']['from'])->toEqual('User'),
+			);
+		});
+
+		it('parses context when followed by equals-style flag', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'make', 'migration', '--from=MyModel'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('make'),
+				expect($result['context'])->toEqual('migration'),
+				expect($result['arguments']['from'])->toEqual('MyModel'),
+			);
+		});
+
+		it('parses short flag with value', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'test', '-f', 'value'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expect($result['flags']['f'])->toEqual('value');
+		});
+
+		it('parses boolean long flag without value', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'env', 'dev', '--regenerate', '--verbose'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['arguments']['regenerate'])->toBe(true),
+				expect($result['arguments']['verbose'])->toBe(true),
+			);
+		});
+
+		it('stores third positional arg using context as key', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'make', 'route', 'UserRoute'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('make'),
+				expect($result['context'])->toEqual('route'),
+				expect($result['route'])->toEqual('UserRoute'),
+			);
+		});
+
+		it('handles third arg with context and flags', function()
+		{
+			global $argv;
+			$originalArgv = $argv;
+
+			$argv = ['haku', 'make', 'migration', 'create_accounts', '--from=Account'];
+			$result = resolveArguments();
+
+			$argv = $originalArgv;
+
+			return expectAll(
+				expect($result['command'])->toEqual('make'),
+				expect($result['context'])->toEqual('migration'),
+				expect($result['migration'])->toEqual('create_accounts'),
+				expect($result['arguments']['from'])->toEqual('Account'),
 			);
 		});
 

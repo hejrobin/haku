@@ -10,12 +10,18 @@ use Override;
 
 use Haku\Console\Command;
 
+use Haku\Console\Ansi;
+
 use Haku\Console\Commands\Generators\{
 	Generator,
 	AvailableGenerators
 };
 
-use function Haku\Console\resolveArguments;
+use function Haku\Console\{
+	resolveArguments,
+	calculateIndentLength
+};
+
 use function Haku\Console\Commands\Generators\getGeneratorInstance;
 
 /**
@@ -27,19 +33,13 @@ class Make extends Command
 	#[Override]
 	protected function resolveArguments(): void
 	{
-		$this->arguments = (object) resolveArguments(
-			triggerNextAsArgument: 'make',
-			triggerFieldName: 'generator',
-			nextAsArgumentTriggers: AvailableGenerators::list(),
-		);
+		$this->arguments = (object) resolveArguments();
 	}
 
 	#[Override]
 	public function options(): array
 	{
-		return [
-			sprintf('generator|generator name|%s', implode(', ', AvailableGenerators::list())),
-		];
+		return [];
 	}
 
 	public function description(): string
@@ -47,16 +47,74 @@ class Make extends Command
 		return 'code generator tools';
 	}
 
-	public function invoke(): bool
+	#[Override]
+	public function requiresContext(): bool
 	{
-		if (!property_exists($this->arguments, 'generator'))
-		{
-			$this->output->error('make requires a generator argument');
+		return true;
+	}
 
-			return false;
+	public function help(): void
+	{
+		$cli = $this->output;
+
+		$cli->output(sprintf(
+			"usage: haku %s <generator>",
+			$cli->format('make', Ansi::Yellow)
+		));
+
+		$cli->break();
+		$cli->send('available generators:');
+		$cli->break();
+
+		$rows = [];
+
+		$generators = AvailableGenerators::help();
+
+		foreach ($generators as $key => $item)
+		{
+			[, $params] = array_map('mb_trim', explode('|', "$item|"));
+
+			$rows[] = $params;
 		}
 
-		$generator = $this->arguments?->generator;
+		$indentLength = calculateIndentLength(array_keys($generators)) + 2;
+		$helpIndentLength = calculateIndentLength($rows) + 2;
+
+		foreach ($generators as $generator => $help)
+		{
+			[$description, $params] = array_map('mb_trim', explode('|', "$help|"));
+
+			$helpIndent = $helpIndentLength - strlen($params);
+
+			if ($params === '')
+			{
+				$params = '';
+				$helpIndent -= strlen($params);
+			}
+
+			$description = str_pad('', $helpIndent, ' ', STR_PAD_LEFT) . $description;
+
+			$cli->send(sprintf(
+				'%s %s %s',
+				$cli->format(str_pad($generator, $indentLength), Ansi::Yellow),
+				$params,
+				$description
+			));
+		}
+	}
+
+	public function invoke(): bool
+	{
+		if (!isset($this->arguments->context))
+		{
+			$this->output->info('make requires a generator argument');
+			$this->output->break();
+			$this->help();
+
+			return true;
+		}
+
+		$generator = $this->arguments->context;
 
 		$this->output->output(sprintf('invoking generator: %s', $generator));
 
